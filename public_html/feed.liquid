@@ -1,0 +1,63 @@
+{% include 'header' %}
+
+<section>
+  <div class="container">
+    <div class="bar">
+      <div class="row">
+        <div class="twelve columns">
+          Filter: <input type="text">
+        </div>
+      </div>
+    </div>
+    <div class="feed">
+      <div class="row th">
+        <div class="one columns">
+          <a href="">@ <i class="icon-arrow-down"></i></a>
+        </div>
+        <div class="three columns">
+          <a href="">User</a>
+        </div>
+        <div class="eight columns">
+          <a href="">Action</a>
+        </div>
+      </div>
+      {% for event in data %}
+      <div class="row">
+        <div class="one columns" title="{{ event.date | date: "%a, %b %d, %y" }}">
+          {{ event.timeago }}
+        </div>
+        <div class="three columns">
+          <a href="{{ event.email }}">{{ event.email }}</a>
+        </div>
+        <div class="one columns">
+          {% if event.event == 'clicked' %}
+            <span class="tag green">{{ event.event }}</span>
+          {% elsif event.event == 'opened' %}
+            <span class="tag yellow">{{ event.event }}</span>
+          {% elsif event.event == 'dropped' %}
+            <span class="tag red">{{ event.event }}</span>
+          {% elsif event.event == 'bounced' %}
+            <span class="tag red">{{ event.event }}</span>
+          {% else %}
+            <span class="tag">{{ event.event }}</span>
+          {% endif %}
+        </div>
+        <div class="seven columns">
+          {% if event.event == 'clicked' %}
+            <a href="/links/{{ event.url }}">{{ event.url }}</a> <a href="{{ event.url }}"><i class="icon-open fade"></i></a>
+          {% elsif event.event == 'opened' %}
+            <a href="/mails/{{ event.msg_id }}">{{ event.msg_id }}</a>
+          {% elsif event.event == 'dropped' %}
+            {{ event.description }}
+          {% elsif event.event == 'bounced' %}
+            {{ event.description }}
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

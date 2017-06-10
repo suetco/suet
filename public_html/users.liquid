@@ -1,0 +1,47 @@
+{% include 'header' %}
+
+<section>
+  <div class="container">
+    <div class="feed">
+      <div class="row th">
+        <div class="two columns" >
+          <a href="">Interaction <i class="icon-arrow-down"></i></a>
+        </div>
+        <div class="four columns" >
+          <a href="">Email</a>
+        </div>
+        <div class="two columns center" >
+          <a href="">Deliveries (Bounced)</a>
+        </div>
+        <div class="two columns center" >
+          <a href="">Opens (Unique)</a>
+        </div>
+        <div class="two columns center" >
+          <a href="">Clicks (Unique)</a>
+        </div>
+      </div>
+      {% for event in data %}
+      <div class="row">
+        <div class="two columns" title="{{ event.last_seen | date: "%a, %b %d, %y" }}">
+          {{ event.timeago }}
+        </div>
+        <div class="four columns">
+          <a href="">{{ event.email }}</a>
+        </div>
+        <div class="two columns center" >
+          <a href="">{{ event.delivered }} (0)</a>
+        </div>
+        <div class="two columns center" >
+          <a href="">{{ event.opened }} ({{ event.unique_opens }})</a>
+        </div>
+        <div class="two columns center" >
+          <a href="">{{ event.clicked }} ({{ event.unique_clicks }})</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
