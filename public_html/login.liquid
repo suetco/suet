@@ -1,0 +1,24 @@
+{% include 'partials/header' %}
+
+<section style="margin-top:10%">
+  <div class="container">
+    <div class="row">
+      <div class="six columns offset-by-three">
+        <h5 class="center pad-btm"><a href="/"><i class="icon-bar-graph-2"></i></a></h5>
+        <div class="box">
+          <form method="post">
+            <p><strong>Login</strong></p>
+            {% if error %}<p class="error">{{ error }}</p>{% endif %}
+            <p><input type="email" name="email" class="u-full-width" placeholder="Email" required></p>
+            <p><input type="password" name="password" class="u-full-width" placeholder="Password" required></p>
+            <p><button class="button button-primary u-full-width">Login</button></p>
+          </form>
+        </div>
+        <p class="center"><a href="/signup">Create an account</a> &middot; <a href="/recover">Recover password</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,22 +1,42 @@
-// Called from Amazon API gateway
+// Called from Google Cloud HTTP function
 
-var dbClient = require('mongodb').MongoClient;
+var dbClient = require('mongodb').MongoClient
+  , crypto = require('crypto')
+;
 
-exports.handler = function(event_data, context, callback) {
+// todo:
+// Store signature and prevent replay attacks
+// Check who owns domain
+// Get mail
+
+exports.handler = function(req, res) {
 
   if (!event_data.event)
-    return callback();
+    return res.send({error: "No event data"});
 
-  context.callbackWaitsForEmptyEventLoop = false;
+  // Required parameters
+  if (!event_data.signature || !event_data.timestamp || !event_data.token || !event_data.domain)
+    return return res.send({error: "Core data missing"});;
 
   dbClient.connect(process.env.db_url, function(err, db) {
 
     // DB connection error
-    if (err)
-      return callback(err);
+    if (err) {
+      console.log(err);
+      return res.send({error: "Db error"});
+    }
+
+    // Verify event
+    // Who owns domain?
+    var hash = crypto.createHmac('sha256', acc.api_key)
+                       .update([event_data.timestamp, event_data.token].join(''))
+                       .digest('hex');
+    if (hash != signature)
+      return res.send({error: "Incorrect signature"});
 
     var event = event_data.event.toLowerCase()
         , email = event_data.recipient
+        , domain = event_data.domain
         , inc = {}
         , unique_clicks = 0
         , unique_opens = 0
@@ -26,7 +46,7 @@ exports.handler = function(event_data, context, callback) {
       msg_id: event_data['message-id'],
       email: email,
       event: event,
-      domain: event_data.domain,
+      domain: domain: domain, domain,
       date: new Date(event_data.timestamp*1000)
     }
 
@@ -47,7 +67,7 @@ exports.handler = function(event_data, context, callback) {
     else if (event == 'complained') {
       // Notify user of complaint
     }
-    else if (data.event == 'dropped') {
+    else if (event == 'dropped') {
       // Notify of drops
       if (event_data.reason)
         data.reason = event_data.reason;
@@ -56,7 +76,7 @@ exports.handler = function(event_data, context, callback) {
       if (event_data.description)
         data.description = event_data.description;
     }
-    else if (data.event == 'bounced') {
+    else if (event == 'bounced') {
       // Notify of bounce
       if (event_data.error)
         data.error = event_data.error;
@@ -69,15 +89,17 @@ exports.handler = function(event_data, context, callback) {
     inc[event] = 1;
 
     db.collection('logs').insert(data, function(err) {
-      if (err)
-        return callback(err);
+      if (err) {
+        console.log(err);
+        return res.send({error: "DB collection error"});
+      }
 
       var p = Promise.resolve();
       // Uniques
       if (event == 'clicked') {
         p.then(function() {
           return new Promise(function(resolve) {
-            db.collection('logs').distinct('url', {email: email, event: 'clicked'}, function(err, docs){
+            db.collection('logs').distinct('url', {email: email, domain: domain, event: 'clicked'}, function(err, docs){
               if (!err)
                 unique_clicks = docs.length;
 
@@ -89,7 +111,7 @@ exports.handler = function(event_data, context, callback) {
       else if (event == 'opened') {
         p.then(function() {
           return new Promise(function(resolve) {
-            db.collection('logs').distinct('msg_id', {email: email, event: 'opened'}, function(err, docs){
+            db.collection('logs').distinct('msg_id', {email: email, domain: domain, event: 'opened'}, function(err, docs){
               if (!err)
                 unique_opens = docs.length;
 
@@ -100,15 +122,16 @@ exports.handler = function(event_data, context, callback) {
       }
 
       p.then(function() {
-        db.collection('users').update({email: email}, {
-          $set: {email: email, unique_opens: unique_opens, unique_clicks: unique_clicks, last_seen: new Date()}
+        db.collection('users').update({email: email, domain: domain}, {
+          $set: {email: email, domain: domain, unique_opens: unique_opens, unique_clicks: unique_clicks, last_seen: new Date()}
           , $inc: inc
         }, {upsert: true});
 
-        return callback(null, {status:"ok"});
+        return res.send({status:"ok"});
       })
       .catch(function(err){
-        return callback(err);
+        console.log(err);
+        return res.send({error: "Internal error"});
       });
 
     });

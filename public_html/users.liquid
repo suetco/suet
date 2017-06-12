@@ -1,4 +1,4 @@
-{% include 'header' %}
+{% include 'partials/header-dashboard' %}
 
 <section>
   <div class="container">
@@ -26,16 +26,16 @@
           {{ event.timeago }}
         </div>
         <div class="four columns">
-          <a href="">{{ event.email }}</a>
+          <a href="/users/{{ event.email }}">{{ event.email }}</a>
         </div>
         <div class="two columns center" >
-          <a href="">{{ event.delivered }} (0)</a>
+          <a href="/users/{{ event.email }}">{{ event.delivered }} (0)</a>
         </div>
         <div class="two columns center" >
-          <a href="">{{ event.opened }} ({{ event.unique_opens }})</a>
+          <a href="/users/{{ event.email }}">{{ event.opened }} ({{ event.unique_opens }})</a>
         </div>
         <div class="two columns center" >
-          <a href="">{{ event.clicked }} ({{ event.unique_clicks }})</a>
+          <a href="/users/{{ event.email }}">{{ event.clicked }} ({{ event.unique_clicks }})</a>
         </div>
       </div>
       {% endfor %}

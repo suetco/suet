@@ -1,11 +1,11 @@
-{% include 'header' %}
+{% include 'partials/header-dashboard' %}
 
 <section>
   <div class="container">
     <div class="bar">
       <div class="row">
         <div class="twelve columns">
-          Filter: <input type="text">
+          Filter: <input type="text"> <!--input type="search" name="q" placeholder="Enter email"-->
         </div>
       </div>
     </div>
@@ -27,7 +27,7 @@
           {{ event.timeago }}
         </div>
         <div class="three columns">
-          <a href="{{ event.email }}">{{ event.email }}</a>
+          <a href="/users/{{ event.email }}">{{ event.email }}</a>
         </div>
         <div class="one columns">
           {% if event.event == 'clicked' %}

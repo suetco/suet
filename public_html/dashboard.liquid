@@ -1,0 +1,38 @@
+{% include 'partials/header-dashboard' %}
+
+<section>
+  <div class="container">
+    <!--
+      Country
+      Device OS
+      Clients
+      Platform (mobile/desktop~)
+      Top clicks
+      Top opens
+      Time graph of engagement
+    -->
+    {% if info %}<p class="info">{{ info }}</p>{% endif %}
+    <div class="row">
+      <div class="six columns">
+        <div class="box">Engagement</div>
+        <div class="box">Country</div>
+        <div class="row">
+          <div class="six columns">
+            <div class="box">Platform</div>
+          </div>
+          <div class="six columns">
+            <div class="box">OS</div>
+          </div>
+        </div>
+      </div>
+      <div class="six columns">
+        <div class="box">Top Clicks</div>
+        <div class="box">Top Opens</div>
+        <div class="box">Clients</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

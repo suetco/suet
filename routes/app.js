@@ -23,6 +23,20 @@ moment.updateLocale('en', {
 
 module.exports = function(app){
 
+  app.get('/dashboard', function(req, res) {
+    res.render('dashboard', render(req, {
+      title: 'Dashboard',
+      page: 'dashboard',
+    }));
+  });
+
+  app.get('/mails', function(req, res) {
+    res.render('mails', render(req, {
+      title: 'Mails',
+      page: 'mails',
+    }));
+  });
+
   app.get('/feed', function(req, res) {
     model.feed(function(err, docs) {
       for (var d of docs) {
@@ -58,12 +72,3 @@ module.exports = function(app){
   })
 
 }
-
-
-/*exports.users = function(req, res) {
-  //model.feed(function(err, docs) {
-    render('users', render(req, {
-      data: data
-    }));
-  //})
-}//*/

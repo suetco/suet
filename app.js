@@ -10,6 +10,7 @@ var express = require('express')
     //, favicon = require('serve-favicon')
 
     // Libs
+    , acl = require('./lib/acl.js')
     , env = require('./env.js')
     , dbo = require('./lib/db.js')
     ;
@@ -34,7 +35,7 @@ dbo.connect(function(err){
 
   // Config
   var app = express();
-  app.listen(3000);
+  app.listen(process.env.PORT || 3000);
 
   // Middlewares
   var sess = {
@@ -56,22 +57,20 @@ dbo.connect(function(err){
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(express.static(__dirname + '/public_html'));
-  // Cache control
-  app.use(function (req, res, next) {
-    res.header("Cache-Control", "no-cache, no-store, must-revalidate");
-    /*var secured = ['dashboard', 'access', 'edit', 'budget'];
-    var req_acc = ['dashboard', 'edit', 'budget'];
-    if (req.session.account) {
-      for (var page of secured) {
-        if (req.url.indexOf(page) != -1) {
-          return res.redirect('/');
-          break;
-        }
-    }*/
-    next();
-  });
+  app.use(acl());
 
   // Routes
+  require('./routes/auth.js')(app);
+  require('./routes/domains.js')(app);
   require('./routes/app.js')(app);
+
+  // No matching route
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    // todo: log err.message
+    console.log(err.message);
+    res.end();
+    //res.render('error');
+  });
 
 });

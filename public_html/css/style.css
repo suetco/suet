@@ -4,10 +4,13 @@ body {
   background-color: #f2f2f2;
 }
 
-h1, h2, h3, h4, h5,
-ul, li, input {
+h1, h2, h3, h4, h5, p,
+ul, li, input, form {
   margin: 0;
   padding: 0;
+}
+p {
+  padding: 7px 0;
 }
 a {
   color: #0f5199;
@@ -16,8 +19,20 @@ a {
 a:hover {
   color: #3844d1;
 }
+strong {
+  font-weight: 500
+}
+form[method=post] {
+  padding: 20px;
+}
 .fade {
   color: #bbb;
+}
+.error {
+  color: #EA2028;
+}
+.info {
+  color: #58bb36;
 }
 
 header {
@@ -47,7 +62,7 @@ header ul a:hover {
   color: #444;
   text-decoration: none;
 }
-header ul a:first-child {
+header ul li:first-child a {
   margin-left: 0
 }
 header ul a.active {
@@ -66,12 +81,25 @@ header ul a.active {
 .left {
   float: left
 }
+.pad-btm {
+  padding-bottom: 20px
+}
+.pad-big {
+  padding: 50px;
+}
 
+.box,
 .feed {
   background-color: #fff;
   padding: 20px;
   border: 1px solid #eee;
   border-radius: 4px
+}
+.box {
+  margin-bottom: 20px
+}
+.box.big {
+  padding: 50px
 }
 .feed .row {
   padding: 15px 0;
@@ -92,7 +120,7 @@ header ul a.active {
   color: #777
 }
 .avatar {
-  width: 64px;
+  width: 36px;
   border-radius: 50%;
   display: block;
 }
@@ -113,3 +141,45 @@ header ul a.active {
   margin: 10px 0 20px
 }
 
+
+/*
+Button override
+*/
+.button.button-primary,
+button.button-primary,
+input[type="submit"].button-primary,
+input[type="reset"].button-primary,
+input[type="button"].button-primary {
+  font-weight: 500;
+  color: #f2eefc;
+  background-color: #7851de;
+  border-color: #6d43db; }
+.button.button-primary:hover,
+button.button-primary:hover,
+input[type="submit"].button-primary:hover,
+input[type="reset"].button-primary:hover,
+input[type="button"].button-primary:hover,
+.button.button-primary:focus,
+button.button-primary:focus,
+input[type="submit"].button-primary:focus,
+input[type="reset"].button-primary:focus,
+input[type="button"].button-primary:focus {
+  text-decoration: none;
+  color: #f2eefc;
+  background-color: #6d43db;
+  border-color: #6d43db; }
+
+/*
+  Form field override
+*/
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid #aaa;
+}
