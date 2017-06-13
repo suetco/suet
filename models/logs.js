@@ -1,10 +1,17 @@
-var dbo = require('../lib/db.js')
+const dbo = require('../lib/db.js')
     , moment = require('moment')
     ;
 
-exports.feed = function(fn) {
-  dbo.db().collection('logs').find({}, {
-    sort: {date: -1}
+exports.feed = function(domain, options, fn) {
+  if (!domain)
+    return fn('Domain not specified');
+
+  options = options || {};
+  let limit = options.limit || 20;
+
+  dbo.db().collection('logs').find({domain: domain}, {
+    sort: {date: -1},
+    limit: limit
   }).toArray(function(err, docs) {
     if (err) {
       console.log(err);
@@ -15,9 +22,16 @@ exports.feed = function(fn) {
   });
 }
 
-exports.users = function(fn) {
-  dbo.db().collection('users').find({}, {
-    sort: {last_seen: -1}
+exports.users = function(domain, options, fn) {
+  if (!domain)
+    return fn('Domain not specified');
+
+  options = options || {};
+  let limit = options.limit || 20;
+
+  dbo.db().collection('users').find({domain: domain}, {
+    sort: {last_seen: -1},
+    limit: limit
   }).toArray(function(err, docs) {
     if (err) {
       console.log(err);

@@ -1,4 +1,5 @@
-var model = require('../models/logs.js')
+const model = require('../models/logs.js')
+    , Mails = require('../models/mails.js')
     , render = require('../lib/utils.js').render
     , moment = require('moment')
     ;
@@ -23,6 +24,16 @@ moment.updateLocale('en', {
 
 module.exports = function(app){
 
+  app.get('/switch/:domain', function(req, res) {
+    let domain = req.params.domain;
+    // If domain exist
+    if (req.session.account.domains.indexOf(domain) != -1 &&
+      req.session.account.active_domain != domain)
+      req.session.account.active_domain = domain;
+
+    res.redirect('back');
+  });
+
   app.get('/dashboard', function(req, res) {
     res.render('dashboard', render(req, {
       title: 'Dashboard',
@@ -30,16 +41,9 @@ module.exports = function(app){
     }));
   });
 
-  app.get('/mails', function(req, res) {
-    res.render('mails', render(req, {
-      title: 'Mails',
-      page: 'mails',
-    }));
-  });
-
   app.get('/feed', function(req, res) {
-    model.feed(function(err, docs) {
-      for (var d of docs) {
+    model.feed(req.session.account.active_domain, {}, function(err, docs) {
+      for (let d of docs) {
         d.timeago = moment(d.date).fromNow();
       }
       res.render('feed', render(req, {
@@ -50,9 +54,22 @@ module.exports = function(app){
     })
   });
 
+  app.get('/mails', function(req, res) {
+    Mails.getAll(req.session.account.active_domain, {}, function(err, docs) {
+      for (let d of docs) {
+        d.timeago = moment(d.date).fromNow();
+      }
+      res.render('mails', render(req, {
+        title: 'Mails',
+        page: 'mails',
+        data: docs
+      }));
+    })
+  });
+
   app.get('/users', function(req, res) {
-    model.users(function(err, docs) {
-      for (var user of docs) {
+    model.users(req.session.account.active_domain, {}, function(err, docs) {
+      for (let user of docs) {
         user.timeago = moment(user.last_seen).fromNow();
         if (!user.clicked)
           user.clicked = 0;

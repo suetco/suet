@@ -83,7 +83,7 @@ exports.handler = function(req, res) {
         return new Promise(function(resolve, reject){
           // 1. Has the mail been pulled?
           db.collection('mails').findOne({
-            msg_id: event_data['message-id']
+            msg_id: event_data['Message-id']
           }, function(err, doc){
             // There is an error or no doc
             if (err || doc)
@@ -94,7 +94,7 @@ exports.handler = function(req, res) {
               'url': ['https://api.mailgun.net/v3/', domain, '/events'].join(''),
               'gzip': true,
               'qs': {
-                'message-id': event_data['message-id']
+                'message-id': event_data['Message-id']
               },
               'auth': {
                 'user': 'api',
@@ -134,7 +134,7 @@ exports.handler = function(req, res) {
                 if (body.subject && body['stripped-html']) {
                   // Save
                   db.collection('mails').insert({
-                    msg_id: event_data['message-id'],
+                    msg_id: event_data['Message-id'],
                     domain: domain,
                     subject: body.subject,
                     body: body['stripped-html'],
@@ -158,7 +158,7 @@ exports.handler = function(req, res) {
               , email = event_data.recipient
 
               , data = {
-                msg_id: event_data['message-id'],
+                msg_id: event_data['Message-id'],
                 email: email,
                 event: event,
                 domain: domain

@@ -68,6 +68,36 @@ header ul li:first-child a {
 header ul a.active {
   color: #444;
 }
+.has-sub {
+  position: relative;
+}
+.has-sub:hover .subnav {
+  display: block
+}
+header .subnav {
+  border-radius: 3px;
+  display: none;
+  position: absolute;
+  box-shadow: 2px 2px 5px 0px rgba(221,221,221,1);
+  border: 1px solid #ddd;
+  margin: 0;
+  z-index: 10;
+  padding: 5px 0;
+  background-color: #fff;
+  text-align: left
+}
+header .subnav li {
+  display: block;
+  margin: 0;
+  padding: 0 10px;
+}
+.subnav a {
+  padding: 3px 20px 3px 3px;
+}
+.separator {
+  height: 2px;
+  border-top: 1px solid #eee;
+}
 
 .align-right {
   text-align: right
@@ -127,7 +157,7 @@ header ul a.active {
 .tag {
   color: #444;
   background-color:#f5f0e5;
-  padding: 5px 10px;
+  padding: 4px;
   border-radius: 3px;
 }
 .tag.green {
