@@ -55,7 +55,7 @@ exports.getDomains = function(accId, key, fn) {
             domain: domain.name
           }, {
             $addToSet: {accs: accId},
-            $set: {key: key}
+            $set: {key: key, owner: accId}
           }, {upsert: true});
         }
 
