@@ -42,7 +42,10 @@ module.exports = function(app){
   });
 
   app.get('/feed', function(req, res) {
-    model.feed(req.session.account.active_domain, {}, function(err, docs) {
+    let options = {};
+    if (req.query.sort)
+      options.sort = req.query.sort;
+    model.feed(req.session.account.active_domain, options, function(err, docs) {
       for (let d of docs) {
         d.timeago = moment(d.date).fromNow();
       }
@@ -71,14 +74,6 @@ module.exports = function(app){
     model.users(req.session.account.active_domain, {}, function(err, docs) {
       for (let user of docs) {
         user.timeago = moment(user.last_seen).fromNow();
-        if (!user.clicked)
-          user.clicked = 0;
-        if (!user.opened)
-          user.opened = 0;
-        if (!user.unique_opens)
-          user.unique_opens = 0;
-        if (!user.unique_clicks)
-          user.unique_clicks = 0;
       }
       res.render('users', render(req, {
         title: 'Users',

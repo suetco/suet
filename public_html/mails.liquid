@@ -4,38 +4,46 @@
   <div class="container">
     <div class="feed">
       <div class="row th">
-        <div class="two columns" >
-          <a href="">When <i class="icon-arrow-down"></i></a>
+        <div class="one columns" >
+          <a href="">@ <i class="icon-arrow-down"></i></a>
         </div>
-        <div class="four columns">
+        <div class="seven columns">
           Mail
         </div>
-        <div class="two columns center" >
-          <a href="">Deliveries (Bounced)</a>
-        </div>
-        <div class="two columns center" >
-          <a href="">Opens (Unique)</a>
-        </div>
-        <div class="two columns center" >
-          <a href="">Clicks (Unique)</a>
+        <div class="four columns">
+          <div class="row">
+            <div class="four columns center" >
+              <a href="">Deliveries</a>
+            </div>
+            <div class="four columns center" >
+              <a href="">Opens</a>
+            </div>
+            <div class="four columns center" >
+              <a href="">Clicks</a>
+            </div>
+          </div>
         </div>
       </div>
       {% for mail in data %}
       <div class="row">
-        <div class="two columns" >
+        <div class="one columns" >
           {{ mail.timeago }}
         </div>
-        <div class="four columns">
+        <div class="seven columns">
           <a href="/mails/{{ mail.msg_id }}">{{ mail.subject }}</a>
         </div>
-        <div class="two columns center" >
-          <a href="">{{ mail.deliveries }} <span class="fade">(0)</span></a>
-        </div>
-        <div class="two columns center" >
-          <a href="">{{ mail.opens }} <span class="fade">(0)</span></a>
-        </div>
-        <div class="two columns center" >
-          <a href="">{{ mail.clicks }} <span class="fade">(0)</span></a>
+        <div class="four columns">
+          <div class="row">
+            <div class="four columns center" >
+              <a href="">{{ mail.delivered }}{% if mail.failed %} <span class="fade">({{ mail.failed }})</span>{% endif %}</a>
+            </div>
+            <div class="four columns center" >
+              <a href="">{{ mail.opened }}</a>
+            </div>
+            <div class="four columns center" >
+              <a href="">{{ mail.clicked }}</a>
+            </div>
+          </div>
         </div>
       </div>
       {% endfor %}

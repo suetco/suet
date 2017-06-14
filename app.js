@@ -19,6 +19,7 @@ dbo.connect(function(err){
 
   if (err) {
     // todo: Notify!!!
+    console.log(err);
     return process.exit(0);
   }
 

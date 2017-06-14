@@ -4,21 +4,21 @@
   <div class="container">
     <div class="bar">
       <div class="row">
-        <div class="twelve columns">
-          Filter: <input type="text"> <!--input type="search" name="q" placeholder="Enter email"-->
+        <div class="six columns">
+          <input type="text" name="filter">
         </div>
       </div>
     </div>
     <div class="feed">
       <div class="row th">
         <div class="one columns">
-          <a href="">@ <i class="icon-arrow-down"></i></a>
+          <a href="?sort=date">@ <i class="icon-arrow-down"></i></a>
         </div>
         <div class="three columns">
-          <a href="">User</a>
+          <a href="?sort=email">User</a>
         </div>
         <div class="eight columns">
-          <a href="">Action</a>
+          <a href="?sort=event">Action</a>
         </div>
       </div>
       {% for event in data %}
@@ -60,6 +60,7 @@
     </div>
   </div>
 </section>
+
 
 </body>
 </html>

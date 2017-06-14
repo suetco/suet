@@ -1,16 +1,16 @@
-var dbo = require('../lib/db.js')
+const dbo = require('../lib/db.js')
     , crypto = require('crypto')
     , validate = require('mailgun-validate')
 
     , Domains = require('./domains.js')
     ;
 
-var validator = new validate('pubkey-02iismi5n5xozcmeyu3-ymqe3f9-0da4');
+let validator = new validate('pubkey-02iismi5n5xozcmeyu3-ymqe3f9-0da4');
 
 exports.create = function(data, fn) {
 
-  var email = data.email || '';
-  var password = data.password || '';
+  let email = data.email || '';
+  let password = data.password || '';
 
   email = email.toLowerCase().trim();
 
@@ -24,7 +24,7 @@ exports.create = function(data, fn) {
       }
     }
     else if (!response.is_valid) {
-      var e = 'Email invalid.';
+      let e = 'Email invalid.';
       if (response.did_you_mean)
         e += ' Do you mean '+response.did_you_mean+'?';
       return fn(e);
@@ -43,7 +43,7 @@ exports.create = function(data, fn) {
       }
       else {
         if (!doc) {
-          var salt = crypto.randomBytes(128).toString('base64');
+          let salt = crypto.randomBytes(128).toString('base64');
           crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
             if (!err) {
               dbo.db().collection('accounts').insert({
@@ -72,8 +72,8 @@ exports.create = function(data, fn) {
 }
 
 exports.login = function(data, fn) {
-  var email = data.email || '';
-  var password = data.password || '';
+  let email = data.email || '';
+  let password = data.password || '';
 
   email = email.toLowerCase().trim();
   dbo.db().collection('accounts').findOne({email: email}, function(err, doc) {
@@ -83,17 +83,20 @@ exports.login = function(data, fn) {
       if (doc) {
         crypto.pbkdf2(password, doc.salt, 5000, 32, 'sha512', function(err, derivedKey) {
           if (!err) {
-            var hash = new Buffer(derivedKey).toString('base64');
+            let hash = new Buffer(derivedKey).toString('base64');
             if (hash == doc.password) {
-              var json = {
+              let json = {
                 id: doc._id,
                 email: doc.email
               };
               // Get his domains
               Domains.get(doc._id, function(err, domains){
                 if (domains && domains.length > 0) {
-                  json.domains = domains;
-                  json.active_domain = domains[0];
+                  let _domains = [];
+                  for (let domain of domains)
+                    _domains.push(domain.domain)
+                  json.domains = _domains;
+                  json.active_domain = _domains[0];
                 }
 
                 return fn(null, json);
@@ -108,16 +111,15 @@ exports.login = function(data, fn) {
           }
         });
       }
-      else {
+      else
         return fn('Email not found.');
-      }
     }
   });
 }
 
 exports.recoverPassword = function(res, data, fn) {
 
-  var email = data.email || '';
+  let email = data.email || '';
   // Email valid, continue
   dbo.db.collection('users').findOne({email: email},
     function(err, doc) {
@@ -126,11 +128,11 @@ exports.recoverPassword = function(res, data, fn) {
         return fn('There has been an internal error. Please try again later.');
       } else {
         if (doc) {
-          var salt = crypto.randomBytes(128).toString('base64');
+          let salt = crypto.randomBytes(128).toString('base64');
           crypto.pbkdf2(salt, salt, 5000, 32, function(err, derivedKey) {
             if (!err) {
-                var hash = new Buffer(derivedKey).toString('base64');
-                var uid = doc._id.toHexString();
+                let hash = new Buffer(derivedKey).toString('base64');
+                let uid = doc._id.toHexString();
                 // Delete all recover for user
                 dbo.db.collection('recover').remove({uid: uid}, function(err, removed){});
                 // Add this one
@@ -140,7 +142,7 @@ exports.recoverPassword = function(res, data, fn) {
                     reg_date: new Date()
                 }, function(err, result) {
                   // Send email
-                  var tmplObj = {hash: encodeURIComponent(hash), uid: uid};
+                  let tmplObj = {hash: encodeURIComponent(hash), uid: uid};
                   res.render('mail_templates/recover', tmplObj, function(err, html) {
                     if (err)  {
                       return;
@@ -152,7 +154,7 @@ exports.recoverPassword = function(res, data, fn) {
                         return;
                       }
 
-                      var transporter = nodemailer.createTransport({
+                      let transporter = nodemailer.createTransport({
                           service: 'Mailgun',
                           auth: {
                               user: 'postmaster@flit.email',
@@ -160,7 +162,7 @@ exports.recoverPassword = function(res, data, fn) {
                           }
                       });
 
-                      var mailOptions = {
+                      let mailOptions = {
                           from: 'Flit <no-reply@flit.email>',
                           to: email,
                           subject: 'Reset your password',
@@ -203,8 +205,8 @@ exports.confirmReset = function(hash, uid, fn) {
 
 exports.resetPassword = function(hash, uid, data, fn) {
 
-    var password = data.password || '';
-    var passwordb = data.passwordb || '';
+    let password = data.password || '';
+    let passwordb = data.passwordb || '';
 
     if (!password || password.length < 6) {
       return fn('Your password should be at least 6 characters.');
@@ -223,7 +225,7 @@ exports.resetPassword = function(hash, uid, data, fn) {
             return fn('Invalid reset details.');
           }
 
-          var salt = crypto.randomBytes(128).toString('base64');
+          let salt = crypto.randomBytes(128).toString('base64');
           crypto.pbkdf2(password, salt, 5000, 32, function(err, derivedKey) {
               if (!err) {
                 dbo.db.collection('users').update(
@@ -244,7 +246,7 @@ exports.resetPassword = function(hash, uid, data, fn) {
 
 exports.updateEmail = function(uid, email, fn) {
 
-    var uid = dbo.id(uid);
+    uid = dbo.id(uid);
     email = email.toLowerCase().trim();
 
     validator.validate(email, function(err, response) {
@@ -257,7 +259,7 @@ exports.updateEmail = function(uid, email, fn) {
             }
         }
         else if (!response.is_valid) {
-            var e = 'Email invalid.';
+            let e = 'Email invalid.';
             if (response.did_you_mean)
                 e += ' Did you mean '+response.did_you_mean+'?';
             fn(e);
@@ -283,7 +285,7 @@ exports.updateEmail = function(uid, email, fn) {
 
 exports.updatePassword = function(uid, oldPassword, password, fn) {
 
-  var uid = dbo.id(uid);
+  uid = dbo.id(uid);
 
   if (!password || password.length < 6) {
     fn('Your password should be at least 6 characters.');
@@ -298,10 +300,10 @@ exports.updatePassword = function(uid, oldPassword, password, fn) {
         if (doc) {
           crypto.pbkdf2(oldPassword, doc.salt, 5000, 32, function(err, derivedKey) {
             if (!err) {
-              var hash = new Buffer(derivedKey).toString('base64');
+              let hash = new Buffer(derivedKey).toString('base64');
               if (hash == doc.password) {
                 // Update password here
-                var salt = crypto.randomBytes(128).toString('base64');
+                let salt = crypto.randomBytes(128).toString('base64');
                 crypto.pbkdf2(password, salt, 5000, 32, function(err, derivedKey) {
                   if (!err) {
                     dbo.db.collection('users').update({_id: uid},

@@ -8,14 +8,38 @@ exports.feed = function(domain, options, fn) {
 
   options = options || {};
   let limit = options.limit || 20;
+  let sort = 'date'
+      , allowedSort = ['date', 'email', 'event']
+      ;
+  if (options.sort && allowedSort.indexOf(options.sort) != -1)
+    sort = options.sort;
 
-  dbo.db().collection('logs').find({domain: domain}, {
-    sort: {date: -1},
-    limit: limit
-  }).toArray(function(err, docs) {
+  let qs = {};
+  qs[sort] = -1;
+
+  let q = [
+    {$match: {domain: domain}},
+    {$lookup: {
+      from: 'mails',
+      localField: 'msg_id',
+      foreignField: 'msg_id',
+      as: 'mail'
+    }},
+    {$unwind: '$mail'},
+    {$sort: qs},
+    {$limit: limit}
+  ];
+
+  dbo.db().collection('logs').aggregate(q).toArray(function(err, docs){
+
     if (err) {
       console.log(err);
       return fn('Internal Error');
+    }
+
+    for (let d of docs) {
+      d.subject = d.mail.subject;
+      delete d.mail;
     }
 
     fn(null, docs);

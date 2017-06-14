@@ -29,13 +29,13 @@
           <a href="/users/{{ event.email }}">{{ event.email }}</a>
         </div>
         <div class="two columns center" >
-          <a href="/users/{{ event.email }}">{{ event.delivered }} <span class="fade">(0)</span></a>
+          <a href="/users/{{ event.email }}">{{ event.delivered }} <span class="fade"></span></a>
         </div>
         <div class="two columns center" >
-          <a href="/users/{{ event.email }}">{{ event.opened }} <span class="fade">({{ event.unique_opens }})</span></a>
+          <a href="/users/{{ event.email }}">{{ event.opened }}{% if event.unique_opens %} <span class="fade">({{ event.unique_opens }})</span>{% endif %}</a>
         </div>
         <div class="two columns center" >
-          <a href="/users/{{ event.email }}">{{ event.clicked }} <span class="fade">({{ event.unique_clicks }})</span></a>
+          <a href="/users/{{ event.email }}">{{ event.clicked }}{% if event.unique_clicks %} <span class="fade">({{ event.unique_clicks }})</span>{% endif %}</a>
         </div>
       </div>
       {% endfor %}

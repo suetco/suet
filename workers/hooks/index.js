@@ -18,11 +18,10 @@ let dbUrl = process.env.DB_URL || '';
 
 exports.handler = function(req, res) {
 
-  // Add multipart support
+  // Add multipart/form-data support
   parser(req, res, function(){
 
     let event_data = req.body;
-    //if (req.get('content-type') == '')
 
     if (!event_data.event)
       return res.send({error: "No event data"});
@@ -45,6 +44,14 @@ exports.handler = function(req, res) {
       }
 
       let domain = event_data.domain;
+      // Inconsistency in mailgun's API
+      let messageId = event_data['message-id'] || event_data['Message-Id'];
+      if (!messageId) {
+        console.log(req.body);
+        return res.send({error: 'Could not get message id'});
+      }
+
+      messageId = messageId.replace(/[\>\<]/g, '');
 
       // Who owns domain?
       let p = new Promise(function(resolve, reject){
@@ -83,7 +90,7 @@ exports.handler = function(req, res) {
         return new Promise(function(resolve, reject){
           // 1. Has the mail been pulled?
           db.collection('mails').findOne({
-            msg_id: event_data['Message-id']
+            msg_id: messageId
           }, function(err, doc){
             // There is an error or no doc
             if (err || doc)
@@ -94,7 +101,7 @@ exports.handler = function(req, res) {
               'url': ['https://api.mailgun.net/v3/', domain, '/events'].join(''),
               'gzip': true,
               'qs': {
-                'message-id': event_data['Message-id']
+                'message-id': messageId
               },
               'auth': {
                 'user': 'api',
@@ -134,14 +141,14 @@ exports.handler = function(req, res) {
                 if (body.subject && body['stripped-html']) {
                   // Save
                   db.collection('mails').insert({
-                    msg_id: event_data['Message-id'],
+                    msg_id: messageId,
                     domain: domain,
                     subject: body.subject,
                     body: body['stripped-html'],
                     date: new Date(body.Date)
                   });
 
-                  return resolve(body.subject);
+                  return resolve();
                 }
                 else
                   return resolve();
@@ -152,20 +159,17 @@ exports.handler = function(req, res) {
         });
       })
       // Track event
-      .then(function(subject){
+      .then(function(){
         return new Promise(function(resolve, reject){
           let event = event_data.event.toLowerCase()
               , email = event_data.recipient
 
               , data = {
-                msg_id: event_data['Message-id'],
+                msg_id: messageId,
                 email: email,
                 event: event,
                 domain: domain
               }
-
-          if (subject)
-            data.subject = subject;
 
           if (event_data.country)
             data.country = event_data.country;
