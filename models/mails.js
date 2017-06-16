@@ -64,3 +64,57 @@ exports.getAll = function(domain, options, fn) {
     fn(null, docs);
   });*/
 }
+
+exports.get = function(msg_id, domain, fn) {
+  if (!domain)
+    return fn('Domain not specified');
+
+  dbo.db().collection('mails').findOne({msg_id: msg_id, domain: domain}, function(err, doc) {
+    if (err) {
+      console.log(err);
+      return fn('Internal Error');
+    }
+    if (!doc) {
+      return fn('Mail not found');
+    }
+
+    dbo.db().collection('logs').find({msg_id: msg_id, domain: domain}, {
+      sort: {date: -1},
+    }).toArray(function(err, logs) {
+      if (err) {
+        console.log(err);
+        return fn('Internal Error');
+      }
+
+      let deliveries = 0,
+          opens = 0,
+          opened_users = [],
+          clicks = 0;
+
+      for (let l of logs) {
+        if (l.event == 'delivered')
+          deliveries++;
+        if (l.event == 'clicked')
+          clicks++;
+        if (l.event == 'opened') {
+          if (opened_users.indexOf(l.email) == -1)
+            opened_users.push(l.email);
+          opens++;
+        }
+      }
+
+      doc.opens = opens;
+      doc.unique_opens = opened_users.length;
+      doc.clicks = clicks;
+      doc.deliveries = deliveries;
+
+      doc.logs = logs;
+
+      // Calculate opens, and unuque
+      // Calculate clicks, and unique
+
+      fn(null, doc);
+    });
+
+  });
+}

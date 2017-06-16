@@ -28,11 +28,21 @@ form[method=post] {
 .fade {
   color: #bbb;
 }
+a.fade:hover {
+  color: #777;
+}
 .error {
   color: #EA2028;
 }
 .info {
   color: #58bb36;
+}
+.list {
+  list-style: none
+}
+.list li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
 }
 
 header {

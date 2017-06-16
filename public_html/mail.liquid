@@ -13,24 +13,24 @@
     -->
     <div class="row pad-btm">
       <div class="eight columns">
-       <a href="/users">Users</a> <i class="icon-fast-forward"></i> <strong>{{ data.email }}</strong>
+       <a href="/mails">Mails</a> <i class="icon-fast-forward"></i> <strong>{{ data.subject }}</strong>
       </div>
       <div class="two columns align-right">
-        {{ data.opens }} opens ({{ data.unique_opens}} unique)
+        {{ data.opens }} opens<br>({{ data.unique_opens}} unique)
       </div>
       <div class="two columns align-right">
         {{ data.clicks }} clicks
       </div>
     </div>
     <div class="row">
-      <div class="eight columns">
+      <div class="twelve columns">
         <div class="feed">
           {% for log in data.logs %}
             <div class="row">
               <div class="one columns">
                {{ log.timeago }}
               </div>
-              <div class="eleven columns">
+              <div class="two columns">
                 {% if log.event == 'clicked' %}
                   <span class="tag green">{{ log.event }}</span>
                 {% elsif log.event == 'opened' %}
@@ -41,28 +41,22 @@
                   <span class="tag red">{{ log.event }}</span>
                 {% else %}
                   <span class="tag">{{ log.event }}</span>
-                {% endif %}<br>
-                <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
+                {% endif %}
+              </div>
+              <div class="three columns">
+                {{ log.email }}
+              </div>
+              <div class="six columns">
                 {% if log.event == 'clicked' %}
-                  <a href="{{ log.url }}" class="fade">{{ log.url }}</a>
+                  <p><a href="{{ log.url }}">{{ log.url }}</a></p>
                 {% endif %}
                 {% if log.event == 'opened' %}
-                  <small class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</small>
+                  <p class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</p>
                 {% endif %}
               </div>
             </div>
           {% endfor %}
         </div>
-        </div>
-      <div class="four columns">
-        <p><strong>Clicks</strong></p>
-        <ul class="list">
-          {% for log in data.logs %}
-            {% if log.event == 'clicked' %}
-              <li><a href="{{ log.url }}">{{ log.url }}</a></li>
-            {% endif %}
-          {% endfor %}
-        </ul>
       </div>
     </div>
   </div>

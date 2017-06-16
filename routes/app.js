@@ -1,5 +1,6 @@
-const model = require('../models/logs.js')
+const Logs = require('../models/logs.js')
     , Mails = require('../models/mails.js')
+    , Users = require('../models/users.js')
     , render = require('../lib/utils.js').render
     , moment = require('moment')
     ;
@@ -45,7 +46,7 @@ module.exports = function(app){
     let options = {};
     if (req.query.sort)
       options.sort = req.query.sort;
-    model.feed(req.session.account.active_domain, options, function(err, docs) {
+    Logs.feed(req.session.account.active_domain, options, function(err, docs) {
       for (let d of docs) {
         d.timeago = moment(d.date).fromNow();
       }
@@ -69,9 +70,25 @@ module.exports = function(app){
       }));
     })
   });
+  app.get('/mails/:id', function(req, res) {
+    Mails.get(req.params.id, req.session.account.active_domain, function(err, doc) {
+      if (err || !doc) {
+        req.flash('error', err);
+        return res.redirect('/mails');
+      }
+      for (let d of doc.logs) {
+        d.timeago = moment(d.date).fromNow();
+      }
+      res.render('mail', render(req, {
+        title: doc.subject,
+        page: 'mails',
+        data: doc
+      }));
+    })
+  });
 
   app.get('/users', function(req, res) {
-    model.users(req.session.account.active_domain, {}, function(err, docs) {
+    Users.getAll(req.session.account.active_domain, {}, function(err, docs) {
       for (let user of docs) {
         user.timeago = moment(user.last_seen).fromNow();
       }
@@ -81,6 +98,22 @@ module.exports = function(app){
         data: docs
       }));
     })
-  })
+  });
+  app.get('/users/:email', function(req, res) {
+    Users.get(req.params.email, req.session.account.active_domain, function(err, doc) {
+      if (err || !doc) {
+        req.flash('error', err);
+        return res.redirect('/users');
+      }
+      for (let d of doc.logs) {
+        d.timeago = moment(d.date).fromNow();
+      }
+      res.render('user', render(req, {
+        title: doc.email,
+        page: 'users',
+        data: doc
+      }));
+    })
+  });
 
 }
