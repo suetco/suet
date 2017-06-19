@@ -9,11 +9,19 @@ exports.getAll = function(domain, options, fn) {
 
   options = options || {};
   let limit = options.limit || 20;
+  let sort = 'last_seen'
+      , order = -1
+      , allowedSort = ['last_seen', 'email', 'clicked', 'opened', 'delivered']
+      ;
+  if (options.sort && allowedSort.indexOf(options.sort) != -1)
+    sort = options.sort;
+  if (options.dir && options.dir == 'asc')
+    order = 1;
 
-  dbo.db().collection('users').find({domain: domain}, {
-    sort: {last_seen: -1},
-    limit: limit
-  }).toArray(function(err, docs) {
+  let qs = {limit: limit, sort: {}};
+  qs.sort[sort] = order;
+
+  dbo.db().collection('users').find({domain: domain}, qs).toArray(function(err, docs) {
     if (err) {
       console.log(err);
       return fn('Internal Error');
@@ -50,6 +58,7 @@ exports.get = function(email, domain, fn) {
     let deliveries = 0,
         opens = 0,
         msg_ids = [],
+        urls = [],
         clicks = 0;
 
     for (let l of logs) {
@@ -57,8 +66,11 @@ exports.get = function(email, domain, fn) {
       delete l.mail.subject;
       if (l.event == 'delivered')
         deliveries++;
-      if (l.event == 'clicked')
+      if (l.event == 'clicked') {
+        if (urls.indexOf(l.url) == -1)
+          urls.push(l.url);
         clicks++;
+      }
       if (l.event == 'opened') {
         if (msg_ids.indexOf(l.msg_id) == -1)
           msg_ids.push(l.msg_id);
@@ -71,6 +83,7 @@ exports.get = function(email, domain, fn) {
       opens: opens,
       unique_opens: msg_ids.length,
       clicks: clicks,
+      urls: urls,
       deliveries: deliveries,
       logs: logs
     });

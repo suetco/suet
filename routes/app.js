@@ -59,7 +59,10 @@ module.exports = function(app){
   });
 
   app.get('/mails', function(req, res) {
-    Mails.getAll(req.session.account.active_domain, {}, function(err, docs) {
+    let options = {};
+    if (req.query.sort)
+      options.sort = req.query.sort;
+    Mails.getAll(req.session.account.active_domain, options, function(err, docs) {
       for (let d of docs) {
         d.timeago = moment(d.date).fromNow();
       }
@@ -88,13 +91,19 @@ module.exports = function(app){
   });
 
   app.get('/users', function(req, res) {
-    Users.getAll(req.session.account.active_domain, {}, function(err, docs) {
+    let options = {sort: 'last_seen'};
+    if (req.query.sort)
+      options.sort = req.query.sort;
+    if (req.query.dir)
+      options.dir = req.query.dir;
+    Users.getAll(req.session.account.active_domain, options, function(err, docs) {
       for (let user of docs) {
         user.timeago = moment(user.last_seen).fromNow();
       }
       res.render('users', render(req, {
         title: 'Users',
         page: 'users',
+        query: req.query,
         data: docs
       }));
     })

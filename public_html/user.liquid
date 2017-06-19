@@ -12,14 +12,17 @@
       Time graph of engagement
     -->
     <div class="row pad-btm">
-      <div class="eight columns">
+      <div class="five columns">
        <a href="/users">Users</a> <i class="icon-fast-forward"></i> <strong>{{ data.email }}</strong>
       </div>
-      <div class="two columns align-right">
+      <div class="three columns align-right">
         {{ data.opens }} opens ({{ data.unique_opens}} unique)
       </div>
-      <div class="two columns align-right">
+      <div class="two columns">
         {{ data.clicks }} clicks
+      </div>
+      <div class="two columns">
+        {{ data.deliveries }} deliveries
       </div>
     </div>
     <div class="row">
@@ -42,12 +45,14 @@
                 {% else %}
                   <span class="tag">{{ log.event }}</span>
                 {% endif %}<br>
-                <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
                 {% if log.event == 'clicked' %}
-                  <a href="{{ log.url }}" class="fade">{{ log.url }}</a>
-                {% endif %}
-                {% if log.event == 'opened' %}
+                  <a href="{{ log.url }}">{{ log.url }}</a><br>
+                  <small><a href="/mails/{{ log.msg_id }}" class="fade">{{ log.subject }}</a></small>
+                {% elsif log.event == 'opened' %}
+                  <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
                   <small class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</small>
+                {% else %}
+                  <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a>
                 {% endif %}
               </div>
             </div>
@@ -57,10 +62,8 @@
       <div class="four columns">
         <p><strong>Clicks</strong></p>
         <ul class="list">
-          {% for log in data.logs %}
-            {% if log.event == 'clicked' %}
-              <li><a href="{{ log.url }}">{{ log.url }}</a></li>
-            {% endif %}
+          {% for url in data.urls %}
+            <li><a href="{{ url }}">{{ url }}</a></li>
           {% endfor %}
         </ul>
       </div>

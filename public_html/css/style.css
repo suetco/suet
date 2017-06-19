@@ -25,8 +25,14 @@ strong {
 form[method=post] {
   padding: 20px;
 }
+.hide {
+  display: none
+}
 .fade {
   color: #bbb;
+}
+a.fade {
+  color: #888;
 }
 a.fade:hover {
   color: #777;
@@ -196,9 +202,29 @@ tags tag > div {
 tags > div {
 }
 
+.modal {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 60%;
+  height: 100%;
+  box-shadow: -2px 0px 5px 0px rgba(150,150,150,0.75);
+}
+
 /*
 Button override
 */
+.small-button {
+  color: #f2eefc;
+  background-color: #7851de;
+  border-color: #6d43db;
+  padding: 5px 10px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.small-button:hover {
+  color: #fff
+}
 .button.button-primary,
 button.button-primary,
 input[type="submit"].button-primary,
