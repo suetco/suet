@@ -162,7 +162,7 @@ exports.handler = function(req, res) {
       .then(function(){
         return new Promise(function(resolve, reject){
           let event = event_data.event.toLowerCase()
-              , email = event_data.recipient
+              , email = event_data.recipient.toLowerCase()
 
               , data = {
                 msg_id: messageId,

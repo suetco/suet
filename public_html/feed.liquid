@@ -12,13 +12,13 @@
     <div class="feed">
       <div class="row th">
         <div class="one columns">
-          <a href="?sort=date">@ <i class="icon-arrow-down"></i></a>
+          <a href="?sort=date&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">@{% if query.sort == 'date' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
         <div class="three columns">
-          <a href="?sort=email">User</a>
+          <a href="?sort=email&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">User{% if query.sort == 'email' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
         <div class="eight columns">
-          <a href="?sort=event">Action</a>
+          <a href="?sort=event&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Action{% if query.sort == 'event' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
       </div>
       {% for event in data %}

@@ -46,6 +46,8 @@ module.exports = function(app){
     let options = {};
     if (req.query.sort)
       options.sort = req.query.sort;
+    if (req.query.dir)
+      options.dir = req.query.dir;
     Logs.feed(req.session.account.active_domain, options, function(err, docs) {
       for (let d of docs) {
         d.timeago = moment(d.date).fromNow();
@@ -53,6 +55,7 @@ module.exports = function(app){
       res.render('feed', render(req, {
         title: 'Feed',
         page: 'feed',
+        query: req.query,
         data: docs
       }));
     })

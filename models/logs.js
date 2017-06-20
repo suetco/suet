@@ -9,13 +9,16 @@ exports.feed = function(domain, options, fn) {
   options = options || {};
   let limit = options.limit || 20;
   let sort = 'date'
+      , order = -1
       , allowedSort = ['date', 'email', 'event']
       ;
   if (options.sort && allowedSort.indexOf(options.sort) != -1)
     sort = options.sort;
+  if (options.dir && options.dir == 'asc')
+    order = 1;
 
   let qs = {};
-  qs[sort] = -1;
+  qs[sort] = order;
 
   let q = [
     {$match: {domain: domain}},

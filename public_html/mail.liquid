@@ -45,7 +45,7 @@
                 {% endif %}
               </div>
               <div class="three columns">
-                {{ log.email }}
+                <a href="/users/{{ log.email }}">{{ log.email }}</a>
               </div>
               <div class="six columns">
                 {% if log.event == 'clicked' %}
@@ -73,7 +73,12 @@ iFrameDoc.close();
 $('.view').on('click', function() {
   $('.modal').toggleClass('hide');
 });
-//$("iframe a").attr("target","_blank");
+$(document).keyup(function(e) {
+  if (e.keyCode == 27) {
+    if (!$('.modal').hasClass('hide'))
+      $('.modal').toggleClass('hide');
+  }
+});
 </script>
 </body>
 </html>
