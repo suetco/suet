@@ -11,17 +11,37 @@ exports.feed = function(domain, options, fn) {
   let sort = 'date'
       , order = -1
       , allowedSort = ['date', 'email', 'event']
+      , allowedEvents = ['delivered', 'opened', 'bounced', 'clicked']
       ;
+
+  let qs = {}
+      , qm = {domain: domain};
+
+  // Sort
   if (options.sort && allowedSort.indexOf(options.sort) != -1)
     sort = options.sort;
   if (options.dir && options.dir == 'asc')
     order = 1;
 
-  let qs = {};
+  // Filter
+  if (options.filter) {
+    // Validate
+    if (Array.isArray(options.filter)) {
+      let i = 0;
+      while (i--) {
+        if (allowedEvents.indexOf(options.filter[i]) == -1)
+          options.filter.splice(i, 1);
+      }
+      if (options.filter.length)
+        qm.event = {$in: options.filter};
+    }
+  }
+
   qs[sort] = order;
 
+
   let q = [
-    {$match: {domain: domain}},
+    {$match: qm},
     {$lookup: {
       from: 'mails',
       localField: 'msg_id',

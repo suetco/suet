@@ -211,6 +211,10 @@ tags > div {
   box-shadow: -2px 0px 5px 0px rgba(150,150,150,0.75);
 }
 
+footer {
+  margin-top: 30px;
+}
+
 /*
 Button override
 */

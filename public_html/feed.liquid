@@ -1,24 +1,33 @@
 {% include 'partials/header-dashboard' %}
+<link rel="stylesheet" href="css/chosen.min.css">
 
 <section>
   <div class="container">
     <div class="bar">
       <div class="row">
         <div class="six columns">
-          <input type="text" name="filter">
+          <form>
+          <select name="filter[]" data-placeholder="Action Filter" multiple="" style="width:80%">
+            <option value="opened"{% if filter contains 'opened' %} selected{% endif %}>Opened</option>
+            <option value="delivered"{% if filter contains 'delivered' %} selected{% endif %}>Delivered</option>
+            <option value="bounced"{% if filter contains 'bounced' %} selected{% endif %}>Bounced</option>
+            <option value="clicked"{% if filter contains 'clicked' %} selected{% endif %}>Clicked</option>
+          </select>
+          <button class="button button-primary" type="submit" style="padding:7px 10px;height:auto;line-height:normal"><i class="icon-menu"></i></button>
+          </form>
         </div>
       </div>
     </div>
     <div class="feed">
       <div class="row th">
         <div class="one columns">
-          <a href="?sort=date&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">@{% if query.sort == 'date' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+          <a href="?sort=date&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if filter %}&filter[]={{ filter | join: '&filter[]=' }}{% endif %}">@{% if query.sort == 'date' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
         <div class="three columns">
-          <a href="?sort=email&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">User{% if query.sort == 'email' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+          <a href="?sort=email&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if filter %}&filter[]={{ filter | join: '&filter[]=' }}{% endif %}">User{% if query.sort == 'email' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
         <div class="eight columns">
-          <a href="?sort=event&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Action{% if query.sort == 'event' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+          <a href="?sort=event&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if filter %}&filter[]={{ filter | join: '&filter[]=' }}{% endif %}">Action{% if query.sort == 'event' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
       </div>
       {% for event in data %}
@@ -60,7 +69,9 @@
     </div>
   </div>
 </section>
-
-
-</body>
-</html>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/chosen.jquery.min.js"></script>
+<script type="text/javascript">
+  $("select[name^=filter]").chosen();
+</script>
+{% include 'partials/footer' %}
