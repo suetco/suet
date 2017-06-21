@@ -20,7 +20,7 @@
           <a href="?sort=clicked&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Clicks (Unique){% if query.sort == 'clicked' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
       </div>
-      {% for event in data %}
+      {% for event in data.data %}
       <div class="row">
         <div class="two columns" title="{{ event.last_seen | date: "%a, %b %d, %y" }}">
           {{ event.timeago }}
@@ -40,6 +40,10 @@
       </div>
       {% endfor %}
     </div>
+    {% assign next = data.offset | plus: data.count %}
+    {% assign prev = data.offset | minus: data.count %}
+    {% assign q = query | remove: 'offset' %}
+    <p class="pagination">{% if data.offset > 0 %}<a href="?{{ q }}{% if prev > 0 %}&offset={{ prev }}{% endif %}" class="button button-primary">Prev</a>{% endif %}{% if next < data.total %}<a href="?{{ q }}&offset={{ data.offset | plus: data.count }}" class="button button-primary">Next</a>{% endif %}</p>
   </div>
 </section>
 

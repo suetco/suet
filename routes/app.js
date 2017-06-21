@@ -50,16 +50,21 @@ module.exports = function(app){
       options.dir = req.query.dir;
     if (req.query.filter)
       options.filter = req.query.filter;
-    Logs.feed(req.session.account.active_domain, options, function(err, docs) {
-      for (let d of docs) {
-        d.timeago = moment(d.date).fromNow();
+    if (req.query.offset)
+      options.offset = req.query.offset;
+    Logs.feed(req.session.account.active_domain, options, function(err, data) {
+      if (!err) {
+        for (let d of data.data) {
+          d.timeago = moment(d.date).fromNow();
+        }
       }
+
       res.render('feed', render(req, {
         title: 'Feed',
         page: 'feed',
         query: req.query,
         filter: req.query.filter,
-        data: docs
+        data: data
       }));
     })
   });
@@ -102,15 +107,17 @@ module.exports = function(app){
       options.sort = req.query.sort;
     if (req.query.dir)
       options.dir = req.query.dir;
-    Users.getAll(req.session.account.active_domain, options, function(err, docs) {
-      for (let user of docs) {
+    if (req.query.offset)
+      options.offset = req.query.offset;
+    Users.getAll(req.session.account.active_domain, options, function(err, data) {
+      for (let user of data.data) {
         user.timeago = moment(user.last_seen).fromNow();
       }
       res.render('users', render(req, {
         title: 'Users',
         page: 'users',
         query: req.query,
-        data: docs
+        data: data
       }));
     })
   });

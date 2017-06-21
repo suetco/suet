@@ -82,7 +82,7 @@ header ul li:first-child a {
   margin-left: 0
 }
 header ul a.active {
-  color: #444;
+  color: #000;
 }
 .has-sub {
   position: relative;
@@ -132,6 +132,13 @@ header .subnav li {
 }
 .pad-big {
   padding: 50px;
+}
+
+.pagination {
+  margin: 10px 0;
+}
+.pagination a {
+  margin-right: 10px
 }
 
 .box,
@@ -184,7 +191,7 @@ header .subnav li {
 }
 
 .bar {
-  margin: 10px 0 20px
+  margin: 10px 0
 }
 
 tags {

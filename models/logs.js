@@ -8,6 +8,7 @@ exports.feed = function(domain, options, fn) {
 
   options = options || {};
   let limit = options.limit || 20;
+  let skip = options.offset || 0;
   let sort = 'date'
       , order = -1
       , allowedSort = ['date', 'email', 'event']
@@ -39,32 +40,51 @@ exports.feed = function(domain, options, fn) {
 
   qs[sort] = order;
 
-
   let q = [
     {$match: qm},
+    {$sort: qs},
+    {$skip: parseInt(skip)},
+    {$limit: limit},
     {$lookup: {
       from: 'mails',
       localField: 'msg_id',
       foreignField: 'msg_id',
       as: 'mail'
     }},
-    {$unwind: '$mail'},
-    {$sort: qs},
-    {$limit: limit}
+    {$unwind: '$mail'}
   ];
 
-  dbo.db().collection('logs').aggregate(q).toArray(function(err, docs){
+  let p = new Promise(function(resolve, reject){
+    dbo.db().collection('logs').count(qm, function(err, c){
+      if (err)
+        return reject(err);
 
-    if (err) {
-      console.log(err);
-      return fn('Internal Error');
-    }
+      resolve(c);
+    });
+  })
+  .then(function(total){
+    dbo.db().collection('logs').aggregate(q).toArray(function(err, docs){
 
-    for (let d of docs) {
-      d.subject = d.mail.subject;
-      delete d.mail;
-    }
+      if (err) {
+        console.log(err);
+        return fn('Internal Error');
+      }
 
-    fn(null, docs);
+      for (let d of docs) {
+        d.subject = d.mail.subject;
+        delete d.mail;
+      }
+
+      fn(null, {
+        total: total,
+        count: docs.length,
+        offset: skip,
+        limit: limit,
+        data: docs
+      });
+    });
+  })
+  .catch(function(err){
+    fn(err);
   });
 }

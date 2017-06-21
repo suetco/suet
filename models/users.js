@@ -9,6 +9,7 @@ exports.getAll = function(domain, options, fn) {
 
   options = options || {};
   let limit = options.limit || 20;
+  let skip = options.offset || 0;
   let sort = 'last_seen'
       , order = -1
       , allowedSort = ['last_seen', 'email', 'clicked', 'opened', 'delivered']
@@ -18,16 +19,35 @@ exports.getAll = function(domain, options, fn) {
   if (options.dir && options.dir == 'asc')
     order = 1;
 
-  let qs = {limit: limit, sort: {}};
+  let qs = {limit: limit, skip: parseInt(skip), sort: {}};
   qs.sort[sort] = order;
 
-  dbo.db().collection('users').find({domain: domain}, qs).toArray(function(err, docs) {
-    if (err) {
-      console.log(err);
-      return fn('Internal Error');
-    }
+  let p = new Promise(function(resolve, reject){
+    dbo.db().collection('users').count({domain: domain}, function(err, c){
+      if (err)
+        return reject(err);
 
-    fn(null, docs);
+      resolve(c);
+    });
+  })
+  .then(function(total){
+    dbo.db().collection('users').find({domain: domain}, qs).toArray(function(err, docs) {
+      if (err) {
+        console.log(err);
+        return fn('Internal Error');
+      }
+
+      fn(null, {
+        total: total,
+        count: docs.length,
+        offset: skip,
+        limit: limit,
+        data: docs
+      });
+    });
+  })
+  .catch(function(err){
+    fn(err);
   });
 }
 
