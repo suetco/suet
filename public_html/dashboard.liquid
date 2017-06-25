@@ -15,23 +15,97 @@
     <div class="row">
       <div class="six columns">
         <div class="box">Engagement</div>
-        <div class="box">Country</div>
+        <!--div class="box">Country</div-->
+        <div class="row center">
+          <div class="four columns">
+            <div class="box">
+              <p><strong>Mails</strong></p>
+              <h4>{{ data.mails }}</h4>
+            </div>
+          </div>
+          <div class="four columns">
+            <div class="box">
+              <p><strong>Users</strong></p>
+              <h4>{{ data.users }}</h4>
+            </div>
+          </div>
+          <div class="four columns">
+            <div class="box">
+              <p><strong>Feed</strong></p>
+              <h4>{{ data.feed }}</h4>
+            </div>
+          </div>
+        </div>
         <div class="row">
           <div class="six columns">
-            <div class="box">Platform</div>
+            <div class="box">
+              <p><strong>Platform</strong></p>
+              <canvas id="chart-platform"></canvas>
+            </div>
           </div>
           <div class="six columns">
-            <div class="box">OS</div>
+            <div class="box">
+              <p><strong>OS</strong></p>
+              <canvas id="chart-os"></canvas>
+            </div>
           </div>
         </div>
       </div>
       <div class="six columns">
-        <div class="box">Top Clicks</div>
-        <div class="box">Top Opens</div>
-        <div class="box">Clients</div>
+        <div class="box">
+          <p><strong>Top Clicks</strong></p>
+          <ul class="list">
+            {% for url in data.clicks %}
+              <li><a href="{{ url._id }}">{{ url._id }}</a> <span class="fade">({{ url.count }})</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="box">
+          <p><strong>Top Opens</strong></p>
+          <ul class="list">
+            {% for open in data.opens %}
+              <li><a href="mails/{{ open._id }}">{{ open.mail.subject }}</a> <span class="fade">({{ open.count }})</span></li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+<script type="text/javascript" src="js/Chart.min.js"></script>
+<script type="text/javascript">
+  //window.onload = function() {
+    Chart.defaults.global.defaultFontFamily='"Rubik", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif';
+    new Chart(document.getElementById("chart-platform").getContext("2d"), {
+      type: 'pie',
+      data: {
+        labels: {{ data.platform.labels }},
+        datasets: [{
+          borderWidth: 0,
+          backgroundColor: ['#fdd733','#ec4e8b','#4abbe4','#62d4a2','#a68dfa','#b3c9c0'],
+          data: {{ data.platform.data }}
+        }]
+      },
+      options: {
+        legend:{display: false}
+      }
+    });
+    Chart.defaults.global.defaultFontFamily='"Rubik", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif';
+    new Chart(document.getElementById("chart-os").getContext("2d"), {
+      type: 'pie',
+      data: {
+        labels: {{ data.os.labels }},
+        datasets: [{
+          borderWidth: 0,
+          backgroundColor: ['#fdd733','#b3c9c0','#ec4e8b','#4abbe4','#963a97','#62d4a2','#7366fc','#a68dfa','#e1d3b2','#6a7989'],
+          data: {{ data.os.data }}
+        }]
+      },
+      options: {
+        legend:{display: false}
+      }
+    });
+  //};
+</script>
 {% include 'partials/footer' %}

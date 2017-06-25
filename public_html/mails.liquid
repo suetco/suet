@@ -7,40 +7,34 @@
         <div class="one columns" >
           <a href="?sort=date">@ <i class="icon-arrow-down"></i></a>
         </div>
-        <div class="seven columns">
+        <div class="eight columns">
           Mail
         </div>
-        <div class="four columns">
+        <div class="three columns">
           <div class="row">
-            <div class="four columns center" >
-              <a href="?sort=delivered">Deliveries</a>
-            </div>
-            <div class="four columns center" >
+            <div class="six columns center" >
               <a href="?sort=opened">Opens</a>
             </div>
-            <div class="four columns center" >
+            <div class="six columns center" >
               <a href="?sort=clicked">Clicks</a>
             </div>
           </div>
         </div>
       </div>
-      {% for mail in data %}
+      {% for mail in data.data %}
       <div class="row">
         <div class="one columns" >
           {{ mail.timeago }}
         </div>
-        <div class="seven columns">
-          <a href="/mails/{{ mail._id }}">{{ mail.subject }}</a>
+        <div class="eight columns">
+          <a href="/mails/{{ mail.msg_id }}">{{ mail.subject }}</a>
         </div>
-        <div class="four columns">
+        <div class="three columns">
           <div class="row">
-            <div class="four columns center" >
-              <a href="">{{ mail.delivered }}{% if mail.failed %} <span class="fade">({{ mail.failed }})</span>{% endif %}</a>
+            <div class="six columns center" >
+              <a href="">{{ mail.opened }}{% if mail.failed %} <span class="fade">({{ mail.failed }})</span>{% endif %}</a>
             </div>
-            <div class="four columns center" >
-              <a href="">{{ mail.opened }}</a>
-            </div>
-            <div class="four columns center" >
+            <div class="six columns center" >
               <a href="">{{ mail.clicked }}</a>
             </div>
           </div>
@@ -48,6 +42,11 @@
       </div>
       {% endfor %}
     </div>
+    {% assign next = data.offset | plus: data.count %}
+    {% assign prev = data.offset | minus: data.count %}
+    {% assign q = query | remove: 'offset' %}
+    <p class="right top-20">{{ data.offset | plus: 1 }} to {{ next }} of {{ data.total }}</p>
+    <p class="pagination">{% if data.offset > 0 %}<a href="?{{ q }}{% if prev > 0 %}&offset={{ prev }}{% endif %}" class="button button-primary">Prev</a>{% endif %}{% if next < data.total %}<a href="?{{ q }}&offset={{ data.offset | plus: data.count }}" class="button button-primary">Next</a>{% endif %}</p>
   </div>
 </section>
 

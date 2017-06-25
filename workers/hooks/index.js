@@ -222,6 +222,8 @@ exports.handler = function(req, res) {
 
             // Uniques
             if (event == 'clicked') {
+              // Mail clicked
+              db.collection('mails').updateOne({msg_id: messageId}, {$inc: {clicked: 1}});
               db.collection('logs').distinct('url', {email: email, domain: domain, event: 'clicked'}, function(err, docs){
                 if (!err)
                   setParams.unique_clicks = docs.length;
@@ -230,6 +232,8 @@ exports.handler = function(req, res) {
               });
             }
             else if (event == 'opened') {
+              // Mail Opened
+              db.collection('mails').updateOne({msg_id: messageId}, {$inc: {opened: 1}});
               db.collection('logs').distinct('msg_id', {email: email, domain: domain, event: 'opened'}, function(err, docs){
                 if (!err)
                   setParams.unique_opens = docs.length;

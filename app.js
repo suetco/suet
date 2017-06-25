@@ -24,12 +24,22 @@ dbo.connect(function(err){
   }
 
   // Filters
+  // Override 'remove'
   engine.registerFilter('remove', function(v, arg){
-    var arr = [];
-    for (var k in v) {
-      if (k != arg)
-        arr.push([k, '=', v[k]].join(''));
+    let arr = [],
+        arg_arr = arg.split(',')
+        ;
+
+    // Remove
+    for (let _arg of arg_arr) {
+      for (let k in v) {
+        if (k == _arg)
+          delete v[k];
+      }
     }
+    // Build http query
+    for (k in v)
+      arr.push([k, '=', v[k]].join(''));
 
     return arr.join('&');
   });

@@ -1,6 +1,7 @@
 const Logs = require('../models/logs.js')
     , Mails = require('../models/mails.js')
     , Users = require('../models/users.js')
+    , Accounts = require('../models/accounts.js')
     , render = require('../lib/utils.js').render
     , moment = require('moment')
     ;
@@ -36,10 +37,13 @@ module.exports = function(app){
   });
 
   app.get('/dashboard', function(req, res) {
-    res.render('dashboard', render(req, {
-      title: 'Dashboard',
-      page: 'dashboard',
-    }));
+    Accounts.dashboardData(req.session.account.active_domain, function(err, data) {
+      res.render('dashboard', render(req, {
+        title: 'Dashboard',
+        page: 'dashboard',
+        data: data
+      }));
+    });
   });
 
   app.get('/feed', function(req, res) {
@@ -73,14 +77,14 @@ module.exports = function(app){
     let options = {};
     if (req.query.sort)
       options.sort = req.query.sort;
-    Mails.getAll(req.session.account.active_domain, options, function(err, docs) {
-      for (let d of docs) {
+    Mails.getAll(req.session.account.active_domain, options, function(err, data) {
+      for (let d of data.data) {
         d.timeago = moment(d.date).fromNow();
       }
       res.render('mails', render(req, {
         title: 'Mails',
         page: 'mails',
-        data: docs
+        data: data
       }));
     })
   });

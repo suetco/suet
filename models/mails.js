@@ -8,8 +8,48 @@ exports.getAll = function(domain, options, fn) {
 
   options = options || {};
   let limit = options.limit || 20;
+  let skip = options.offset || 0;
+  let sort = 'date'
+      , order = -1
+      , allowedSort = ['clicked', 'opened', 'date']
+      ;
+  if (options.sort && allowedSort.indexOf(options.sort) != -1)
+    sort = options.sort;
+  if (options.dir && options.dir == 'asc')
+    order = 1;
 
-  let q = [
+  let qs = {limit: limit, skip: parseInt(skip), sort: {}};
+  qs.sort[sort] = order;
+
+  let p = new Promise(function(resolve, reject){
+    dbo.db().collection('mails').count({domain: domain}, function(err, c){
+      if (err)
+        return reject(err);
+
+      resolve(c);
+    });
+  })
+  .then(function(total){
+    dbo.db().collection('mails').find({domain: domain}, qs).toArray(function(err, docs) {
+      if (err) {
+        console.log(err);
+        return fn('Internal Error');
+      }
+
+      fn(null, {
+        total: total,
+        count: docs.length,
+        offset: skip,
+        limit: limit,
+        data: docs
+      });
+    });
+  })
+  .catch(function(err){
+    fn(err);
+  });
+
+  /*let q = [
     {$match: {domain: domain}},
     {$group: {
       _id: {msg_id: '$msg_id', event: '$event'},
@@ -50,19 +90,7 @@ exports.getAll = function(domain, options, fn) {
     }
 
     return fn(null, docs);
-  });//* /
-
-  /*dbo.db().collection('mails').find({domain: domain}, {
-    sort: {date: -1},
-    limit: limit
-  }).toArray(function(err, docs) {
-    if (err) {
-      console.log(err);
-      return fn('Internal Error');
-    }
-
-    fn(null, docs);
-  });*/
+  });//*/
 }
 
 exports.get = function(msg_id, domain, fn) {
@@ -109,9 +137,6 @@ exports.get = function(msg_id, domain, fn) {
       doc.deliveries = deliveries;
 
       doc.logs = logs;
-
-      // Calculate opens, and unuque
-      // Calculate clicks, and unique
 
       fn(null, doc);
     });

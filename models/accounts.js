@@ -7,6 +7,200 @@ const dbo = require('../lib/db.js')
 
 let validator = new validate('pubkey-02iismi5n5xozcmeyu3-ymqe3f9-0da4');
 
+exports.dashboardData = function(domain, fn) {
+  let data = {
+    clicks: [],
+    opens: [],
+    platform: [],
+    os: [],
+    mails: 0,
+    feed: 0,
+    users: 0
+  }
+  let p = new Promise(function(resolve, reject){
+    // Main data
+    dbo.db().collection('logs').aggregate([
+      {$match: {domain: domain}},
+      {$group: {
+        _id: {
+          date: {$dateToString: {format: "%Y-%m-%d", date: "$date"}},
+          event: '$event'
+        },
+        count: {'$sum': 1}
+      }},
+      {$group: {
+        _id: '$_id.date',
+        event: {$push: {event: "$_id.event", count: "$count"}}
+      }},
+      {$sort: {'_id': 1}}
+    ]).toArray(function(err, docs){
+      if (err)
+        return resolve();
+
+      let e_labels = []
+          , e_data = {
+            delivered: [],
+            clicked: [],
+            opened: []
+          };
+      for (let d of docs) {
+        e_labels.push(d._id);
+        for (let e of d.event) {
+          e_data[e.event].push(e.count);
+        }
+      }
+
+      data.engagement = docs;
+      resolve();
+    });
+  })
+  .then(function(){
+    // Get top clicks
+    dbo.db().collection('logs').aggregate([
+      {$match: {domain: domain, event: 'clicked'}},
+      {$group: {
+        _id: '$url',
+        count: {$sum: 1}
+      }},
+      {$sort: {count: -1}},
+      {$limit: 5}
+    ]).toArray(function(err, docs){
+      if (err)
+        return resolve();
+
+      data.clicks = docs;
+      resolve();
+    });
+  })
+  .then(function(){
+    // Get top opens
+    return new Promise(function(resolve, reject){
+
+      dbo.db().collection('logs').aggregate([
+      {$match: {domain: domain, event: 'opened'}},
+      {$group: {
+        _id: '$msg_id',
+        count: {$sum: 1}
+      }},
+      {$sort: {count: -1}},
+      {$limit: 5},
+      {$lookup: {
+        from: 'mails',
+        localField: '_id',
+        foreignField: 'msg_id',
+        as: 'mail'
+      }},
+      {$unwind: '$mail'}
+    ]).toArray(function(err, docs){
+        if (err)
+          return resolve();
+
+        data.opens = docs;
+        resolve();
+      });
+    });
+  })
+  .then(function(){
+    // Get platform
+    return new Promise(function(resolve, reject){
+
+      dbo.db().collection('logs').aggregate([
+      {$match: {domain: domain, platform: {$exists: true}}},
+      {$group: {
+        _id: '$platform',
+        count: {$sum: 1}
+      }}
+    ]).toArray(function(err, docs){
+        if (err)
+          return resolve();
+
+        let pf_labels = []
+            , pf_data = [];
+        for (let d of docs) {
+          pf_labels.push(d._id);
+          pf_data.push(d.count);
+        }
+
+        data.platform = {labels: pf_labels, data: pf_data};
+
+        resolve();
+      });
+    });
+  })
+  .then(function(){
+    // Get OS
+    return new Promise(function(resolve, reject){
+
+      dbo.db().collection('logs').aggregate([
+      {$match: {domain: domain, os: {$exists: true}}},
+      {$group: {
+        _id: '$os',
+        count: {$sum: 1}
+      }}
+    ]).toArray(function(err, docs){
+        if (err)
+          return resolve();
+
+        let os_labels = []
+            , os_data = [];
+        for (let d of docs) {
+          os_labels.push(d._id);
+          os_data.push(d.count);
+        }
+
+        data.os = {labels: os_labels, data: os_data};
+
+        resolve();
+      });
+    });
+  })
+  .then(function(){
+    // Count mail
+    return new Promise(function(resolve, reject){
+      dbo.db().collection('mails').count({domain: domain}, function(err, c){
+        if (err)
+          return reject(err);
+
+        data.mails = c;
+
+        resolve();
+      });
+    });
+  })
+  .then(function(){
+    // Count events
+    return new Promise(function(resolve, reject){
+      dbo.db().collection('logs').count({domain: domain}, function(err, c){
+        if (err)
+          return reject(err);
+
+        data.feed = c;
+
+        resolve();
+      });
+    });
+  })
+  .then(function(){
+    // Count users
+    return new Promise(function(resolve, reject){
+      dbo.db().collection('users').count({domain: domain}, function(err, c){
+        if (err)
+          return reject(err);
+
+        data.users = c;
+
+        resolve();
+      });
+    });
+  })
+  .then(function() {
+    return fn(null, data);
+  })
+  .catch(function(err) {
+    return fn();
+  });
+}
+
 exports.create = function(data, fn) {
 
   let email = data.email || '';
@@ -333,29 +527,4 @@ exports.updatePassword = function(uid, oldPassword, password, fn) {
       }
     });
   }
-}
-
-exports.saveKey = function(acc_id, key, fn) {
-  if (!acc_id)
-    return fn('Invalid account');
-  if (!key)
-    return fn('API key missing');
-
-  acc_id = dbo.id(acc_id);
-
-  dbo.db().collection('accounts').findOne({_id: acc_id}, function(err, doc) {
-    if (!doc)
-      return fn('Invalid account');
-
-    dbo.db().collection('accounts').updateOne({
-      _id: acc_id
-    }, {
-      $set: {key: key}
-    }, function(err) {
-      if (err)
-        return fn('There has been an internal error');
-
-      return fn(null, true);
-    });
-  });
 }
