@@ -13,8 +13,42 @@
     -->
     {% if info %}<p class="info">{{ info }}</p>{% endif %}
     <div class="row">
+      <div class="twelve columns">
+        <div class="box">
+          <p><strong>Engagement</strong></p>
+          <p>&nbsp;</p>
+          <canvas id="chart-engagement"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="row">
       <div class="six columns">
-        <div class="box">Engagement</div>
+        <div class="row center">
+          <div class="three columns">
+            <div class="box">
+              <p><strong>Delivered</strong></p>
+              <h5>{{ data.engagement.data.delivered | sum }}</h5>
+            </div>
+          </div>
+          <div class="three columns">
+            <div class="box">
+              <p><strong>Opened</strong></p>
+              <h5>{{ data.engagement.data.opened | sum }}</h5>
+            </div>
+          </div>
+          <div class="three columns">
+            <div class="box">
+              <p><strong>Clicked</strong></p>
+              <h5>{{ data.engagement.data.clicked | sum }}</h5>
+            </div>
+          </div>
+          <div class="three columns">
+            <div class="box">
+              <p><strong>Dropped</strong></p>
+              <h5>{{ data.engagement.data.dropped | sum }}</h5>
+            </div>
+          </div>
+        </div>
         <!--div class="box">Country</div-->
         <div class="row center">
           <div class="four columns">
@@ -36,6 +70,16 @@
             </div>
           </div>
         </div>
+        <div class="box">
+          <p><strong>Top Clicks</strong></p>
+          <ul class="list">
+            {% for url in data.clicks %}
+              <li><a href="{{ url._id }}">{{ url._id }}</a> <span class="fade">({{ url.count }})</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="six columns">
         <div class="row">
           <div class="six columns">
             <div class="box">
@@ -49,16 +93,6 @@
               <canvas id="chart-os"></canvas>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="six columns">
-        <div class="box">
-          <p><strong>Top Clicks</strong></p>
-          <ul class="list">
-            {% for url in data.clicks %}
-              <li><a href="{{ url._id }}">{{ url._id }}</a> <span class="fade">({{ url.count }})</span></li>
-            {% endfor %}
-          </ul>
         </div>
         <div class="box">
           <p><strong>Top Opens</strong></p>
@@ -77,6 +111,74 @@
 <script type="text/javascript">
   //window.onload = function() {
     Chart.defaults.global.defaultFontFamily='"Rubik", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif';
+    new Chart(document.getElementById("chart-engagement").getContext("2d"), {
+        type: 'line',
+        data: {
+            labels: {{ data.engagement.label }},
+            datasets: [{
+                label: "Delivered",
+                borderWidth: 2,
+                pointRadius: 3,
+                fill: true,
+                borderColor: '#fbce43',
+                backgroundColor: 'rgba(251, 206, 67, 0.1)',
+                pointBackgroundColor: '#fbce43',
+                data: {{ data.engagement.data.delivered }}
+            }, {
+                label: "Opened",
+                fill: true,
+                borderColor: '#3fb0ef',
+                backgroundColor: 'rgba(63, 176, 239, 0.1)',
+                pointBackgroundColor: '#3fb0ef',
+                borderWidth: 2,
+                pointRadius: 3,
+                data: {{ data.engagement.data.opened }}
+            }, {
+                label: "Clicked",
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 3,
+                borderColor: '#69dd88',
+                backgroundColor: 'rgba(105, 221, 136, 0.1)',
+                pointBackgroundColor: '#69dd88',
+                data: {{ data.engagement.data.clicked }}
+            }, {
+                label: "Dropped",
+                fill: true,
+                borderColor: '#e74c84',
+                backgroundColor: 'rgba(231, 76, 132, 0.1)',
+                pointBackgroundColor: '#e74c84',
+                borderWidth: 2,
+                pointRadius: 3,
+                data: {{ data.engagement.data.dropped }}
+            }]
+        },
+        options: {
+            legend:{display: false},
+            responsive: true,
+            title:{display:false},
+            tooltips: {
+              mode: 'index',
+              intersect: false,
+            },
+            hover: {
+              mode: 'nearest',
+              intersect: true
+            },
+            scales: {
+              xAxes: [{
+                gridLines: {
+                  display:true
+                }
+              }],
+              yAxes: [{
+                gridLines: {
+                  display:false
+                }
+              }]
+            }
+        }
+    });
     new Chart(document.getElementById("chart-platform").getContext("2d"), {
       type: 'pie',
       data: {
@@ -88,10 +190,10 @@
         }]
       },
       options: {
-        legend:{display: false}
+        legend:{display: false},
+        color: 'rgba(233,233,233,0.5)'
       }
     });
-    Chart.defaults.global.defaultFontFamily='"Rubik", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif';
     new Chart(document.getElementById("chart-os").getContext("2d"), {
       type: 'pie',
       data: {

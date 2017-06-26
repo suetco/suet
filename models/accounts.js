@@ -20,7 +20,7 @@ exports.dashboardData = function(domain, fn) {
   let p = new Promise(function(resolve, reject){
     // Main data
     dbo.db().collection('logs').aggregate([
-      {$match: {domain: domain}},
+      {$match: {domain: domain, date: {$gte: new Date(new Date().getTime() - 1000*60*60*24*30)}}},
       {$group: {
         _id: {
           date: {$dateToString: {format: "%Y-%m-%d", date: "$date"}},
@@ -37,39 +37,53 @@ exports.dashboardData = function(domain, fn) {
       if (err)
         return resolve();
 
-      let e_labels = []
+      let d, e
+          , events_map
+          , e_labels = []
           , e_data = {
-            delivered: [],
-            clicked: [],
-            opened: []
+            dropped: []
+            , delivered: []
+            , clicked: []
+            , opened: []
           };
-      for (let d of docs) {
+      for (d of docs) {
         e_labels.push(d._id);
-        for (let e of d.event) {
-          e_data[e.event].push(e.count);
+        events_map = {'delivered': false, 'dropped': false, 'opened': false, 'clicked': false};
+        for (e of d.event) {
+          if (e_data[e.event]) {
+            e_data[e.event].push(e.count);
+            events_map[e.event] = true;
+          }
+        }
+        // Fill any missing event with 0
+        for (e in events_map) {
+          if (!events_map[e])
+            e_data[e].push(0);
         }
       }
 
-      data.engagement = docs;
+      data.engagement = {label: e_labels, data: e_data};
       resolve();
     });
   })
   .then(function(){
     // Get top clicks
-    dbo.db().collection('logs').aggregate([
-      {$match: {domain: domain, event: 'clicked'}},
-      {$group: {
-        _id: '$url',
-        count: {$sum: 1}
-      }},
-      {$sort: {count: -1}},
-      {$limit: 5}
-    ]).toArray(function(err, docs){
-      if (err)
-        return resolve();
+    return new Promise(function(resolve, reject){
+      dbo.db().collection('logs').aggregate([
+        {$match: {domain: domain, event: 'clicked'}},
+        {$group: {
+          _id: '$url',
+          count: {$sum: 1}
+        }},
+        {$sort: {count: -1}},
+        {$limit: 5}
+      ]).toArray(function(err, docs){
+        if (err)
+          return resolve();
 
-      data.clicks = docs;
-      resolve();
+        data.clicks = docs;
+        resolve();
+      });
     });
   })
   .then(function(){
