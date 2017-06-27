@@ -44,7 +44,8 @@ dbo.connect(function(err){
     return arr.join('&');
   });
   engine.registerFilter('sum', function(v){
-    console.log(v);
+    if (!v)
+      return;
     return v.reduce(function(a, b) {
       return a + b;
     }, 0);

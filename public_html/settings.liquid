@@ -1,0 +1,39 @@
+{% include 'partials/header-dashboard' %}
+
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="six columns">
+        <div class="box">
+          <p><strong>Update Email</strong></p>
+          <form method="post">
+            <p><input type="email" name="email" placeholder="Email" class="u-full-width"></p>
+            <p><button class="button button-primary u-full-width">Update</button></p>
+          </form>
+        </div>
+        <!--div class="box">
+          <p><strong>Delete Account</strong></p>
+          <p class="error">This is not a recoverable action. All data related to the current domain will be deleted. Be sure you really want to do this before you continue.</p>
+          <form method="post">
+            <p><input type="text" name="domain" placeholder="Enter current domain" class="u-full-width"></p>
+            <p><button class="button button-primary u-full-width">Delete</button></p>
+          </form>
+        </div-->
+      </div>
+      <div class="six columns">
+        <div class="row">
+          <div class="box">
+            <p><strong>Update Password</strong></p>
+            <form method="post">
+              <p><input type="password" name="password" placeholder="Current password" class="u-full-width"></p>
+              <p><input type="password" name="new_password" placeholder="New password" class="u-full-width"></p>
+              <p><button class="button button-primary u-full-width">Update</button></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include 'partials/footer' %}

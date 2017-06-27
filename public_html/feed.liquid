@@ -53,7 +53,7 @@
         </div>
         <div class="seven columns">
           {% if event.event == 'clicked' %}
-            <a href="/links/{{ event.url }}">{{ event.url }}</a> <a href="{{ event.url }}"><i class="icon-open fade"></i></a>
+            <a href="{{ event.url }}">{{ event.url }}</a> <a href="{{ event.url }}"><i class="icon-open fade"></i></a>
           {% elsif event.event == 'opened' %}
             <a href="/mails/{{ event.msg_id }}">{% if event.subject %}{{ event.subject }}{% else %}{{ event.msg_id }}{% endif %}</a>
           {% elsif event.event == 'delivered' %}
