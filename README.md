@@ -1,3 +1,5 @@
+## Work in progress. Check back soon.
+
 Suet is an analytics dashboard for Mailgun. It gives better insight into the performance of your transactional emails by providing answers to questions like: 
 
 - Who received what email? Which ones were opened? What links were clicked? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/feed.png))

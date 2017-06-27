@@ -20,6 +20,7 @@ It is assumed you have MongoDb installed already. If not, [install MongoDb](http
 You need to setup a [webhook](http://mailgun-documentation.readthedocs.io/en/latest/api-webhooks.html) that Mailgun will send events to. The recommended option is to use [Google Cloud HTTP function](https://cloud.google.com/functions/docs/writing/http). It is highly scalable especially if you send lots of mails.
 
 > Q: Why not AWS API gateway + Lambda?
+ 
 > A: Mailgun uses the content-type multipart/form-data to send some event data and this content-type is not supported by AWS API gateway (yet).
 
 If microservices is not your thing or just can't go through the stress, there is a webhook endpoint available at `[your server]/webhook`.
