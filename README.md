@@ -11,7 +11,7 @@ Suet is an analytics dashboard for Mailgun. It gives better insight into the per
 
 ## Usage
 
-The easiest way to use Suet is through the managed version at [suet.co](https://suet.co/) (cost as low as $5/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/kehers/suet/blob/master/docs/installation.md).
+The easiest way to use Suet is through the managed version at [suet.co](https://suet.co/) (costs as low as $5/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/kehers/suet/blob/master/docs/installation.md).
 
 ## Staying up to date
 

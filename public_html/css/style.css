@@ -1,6 +1,6 @@
 body {
   font-family: "Rubik", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #666;
+  color: #555;
   background-color: #f2f2f2;
 }
 
@@ -49,6 +49,10 @@ a.fade:hover {
 .list li {
   padding: 5px 0;
   border-bottom: 1px solid #ddd;
+}
+
+.hero {
+  margin-top: 50px
 }
 
 header {
@@ -113,6 +117,11 @@ header .subnav li {
 .separator {
   height: 2px;
   border-top: 1px solid #eee;
+}
+
+.title {
+  color: #000;
+  margin-bottom: 20px;
 }
 
 .align-right {
@@ -222,9 +231,16 @@ tags > div {
 }
 
 footer {
-  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #eee;
 }
-
+footer ul {
+  list-style: none;
+}
+footer ul li {
+  display: inline-block;
+  padding: 5px;
+}
 /*
 Button override
 */
