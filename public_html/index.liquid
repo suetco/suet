@@ -19,7 +19,7 @@
     padding: 50px 0;
   }
   header {
-    padding: 100px 0;
+    padding: 10% 0;
     margin-bottom: 0;
     background: #fff url(images/screenshots/browser.png) top right no-repeat;
     background-size: 50%;
@@ -30,6 +30,19 @@
   header h5 span {
     position: relative;
     top: 3px;
+  }
+  .box-alt {
+    /*background-color: #f7b032;
+    box-shadow: 2px 2px 5px 0px rgba(221,221,221,1);
+    color: #0c263d*/
+    padding: 25px;
+  }
+  .box-b {
+    background-color: #4657c7;
+    color: #b2c1f1;
+  }
+  .box-b h5 {
+    color: #ea98c2;
   }
   </style>
 </head>
@@ -50,9 +63,8 @@
     </div>
   </div>
 </header>
-<section>
+<section style="background-color:#f9fbf9">
   <div class="container">
-    <h5 class="title">Features</h5>
     <div class="row">
       <div class="three columns">
         <p><strong>Engagement overview</strong></p>
@@ -75,21 +87,31 @@
 </section>
 <section style="background-color:#fff">
   <div class="container">
-    <h5 class="title">Pricing</h5>
     <div class="row">
-      <div class="six columns">
+      <div class="six columns" style="padding:3% 0">
+        <h5 class="title">Pricing</h5>
         <p>Pricing is based on the number of Mailgun events received per month.</p>
-        <p>An event is something that happens to your emails. This could be a delivery, open, bounce or click on a link. Note that non-unique events are also tracked. This means if a recipient opens the same email twice, 2 events are tracked and not one.</p>
+        <p>An event is something that happens to an email. This could be a delivery, open, bounce or click on a link. Note that non-unique events are also tracked. This means if a recipient opens the same email twice, 2 events are tracked and not one.</p>
       </div>
-      <div class="three columns">
-        <p style="margin-bottom:10px"><strong><u>Dev</u></strong><br>
-        $5/month<br>Up to 5k events/month</p>
-        <p><strong><u>Pro</u></strong><br>
-        $10/month<br>Up to 25k events/month</p>
+      <div class="three columns" style="width: 24%">
+        <div class="box-alt box-bordered" style="background-color:#f7b432;color:#1c2b3d">
+          <h5>Dev</h5>
+          <p>$5/month<br>Up to 5k events/month</p>
+        </div>
+        <div class="box-alt box-bordered" style="background-color:#6a2c75;color:#e8e1f6">
+          <h5>Pro</h5>
+          <p>$20/month<br>Up to 50k events/month</p>
+        </div>
       </div>
-      <div class="three columns">
-        <p><strong><u>Biz</u></strong><br>
-        $30/month<br>Up to 100k events/month</p>
+      <div class="three columns" style="margin-left:0;width: 24%;background-color:#241d5b;color:#fefefe">
+        <div class="box-alt">
+          <h5>Biz</h5>
+          <p>$100/month<br>Up to 500k events/month</p>
+        </div>
+        <div class="box-alt">
+          <h5>More?</h5>
+          <p><a href="mailto:hello@suet.co">Get in touch</a><br>&nbsp;</p>
+        </div>
       </div>
     </div>
   </div>

@@ -40,6 +40,47 @@ module.exports = function(app){
     });
   });
 
+  // Recover
+  app.get('/recover', function(req, res) {
+      res.render('recover', render(req, {
+        title: 'Recover password'
+      }));
+    });
+  app.post('/recover', function(req, res) {
+    Accounts.recoverPassword(res, req.body, function(err, doc){
+      if (err)
+        req.flash('error', err);
+      else
+        req.flash('info', 'Password reset mail has been sent');
+
+      return res.redirect('/recover');
+    });
+  });
+
+  app.get('/reset/:hash/:id', function(req, res) {
+    Accounts.confirmReset(req.params.hash, req.params.id, function(err, status) {
+        if (err) {
+          req.flash('error', err);
+          return res.redirect('/recover');
+        }
+
+        res.render('reset', render(req, {
+            title: 'Create new password'
+          }));
+    })
+  });
+  app.post('/reset/:hash/:id', function(req, res) {
+    Accounts.resetPassword(req.params.hash, req.params.id, req.body, function(err, status) {
+        if (err) {
+          req.flash('error', err);
+          return res.redirect('/reset/'+req.params.hash+'/'+req.params.id);
+        }
+
+        req.flash('info', 'Password reset successful. Login to continue.');
+        res.redirect('/login');
+    })
+  });
+
   // Logout
   app.get('/logout', function(req, res) {
     req.session.destroy();

@@ -147,4 +147,32 @@ module.exports = function(app){
       title: 'Settings'
     }));
   });
+  app.post('/settings', function(req, res) {
+    if (req.body.email) {
+      Accounts.updateEmail(req.session.account.id, req.body.email, function(err, status) {
+        if (err) {
+          req.flash('error', err);
+        }
+        else {
+          req.flash('info', 'Email updated');
+          req.session.account.email = status.email;
+        }
+
+        return res.redirect('/settings');
+      });
+    }
+    else if (req.body.password) {
+      Accounts.updatePassword(req.session.account.id,
+        req.body.password, req.body.new_password, function(err, status) {
+        if (err)
+          req.flash('error', err);
+        else
+          req.flash('info', 'Password updated');
+
+        return res.redirect('/settings');
+      });
+    }
+    else
+        return res.redirect('/settings');
+  });
 }

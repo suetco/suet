@@ -2,12 +2,14 @@
 
 <section>
   <div class="container">
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    {% if info %}<p class="info">{{ info }}</p>{% endif %}
     <div class="row">
       <div class="six columns">
         <div class="box">
           <p><strong>Update Email</strong></p>
           <form method="post">
-            <p><input type="email" name="email" placeholder="Email" class="u-full-width"></p>
+            <p><input type="email" name="email" placeholder="Email" value="{{acc_email}}" class="u-full-width"></p>
             <p><button class="button button-primary u-full-width">Update</button></p>
           </form>
         </div>

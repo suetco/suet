@@ -11,7 +11,6 @@ var express = require('express')
 
     // Libs
     , acl = require('./lib/acl.js')
-    , env = require('./env.js')
     , dbo = require('./lib/db.js')
     ;
 

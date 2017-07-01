@@ -7,15 +7,15 @@
         <h5 class="center pad-btm"><a href="/"><i class="icon-bar-graph-2"></i></a></h5>
         <div class="box">
           <form method="post">
-            <p><strong>Login</strong></p>
+            <p><strong>Recover Password</strong></p>
             {% if error %}<p class="error">{{ error }}</p>{% endif %}
             {% if info %}<p class="info">{{ info }}</p>{% endif %}
+            <p>Enter your email below to recover your password</p>
             <p><input type="email" name="email" class="u-full-width" placeholder="Email" required></p>
-            <p><input type="password" name="password" class="u-full-width" placeholder="Password" required></p>
-            <p><button class="button button-primary u-full-width">Login</button></p>
+            <p><button class="button button-primary u-full-width">Recover</button></p>
           </form>
         </div>
-        <p class="center"><a href="/signup">Create an account</a> &middot; <a href="/recover">Recover password</a></p>
+        <p class="center"><a href="/login">Back</a></p>
       </div>
     </div>
   </div>

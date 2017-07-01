@@ -1,11 +1,9 @@
 const dbo = require('../lib/db.js')
     , crypto = require('crypto')
-    , validate = require('mailgun-validate')
+    , request = require('request')
 
     , Domains = require('./domains.js')
     ;
-
-let validator = new validate('pubkey-02iismi5n5xozcmeyu3-ymqe3f9-0da4');
 
 exports.dashboardData = function(domain, fn) {
   let data = {
@@ -221,60 +219,35 @@ exports.create = function(data, fn) {
   let password = data.password || '';
 
   email = email.toLowerCase().trim();
+  if (!/^\S+@\S+$/.test(email))
+    return fn('Email invalid. Confirm and try again');
 
-  validator.validate(email, function(err, response) {
+  // Email valid, continue
+  dbo.db().collection('accounts').findOne({
+    email: email
+  }, function(err, doc) {
+    if (err)
+      return fn('There has been an internal error. Please try again later.');
 
-    if (err || !response) {
-      // Cant connect to mailgun
-      // Default to regexp
-      if (!email.match(/^[\w\.\-\+]+@[\w\.\-\+]+\.[\w]+$/)) {
-        return fn('Email invalid. Confirm and try again');
-      }
-    }
-    else if (!response.is_valid) {
-      let e = 'Email invalid.';
-      if (response.did_you_mean)
-        e += ' Do you mean '+response.did_you_mean+'?';
-      return fn(e);
-    }
+    if (doc)
+      return fn('This email is already in use.');
 
-    if (!password || password.length < 6) {
-      return fn('Your password should be at least 6 characters.');
-    }
+    let salt = crypto.randomBytes(128).toString('base64');
+    crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+      if (err)
+        fn('There has been an internal error. Please try again later.');
 
-    // Email valid, continue
-    dbo.db().collection('accounts').findOne({
-      email: email
-    }, function(err, doc) {
-      if (err) {
-        return fn('There has been an internal error. Please try again later.');
-      }
-      else {
-        if (!doc) {
-          let salt = crypto.randomBytes(128).toString('base64');
-          crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
-            if (!err) {
-              dbo.db().collection('accounts').insert({
-                email: email,
-                password: new Buffer(derivedKey).toString('base64'),
-                salt: salt,
-                reg_date: new Date()
-              }, function(err, result) {
-                return fn(null, {
-                  id: result.ops[0]._id,
-                  email: result.ops[0].email
-                });
-              });
-            }
-            else {
-              fn('There has been an internal error. Please try again later.');
-            }
-          });
-        }
-        else {
-          return fn('This email is already in use.');
-        }
-      }
+      dbo.db().collection('accounts').insert({
+        email: email,
+        password: new Buffer(derivedKey).toString('base64'),
+        salt: salt,
+        reg_date: new Date()
+      }, function(err, result) {
+        return fn(null, {
+          id: result.ops[0]._id,
+          email: result.ops[0].email
+        });
+      });
     });
   });
 }
@@ -285,129 +258,127 @@ exports.login = function(data, fn) {
 
   email = email.toLowerCase().trim();
   dbo.db().collection('accounts').findOne({email: email}, function(err, doc) {
-    if (err) {
+    if (err)
       return fn('There has been an internal error. Please try again later.');
-    } else {
-      if (doc) {
-        crypto.pbkdf2(password, doc.salt, 5000, 32, 'sha512', function(err, derivedKey) {
-          if (!err) {
-            let hash = new Buffer(derivedKey).toString('base64');
-            if (hash == doc.password) {
-              let json = {
-                id: doc._id,
-                email: doc.email
-              };
-              // Get his domains
-              Domains.get(doc._id, function(err, domains){
-                if (domains && domains.length > 0) {
-                  let _domains = [];
-                  for (let domain of domains)
-                    _domains.push(domain.domain)
-                  json.domains = _domains;
-                  json.active_domain = _domains[0];
-                }
 
-                return fn(null, json);
-              });
-            }
-            else {
-              return fn('Wrong password. Confirm and try again.');
-            }
-          }
-          else {
-            return fn('There has been an internal error. Please try again later.');
-          }
-        });
-      }
-      else
-        return fn('Email not found.');
-    }
+    if (!doc)
+      return fn('Email not found.');
+
+    crypto.pbkdf2(password, doc.salt, 5000, 32, 'sha512', function(err, derivedKey) {
+      if (err)
+        return fn('There has been an internal error. Please try again later.');
+
+      let hash = new Buffer(derivedKey).toString('base64');
+      if (hash != doc.password)
+        return fn('Wrong password. Confirm and try again.');
+
+      let json = {
+        id: doc._id,
+        email: doc.email
+      };
+      // Get his domains
+      Domains.get(doc._id, function(err, domains){
+        if (domains && domains.length > 0) {
+          let _domains = [];
+          for (let domain of domains)
+            _domains.push(domain.domain)
+          json.domains = _domains;
+          json.active_domain = _domains[0];
+        }
+
+        return fn(null, json);
+      });
+    });
   });
 }
 
 exports.recoverPassword = function(res, data, fn) {
 
   let email = data.email || '';
-  // Email valid, continue
-  dbo.db.collection('users').findOne({email: email},
+  dbo.db().collection('accounts').findOne({email: email},
     function(err, doc) {
-      if (err) {
-        // pusher here
+      if (err)
         return fn('There has been an internal error. Please try again later.');
-      } else {
-        if (doc) {
-          let salt = crypto.randomBytes(128).toString('base64');
-          crypto.pbkdf2(salt, salt, 5000, 32, function(err, derivedKey) {
-            if (!err) {
-                let hash = new Buffer(derivedKey).toString('base64');
-                let uid = doc._id.toHexString();
-                // Delete all recover for user
-                dbo.db.collection('recover').remove({uid: uid}, function(err, removed){});
-                // Add this one
-                dbo.db.collection('recover').insert({
-                    hash: hash,
-                    uid: uid,
-                    reg_date: new Date()
-                }, function(err, result) {
-                  // Send email
-                  let tmplObj = {hash: encodeURIComponent(hash), uid: uid};
-                  res.render('mail_templates/recover', tmplObj, function(err, html) {
-                    if (err)  {
-                      return;
-                    }
 
-                    res.render('mail_templates/recover_txt', tmplObj, function(err, text) {
-                      if (err)  {
-                        console.log(err);
-                        return;
-                      }
+      if (!doc)
+        return fn('The specified email does not exist.');
 
-                      let transporter = nodemailer.createTransport({
-                          service: 'Mailgun',
-                          auth: {
-                              user: 'postmaster@flit.email',
-                              pass: 'e783d6450cd2d5101d044b5f091fd271'
-                          }
-                      });
+      let salt = crypto.randomBytes(128).toString('base64');
+      crypto.pbkdf2(salt, salt, 5000, 32, 'sha512', function(err, derivedKey) {
 
-                      let mailOptions = {
-                          from: 'Flit <no-reply@flit.email>',
-                          to: email,
-                          subject: 'Reset your password',
-                          text: text,
-                          html: html
-                      };
-                      transporter.sendMail(mailOptions);
-                    });
-                  });
+        if (err)
+          return fn('There has been an internal error. Please try again later.');
 
-                  fn.call(this);
-                });
-            } else {
+        let hash = new Buffer(derivedKey).toString('base64');
+        let uid = doc._id.toHexString();
+        // Delete all recover requests for user
+        dbo.db().collection('recover').remove({uid: uid});
+        // Add this one
+        dbo.db().collection('recover').insert({
+            hash: hash,
+            uid: uid,
+            date: new Date()
+        }, function(err, result) {
+          // Send email
+          let tmplObj = {
+            hash: encodeURIComponent(hash),
+            uid: uid,
+            domain: process.env.HOST
+          }
+
+          res.render('mail_templates/recover', tmplObj, function(err, html) {
+            if (err)
               return fn('There has been an internal error. Please try again later.');
-            }
+
+            res.render('mail_templates/recover_txt', tmplObj, function(err, text) {
+
+              let params = {
+                from: process.env.EMAIL_FROM,
+                subject: 'Reset your password',
+                html: html,
+                to: email
+              }
+
+              if (!err && text)
+                params.text = text;
+
+              console.log(text);
+              process.exit();
+
+              request.post({
+                url: 'https://api.mailgun.net/v3/'+process.env.EMAIL_DOMAIN+'/messages',
+                auth: {
+                  user: 'api',
+                  pass: process.env.EMAIL_KEY
+                },
+                sendImmediately: false,
+                form: params
+              }, function(err, response, body) {
+
+                if (err || response.statusCode != 200)
+                  return fn('There has been an error sending recovery mail. Please try again later.');
+
+                return fn();
+              });//*/
+
+            });
           });
-        } else {
-          return fn('The specified email does not exist.');
-        }
-      }
+        });
+      });
   });
 }
 
 exports.confirmReset = function(hash, uid, fn) {
 
-  dbo.db.collection('recover').findOne({uid: uid, hash: decodeURIComponent(hash)},
+  dbo.db().collection('recover').findOne({uid: uid, hash: decodeURIComponent(hash)},
     function(err, doc) {
-      if (err) {
+      if (err)
         return fn('There has been an internal error. Please try again later.');
-      }
 
-      if (doc) {
-        fn();
-      } else {
-        fn('Invalid reset details.');
-      }
+      if (!doc)
+        return fn('Invalid reset details.');
 
+      return fn();
   });
 }
 
@@ -416,129 +387,95 @@ exports.resetPassword = function(hash, uid, data, fn) {
     let password = data.password || '';
     let passwordb = data.passwordb || '';
 
-    if (!password || password.length < 6) {
-      return fn('Your password should be at least 6 characters.');
-    }
-    else if (password != passwordb) {
+    if (password != passwordb)
       return fn('Password and confirmation did not match.');
-    }
-    else {
-      dbo.db.collection('recover').findOne({uid: uid, hash: decodeURIComponent(hash)},
-        function(err, doc) {
-          if (err) {
+    if (!password || password.length < 6)
+      return fn('Your password should be at least 6 characters.');
+
+    dbo.db().collection('recover').findOne({uid: uid, hash: decodeURIComponent(hash)},
+      function(err, doc) {
+        if (err)
+          return fn('There has been an internal error. Please try again later.');
+
+        if (!doc)
+          return fn('Invalid reset details.');
+
+        let salt = crypto.randomBytes(128).toString('base64');
+        crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+          if (err)
             return fn('There has been an internal error. Please try again later.');
-          }
 
-          if (!doc) {
-            return fn('Invalid reset details.');
-          }
-
-          let salt = crypto.randomBytes(128).toString('base64');
-          crypto.pbkdf2(password, salt, 5000, 32, function(err, derivedKey) {
-              if (!err) {
-                dbo.db.collection('users').update(
-                  {_id: dbo.id(uid)},
-                  {$set: {password: new Buffer(derivedKey).toString('base64'), salt: salt}},
-                  function(err, result) {
-                    dbo.db.collection('recover').remove({uid: uid}, function(err, res){});
-                    fn();
-                });
-              } else {
-                return fn('There has been an internal error. Please try again later.');
-              }
+          dbo.db().collection('accounts').update(
+            {_id: dbo.id(uid)},
+            {$set: {password: new Buffer(derivedKey).toString('base64'), salt: salt}},
+            function(err, result) {
+              dbo.db().collection('recover').remove({uid: uid});
+              return fn();
           });
+        });
 
-      });
-    }
+    });
 }
 
 exports.updateEmail = function(uid, email, fn) {
 
-    uid = dbo.id(uid);
-    email = email.toLowerCase().trim();
+  uid = dbo.id(uid);
+  email = email.toLowerCase().trim();
 
-    validator.validate(email, function(err, response) {
-        if (err || !response) {
-            // Cant connect to mailgun
-            // Default to regexp
-            if (!email.match(/^[\w\.\-\+]+@[\w\.\-\+]+\.[\w]+$/)) {
-                fn('Email invalid. Confirm and try again');
-                return;
-            }
-        }
-        else if (!response.is_valid) {
-            let e = 'Email invalid.';
-            if (response.did_you_mean)
-                e += ' Did you mean '+response.did_you_mean+'?';
-            fn(e);
-            return;
-        }
+  if (!/^\S+@\S+$/.test(email))
+    return fn('Email invalid. Confirm and try again');
 
-        dbo.db.collection('users').findOne({_id: uid}, function(err, doc) {
-              if (err) {
-                fn('There has been an internal error. Please try again later.');
-                return;
-              } else {
-                dbo.db.collection('users').update({_id: uid}, {$set: {email: email}},
-                  function(err, result) {
-                  if (err)
-                      return fn('There has been an internal error. Please try again later.');
-                  else
-                      return fn(null, {email:email});
-                });
-              }
-          });
+  dbo.db().collection('accounts').findOne({_id: uid}, function(err, doc) {
+    if (err)
+      return fn('There has been an internal error. Please try again later.');
+
+    dbo.db().collection('accounts').updateOne({_id: uid}, {$set: {email: email}},
+      function(err, result) {
+      if (err)
+        return fn('There has been an internal error. Please try again later.');
+
+      return fn(null, {email:email});
     });
+  });
 }
 
 exports.updatePassword = function(uid, oldPassword, password, fn) {
 
   uid = dbo.id(uid);
 
-  if (!password || password.length < 6) {
-    fn('Your password should be at least 6 characters.');
-    return;
-  }
-  else {
-    dbo.db.collection('users').findOne({_id: uid}, function(err, doc) {
-      if (err) {
-        fn('There has been an internal error. Please try again later.');
-        return;
-      } else {
-        if (doc) {
-          crypto.pbkdf2(oldPassword, doc.salt, 5000, 32, function(err, derivedKey) {
-            if (!err) {
-              let hash = new Buffer(derivedKey).toString('base64');
-              if (hash == doc.password) {
-                // Update password here
-                let salt = crypto.randomBytes(128).toString('base64');
-                crypto.pbkdf2(password, salt, 5000, 32, function(err, derivedKey) {
-                  if (!err) {
-                    dbo.db.collection('users').update({_id: uid},
-                      {$set: {password: new Buffer(derivedKey).toString('base64'), salt: salt}},
-                      function(err, result) {
-                      if (err)
-                        fn('There has been an internal error. Please try again later.');
-                      else
-                        fn(null);
-                    });
-                  } else {
-                    fn('There has been an internal error. Please try again later.');
-                  }
-                });
-              } else {
-                fn('Wrong password. Confirm and try again.');
-              }
-            } else {
-              // internal error
-              fn('There has been an internal error. Please try again later.');
-            }
-          });
-        }
-        else {
-            fn('Invalid password. Confirm and try again.');
-        }
-      }
+  if (!password || password.length < 6)
+    return fn('Your password should be at least 6 characters.');
+
+  dbo.db().collection('accounts').findOne({_id: uid}, function(err, doc) {
+    if (err)
+      return fn('There has been an internal error. Please try again later.');
+
+    if (!doc)
+      return fn('Invalid account.');
+
+    crypto.pbkdf2(oldPassword, doc.salt, 5000, 32, 'sha512', function(err, derivedKey) {
+      if (err)
+        return fn('There has been an internal error. Please try again later.');
+
+      let hash = new Buffer(derivedKey).toString('base64');
+      if (hash != doc.password)
+        return fn('Wrong password. Confirm and try again.');
+
+      // Update password here
+      let salt = crypto.randomBytes(128).toString('base64');
+      crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+        if (err)
+          return fn('There has been an internal error. Please try again later.');
+
+        dbo.db().collection('accounts').update({_id: uid},
+          {$set: {password: new Buffer(derivedKey).toString('base64'), salt: salt}},
+          function(err, result) {
+          if (err)
+            return fn('There has been an internal error. Please try again later.');
+
+          return fn(null);
+        });
+      });
     });
-  }
+  });
 }
