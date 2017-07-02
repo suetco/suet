@@ -40,6 +40,7 @@ module.exports = function(app){
     Accounts.dashboardData(req.session.account.active_domain, function(err, data) {
       res.render('dashboard', render(req, {
         title: 'Dashboard',
+        webhook: process.env.WEBHOOK || [process.env.HOST, '/webhook'].join(''),
         page: 'dashboard',
         data: data
       }));

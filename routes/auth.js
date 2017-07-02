@@ -59,25 +59,25 @@ module.exports = function(app){
 
   app.get('/reset/:hash/:id', function(req, res) {
     Accounts.confirmReset(req.params.hash, req.params.id, function(err, status) {
-        if (err) {
-          req.flash('error', err);
-          return res.redirect('/recover');
-        }
+      if (err) {
+        req.flash('error', err);
+        return res.redirect('/recover');
+      }
 
-        res.render('reset', render(req, {
-            title: 'Create new password'
-          }));
+      res.render('reset', render(req, {
+          title: 'Create new password'
+        }));
     })
   });
   app.post('/reset/:hash/:id', function(req, res) {
     Accounts.resetPassword(req.params.hash, req.params.id, req.body, function(err, status) {
-        if (err) {
-          req.flash('error', err);
-          return res.redirect('/reset/'+req.params.hash+'/'+req.params.id);
-        }
+      if (err) {
+        req.flash('error', err);
+        return res.redirect('/reset/'+req.params.hash+'/'+req.params.id);
+      }
 
-        req.flash('info', 'Password reset successful. Login to continue.');
-        res.redirect('/login');
+      req.flash('info', 'Password reset successful. Login to continue.');
+      res.redirect('/login');
     })
   });
 

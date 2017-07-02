@@ -11,7 +11,11 @@
       Top opens
       Time graph of engagement
     -->
-    {% if info %}<p class="info">{{ info }}</p>{% endif %}
+    {% if data.engagement.label.size == 0 %}
+    <div class="box big-info">
+      <p>No data available for this dashboard yet. To start receiving data, visit the <a href="https://mailgun.com/app/webhooks">Webhooks page</a> of your Mailgun account and set the event URLs to <code>{{webhook}}</code></p>
+    </div>
+    {% endif %}
     <div class="row">
       <div class="twelve columns">
         <div class="box">

@@ -3,11 +3,11 @@
 ### Requirements
 
 - NodeJs (>= 4.0)
-- MongoDb (>= 3.4)
+- MongoDB (>= 3.4)
 
 ### Download and Config
 
-It is assumed you have MongoDB installed already. If not, [install MongoDB](https://docs.mongodb.com/manual/installation/). Note that MongoDB must be publicly accessible via an IP or domain if you are using Google Cloud HTTP function (see Webhook Setup). If you can, I recommend you use host MongoDB on a separate server.
+It is assumed you have MongoDB installed already. If not, [install MongoDB](https://docs.mongodb.com/manual/installation/). Note that MongoDB must be publicly accessible via an IP or domain if you are using Google Cloud HTTP function to handle your webhooks (see [Webhook Setup](#webhook-setup)). If you can, I recommend you host MongoDB on a separate server.
 
 - Create directory locally or on your server
 - Run `git clone https://github.com/kehers/suet` in the directory or just download and unzip right in
@@ -17,11 +17,12 @@ Next, you will need to create the environmental variables listed below. The emai
 
 The required environmental variables are:
 
-- HOST (The IP or web address your application will be located at, without the trailing slash e.g. http://suet.some.paas)
-- DB_URL (URL of your MongoDB database e.g mongodb://localhost/suet)
-- EMAIL_FROM (The sender identification for the email. Format “Name <email>” e.g. Suet <no-reply@suet.co>)
-- EMAIL_DOMAIN (The Mailgun domain you want to send emails from)
-- EMAIL_KEY (The API key of the domain above. Login to your Mailgun account and click the domain to get the domain API key.)
+- `HOST` (The IP or web address your application will be located at, without the trailing slash e.g. http://suet.some.paas)
+- `DB_URL` (URL of your MongoDB database e.g mongodb://localhost/suet)
+- `EMAIL_FROM` (The sender identification for the email. Format “Name \<email>” e.g. Suet \<no-reply@suet.co>)
+- `EMAIL_DOMAIN` (The Mailgun domain you want to send emails from)
+- `EMAIL_KEY` (The API key of the domain above. Login to your Mailgun account and click the domain to get the domain API key.)
+- `WEBHOOK` (Your webhook URL. See [Webhook Setup](#webhook-setup). This is optional. Defaults to `HOST`/webhook if not added)
 
 Now you can start the app with the environmental variables. A straight forward way to do this is to simply run it in command line like this:
 

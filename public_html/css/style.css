@@ -43,6 +43,11 @@ a.fade:hover {
 .info {
   color: #58bb36;
 }
+.big-info.box {
+  background-color: #d7ecc1;
+  color: #000;
+  font-size: 120%;
+}
 .list {
   list-style: none
 }
@@ -113,6 +118,10 @@ header .subnav li {
 }
 .subnav a {
   padding: 3px 20px 3px 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px
 }
 .separator {
   height: 2px;
