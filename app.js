@@ -22,6 +22,9 @@ dbo.connect(function(err){
     return process.exit(0);
   }
 
+  // Index DB
+  require('./lib/indexes.js')(dbo);
+
   // Filters
   // Override 'remove'
   engine.registerFilter('remove', function(v, arg){

@@ -342,9 +342,6 @@ exports.recoverPassword = function(res, data, fn) {
               if (!err && text)
                 params.text = text;
 
-              console.log(text);
-              process.exit();
-
               request.post({
                 url: 'https://api.mailgun.net/v3/'+process.env.EMAIL_DOMAIN+'/messages',
                 auth: {
