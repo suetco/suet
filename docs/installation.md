@@ -2,7 +2,7 @@
 
 ### Requirements
 
-- NodeJs (>= 4.0)
+- NodeJs (>= 6.0)
 - MongoDB (>= 3.4)
 
 ### Download and Config
