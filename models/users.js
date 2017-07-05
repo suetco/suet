@@ -2,7 +2,6 @@ const dbo = require('../lib/db.js')
     , moment = require('moment')
     ;
 
-
 exports.getAll = function(domain, options, fn) {
   if (!domain)
     return fn('Domain not specified');

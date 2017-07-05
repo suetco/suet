@@ -47,7 +47,6 @@ exports.handler = function(req, res) {
       // Inconsistency in mailgun's API
       let messageId = event_data['message-id'] || event_data['Message-Id'];
       if (!messageId) {
-        console.log(req.body);
         return res.send({error: 'Could not get message id'});
       }
 

@@ -215,12 +215,17 @@ exports.dashboardData = function(domain, fn) {
 
 exports.create = function(data, fn) {
 
+  if (!data)
+    return fn('No data provided.');
+
   let email = data.email || '';
   let password = data.password || '';
 
   email = email.toLowerCase().trim();
   if (!/^\S+@\S+$/.test(email))
     return fn('Email invalid. Confirm and try again');
+  if (password.length < 6)
+    return fn('Password should have at least six characters');
 
   // Email valid, continue
   dbo.db().collection('accounts').findOne({
@@ -253,6 +258,9 @@ exports.create = function(data, fn) {
 }
 
 exports.login = function(data, fn) {
+  if (!data)
+    return fn('No data provided.');
+
   let email = data.email || '';
   let password = data.password || '';
 
@@ -415,6 +423,8 @@ exports.resetPassword = function(hash, uid, data, fn) {
 }
 
 exports.updateEmail = function(uid, email, fn) {
+  if (!uid)
+    return fn('User id missing');
 
   uid = dbo.id(uid);
   email = email.toLowerCase().trim();
@@ -437,6 +447,12 @@ exports.updateEmail = function(uid, email, fn) {
 }
 
 exports.updatePassword = function(uid, oldPassword, password, fn) {
+
+  if (!uid)
+    return fn('User ID missing');
+
+  if (!oldPassword)
+    return fn('Old password missing');
 
   uid = dbo.id(uid);
 

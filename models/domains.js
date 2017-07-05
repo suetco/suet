@@ -3,11 +3,12 @@ var dbo = require('../lib/db.js')
     ;
 
 exports.get = function(accId, fn) {
+  if (!accId)
+    return fn('Invalid account');
   dbo.db().collection('domains').find({
     accs: dbo.id(accId)
   }).toArray(function(err, docs) {
     if (err) {
-      console.log(err);
       return fn('Internal Error');
     }
 
@@ -37,7 +38,7 @@ exports.getDomains = function(accId, key, fn) {
       }
     }, function(err, response, body) {
 
-      if (err && response.statusCode != 200) {
+      if (err || response.statusCode != 200) {
         return fn('Error validating your Mailgun API key. Please try again later.');
       }
 

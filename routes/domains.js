@@ -26,9 +26,6 @@ module.exports = function(app){
       if (domains.length > 0)
         req.session.account.active_domain = domains[0];
 
-      req.flash('info', ['All set! Just one more thing to do. ',
-        'Login your mailgun account and set webhooks to ', process.env.WEBHOOK,
-        ' for your domains. <!-- todo: see how -->'].join(''));
       res.redirect('/dashboard');
     });
   });
