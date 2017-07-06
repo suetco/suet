@@ -16,12 +16,12 @@
 
   <style type="text/css">
   section {
-    padding: 50px 0;
+    padding: 150px 0;
   }
   header {
-    padding: 10% 0;
+    padding: 11% 0;
     margin-bottom: 0;
-    background: #fff url(images/screenshots/browser.png) top right no-repeat;
+    background: #fff url(images/screenshots/browser.png) bottom right no-repeat;
     background-size: 50%;
   }
   strong {
@@ -31,18 +31,49 @@
     position: relative;
     top: 3px;
   }
-  .box-alt {
-    /*background-color: #f7b032;
-    box-shadow: 2px 2px 5px 0px rgba(221,221,221,1);
-    color: #0c263d*/
-    padding: 25px;
+  .features {
+    background-image: linear-gradient( 135deg, #7c64ea 0%, #5637e4 100%);
+    color: #f0effb;
   }
-  .box-b {
-    background-color: #4657c7;
-    color: #b2c1f1;
+  .features strong {
+    color: #fff;
   }
-  .box-b h5 {
-    color: #ea98c2;
+  .price {
+    padding-top:50px
+  }
+  .price .three {
+    padding: 10px 0;
+    border-right: 1px dotted #bbb;
+  }
+  .price .three:last-child {
+    border-right: 0;
+  }
+  footer {
+    padding: 30px 0;
+  }
+  /* responsive touch */
+  @media (max-width: 800px) {
+    section {
+      padding: 50px 0;
+    }
+    header {
+      background: #fff;
+    }
+    header .one-half.column {
+      width: 80%
+    }
+  }
+  /* responsive touch */
+  @media (max-width: 800px) {
+    section {
+      padding: 50px 0;
+    }
+    header {
+      background: #fff;
+    }
+    header .one-half.column {
+      width: 80%
+    }
   }
   </style>
 </head>
@@ -55,15 +86,13 @@
         <h5><a href="/"><i class="icon-bar-graph-2"></i> <span>suet</span></a></h5>
         <div class="hero">
           <h5 class="title">Detailed analytics for your Mailgun transactional emails</h5>
-          <p><a href="/signup" class="button button-primary" style="margin-right:20px">Signup</a>  <a href="/login" style="margin-left:20px" class="button"><i class="icon-skip-forward"></i> Login</a> <a href="http://github.com/kehers/suet" class="button"><i class="icon-arrow-down"></i> Download</a> </p>
+          <p><a href="/signup" class="button button-primary">Signup</a>  <a href="/login" class="button"><i class="icon-skip-forward"></i> Login</a> <a href="http://github.com/kehers/suet" class="button"><i class="icon-arrow-down"></i> Download</a> </p>
         </div>
-      </div>
-      <div class="one-half column align-right">
       </div>
     </div>
   </div>
 </header>
-<section style="background-color:#f9fbf9">
+<section class="features">
   <div class="container">
     <div class="row">
       <div class="three columns">
@@ -85,38 +114,44 @@
     </div>
   </div>
 </section>
-<section style="background-color:#fff">
+<section class="pricing">
   <div class="container">
     <div class="row">
-      <div class="six columns" style="padding:3% 0">
+      <div class="eight columns">
         <h5 class="title">Pricing</h5>
         <p>Pricing is based on the number of Mailgun events received per month.</p>
         <p>An event is something that happens to an email. This could be a delivery, open, bounce or click on a link. Note that non-unique events are also tracked. This means if a recipient opens the same email twice, 2 events are tracked and not one.</p>
       </div>
-      <div class="three columns" style="width: 24%">
-        <div class="box-alt box-bordered" style="background-color:#f7b432;color:#1c2b3d">
-          <h5>Dev</h5>
+    </div>
+    <div class="row price">
+      <div class="three columns">
+        <div>
+          <p><strong>Dev</strong></p>
           <p>$5/month<br>Up to 5k events/month</p>
         </div>
-        <div class="box-alt box-bordered" style="background-color:#6a2c75;color:#e8e1f6">
-          <h5>Pro</h5>
+      </div>
+      <div class="three columns">
+        <div>
+          <p><strong>Pro</strong></p>
           <p>$20/month<br>Up to 50k events/month</p>
         </div>
       </div>
-      <div class="three columns" style="margin-left:0;width: 24%;background-color:#241d5b;color:#fefefe">
-        <div class="box-alt">
-          <h5>Biz</h5>
+      <div class="three columns">
+        <div>
+          <p><strong>Biz</strong></p>
           <p>$100/month<br>Up to 500k events/month</p>
         </div>
-        <div class="box-alt">
-          <h5>More?</h5>
-          <p><a href="mailto:hello@suet.co">Get in touch</a><br>&nbsp;</p>
+      </div>
+      <div class="three columns">
+        <div>
+          <p><strong>More?</strong></p>
+          <p><a href="mailto:hello@suet.co">Get in touch</a></p>
         </div>
       </div>
     </div>
   </div>
 </section>
-<section style="background-color:#f9fbf9">
+<section style="background-color:#fff">
   <div class="container">
     <h5 class="title">FAQ</h5>
     <div class="row">
@@ -154,7 +189,6 @@
   </div>
 </section>
 <footer>
-  <section>
     <div class="container">
       <div class="row">
         <p class="right">&copy; 2017, Suet</p>
@@ -168,7 +202,6 @@
         </ul>
       </div>
     </div>
-  </section>
 </footer>
 
 </body>
