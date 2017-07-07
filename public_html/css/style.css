@@ -16,6 +16,9 @@ a {
   color: #0f5199;
   text-decoration: none
 }
+.break-words {
+  word-break: break-all;
+}
 a:hover {
   color: #3844d1;
 }

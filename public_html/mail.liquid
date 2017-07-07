@@ -49,7 +49,7 @@
               </div>
               <div class="six columns">
                 {% if log.event == 'clicked' %}
-                  <p><a href="{{ log.url }}">{{ log.url }}</a></p>
+                  <p><a href="{{ log.url }}" class="break-words">{{ log.url }}</a></p>
                 {% endif %}
                 {% if log.event == 'opened' %}
                   <p class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</p>

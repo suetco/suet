@@ -76,7 +76,7 @@
         </div>
         <div class="box">
           <p><strong>Top Clicks</strong></p>
-          <ul class="list">
+          <ul class="list break-words">
             {% for url in data.clicks %}
               <li><a href="{{ url._id }}">{{ url._id }}</a> <span class="fade">({{ url.count }})</span></li>
             {% endfor %}
@@ -100,7 +100,7 @@
         </div>
         <div class="box">
           <p><strong>Top Opens</strong></p>
-          <ul class="list">
+          <ul class="list break-words">
             {% for open in data.opens %}
               <li><a href="mails/{{ open._id }}">{{ open.mail.subject }}</a> <span class="fade">({{ open.count }})</span></li>
             {% endfor %}

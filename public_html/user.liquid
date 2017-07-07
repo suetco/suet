@@ -46,7 +46,7 @@
                   <span class="tag">{{ log.event }}</span>
                 {% endif %}<br>
                 {% if log.event == 'clicked' %}
-                  <a href="{{ log.url }}">{{ log.url }}</a><br>
+                  <a href="{{ log.url }}" class="break-words">{{ log.url }}</a><br>
                   <small><a href="/mails/{{ log.msg_id }}" class="fade">{{ log.subject }}</a></small>
                 {% elsif log.event == 'opened' %}
                   <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
@@ -61,7 +61,7 @@
         </div>
       <div class="four columns">
         <p><strong>Clicks</strong></p>
-        <ul class="list">
+        <ul class="list break-words">
           {% for url in data.urls %}
             <li><a href="{{ url }}">{{ url }}</a></li>
           {% endfor %}
