@@ -21,7 +21,7 @@ The required environmental variables are:
 - `DB_URL` (URL of your MongoDB database e.g mongodb://localhost/suet)
 - `EMAIL_FROM` (The sender identification for the email. Format “Name \<email>” e.g. Suet \<no-reply@suet.co>)
 - `EMAIL_DOMAIN` (The Mailgun domain you want to send emails from)
-- `EMAIL_KEY` (The API key of the domain above. Login to your Mailgun account and click the domain to get the domain API key.)
+- `EMAIL_KEY` (The API key of the domain above. Login to your Mailgun account and click the domain to get the domain API key)
 - `WEBHOOK` (Your webhook URL. See [Webhook Setup](#webhook-setup). This is optional. Defaults to `HOST`/webhook if not added)
 
 Now you can start the app with the environmental variables. A straight forward way to do this is to simply run it in command line like this:
@@ -44,11 +44,11 @@ If microservices is not your thing or just can't go through the stress, there is
 - Enable Cloud functions in the dashboard
 - Click on **Create Function**
 - Enter your preferred name (e.g suet-hooks) 
-- In the trigger section, select **HTTP trigger**. Note the **URL**, that will be your webhook
+- In the trigger section, select **HTTP trigger**. Note the **URL**, that will be your webhook URL
 - Edit `workers/hooks/index.js` and enter your MongoDB URL. (No environment variable in Google cloud or I wasn’t looking hard enough)
 - Copy the content of the file and paste in the index.js section of the Cloud function.
 - Copy the content of `workers/hooks/package.json` and paste in the package.json section
-- Select or create a **Stage bucket**. The stage bucket is simply where the code staged so you can use anything here
+- Select or create a **Stage bucket**. The stage bucket is simply where the code is staged. You can use anything here
 - In **Function to execute**, enter `handler`
 - Save
 
