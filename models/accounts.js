@@ -1,24 +1,27 @@
 const dbo = require('../lib/db.js')
     , crypto = require('crypto')
     , request = require('request')
+    , moment = require('moment')
 
     , Domains = require('./domains.js')
     ;
 
-exports.dashboardData = function(domain, fn) {
+exports.dashboardData = function(domain, query, fn) {
   let data = {
-    clicks: [],
-    opens: [],
-    platform: [],
-    os: [],
-    mails: 0,
-    feed: 0,
-    users: 0
-  }
+        clicks: [],
+        opens: [],
+        platform: [],
+        os: [],
+        mails: 0,
+        feed: 0,
+        users: 0
+      }
+      , date = {$gte: moment().subtract(7, 'days').toDate()} // last 7 days
+      ;
   let p = new Promise(function(resolve, reject){
     // Main data
     dbo.db().collection('logs').aggregate([
-      {$match: {domain: domain, date: {$gte: new Date(new Date().getTime() - 1000*60*60*24*30)}}},
+      {$match: {domain: domain, date: date}},
       {$group: {
         _id: {
           date: {$dateToString: {format: "%Y-%m-%d", date: "$date"}},
@@ -66,9 +69,28 @@ exports.dashboardData = function(domain, fn) {
   })
   .then(function(){
     // Get top clicks
+
+    // Date filter
+    let click_date = date;
+    if (query['top_clicks.days']) {
+      let from = query['top_clicks.days'].toLowerCase();
+      if (from == 'today')
+        click_date = {$gte: moment().startOf('day').toDate()};
+      else if (from == 'yesterday')
+        click_date = {
+          $gte: moment().subtract(1, 'days').startOf('day').toDate(),
+          $lte: moment().subtract(1, 'days').endOf('day').toDate()
+        };
+      else {
+        from = parseInt(from);
+        if (from > 0)
+          click_date = {$gte: moment().subtract(from, 'days').toDate()};
+      }
+    }
+
     return new Promise(function(resolve, reject){
       dbo.db().collection('logs').aggregate([
-        {$match: {domain: domain, event: 'clicked'}},
+        {$match: {domain: domain, event: 'clicked', date: click_date}},
         {$group: {
           _id: '$url',
           count: {$sum: 1}
@@ -86,10 +108,28 @@ exports.dashboardData = function(domain, fn) {
   })
   .then(function(){
     // Get top opens
+
+    // Date filter
+    let open_date = date;
+    if (query['top_opens.days']) {
+      let from = query['top_opens.days'].toLowerCase();
+      if (from == 'today')
+        open_date = {$gte: moment().startOf('day').toDate()};
+      else if (from == 'yesterday')
+        open_date = {
+          $gte: moment().subtract(1, 'days').startOf('day').toDate(),
+          $lte: moment().subtract(1, 'days').endOf('day').toDate()
+        };
+      else {
+        from = parseInt(from);
+        if (from > 0)
+          open_date = {$gte: moment().subtract(from, 'days').toDate()};
+      }
+    }
     return new Promise(function(resolve, reject){
 
       dbo.db().collection('logs').aggregate([
-      {$match: {domain: domain, event: 'opened'}},
+      {$match: {domain: domain, event: 'opened', date: open_date}},
       {$group: {
         _id: '$msg_id',
         count: {$sum: 1}

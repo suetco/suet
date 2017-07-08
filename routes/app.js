@@ -37,11 +37,12 @@ module.exports = function(app){
   });
 
   app.get('/dashboard', function(req, res) {
-    Accounts.dashboardData(req.session.account.active_domain, function(err, data) {
+    Accounts.dashboardData(req.session.account.active_domain, req.query, function(err, data) {
       res.render('dashboard', render(req, {
         title: 'Dashboard',
         webhook: process.env.WEBHOOK || [process.env.HOST, '/webhook'].join(''),
         page: 'dashboard',
+        query: req.query,
         data: data
       }));
     });

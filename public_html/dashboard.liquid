@@ -75,6 +75,12 @@
           </div>
         </div>
         <div class="box">
+          <select name="top_clicks.days" class="right">
+            <option value="today"{% if query['top_clicks.days'] == 'today' %} selected{%endif%}>Today</option>
+            <option value="yesterday"{% if query['top_clicks.days'] == 'yesterday' %} selected{%endif%}>Yesterday</option>
+            <option value="7"{% if query['top_clicks.days'] == nil or query['top_clicks.days'] == '7' %} selected{%endif%}>Last 7 days</option>
+            <option value="30"{% if query['top_clicks.days'] == '30' %} selected{%endif%}>Last 30 days</option>
+          </select>
           <p><strong>Top Clicks</strong></p>
           <ul class="list break-words">
             {% for url in data.clicks %}
@@ -99,6 +105,12 @@
           </div>
         </div>
         <div class="box">
+          <select name="top_opens.days" class="right">
+            <option value="today"{% if query['top_opens.days'] == 'today' %} selected{%endif%}>Today</option>
+            <option value="yesterday"{% if query['top_opens.days'] == 'yesterday' %} selected{%endif%}>Yesterday</option>
+            <option value="7"{% if query['top_opens.days'] == nil or query['top_opens.days'] == '7' %} selected{%endif%}>Last 7 days</option>
+            <option value="30"{% if query['top_opens.days'] == '30' %} selected{%endif%}>Last 30 days</option>
+          </select>
           <p><strong>Top Opens</strong></p>
           <ul class="list break-words">
             {% for open in data.opens %}
@@ -111,8 +123,15 @@
   </div>
 </section>
 
+<script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/Chart.min.js"></script>
 <script type="text/javascript">
+  let query = {{query}};
+  $('select').on('change', function(){
+    query[$(this).attr("name")] = $(this).val();
+    window.location = '?'+$.param(query);
+  });
+
   //window.onload = function() {
     Chart.defaults.global.defaultFontFamily='"Rubik", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif';
     new Chart(document.getElementById("chart-engagement").getContext("2d"), {
