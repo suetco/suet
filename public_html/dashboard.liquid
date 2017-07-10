@@ -82,7 +82,7 @@
             <option value="30"{% if query['top_clicks.days'] == '30' %} selected{%endif%}>Last 30 days</option>
           </select>
           <p><strong>Top Clicks</strong></p>
-          <ul class="list break-words">
+          <ul class="list break-words u-cf">
             {% for url in data.clicks %}
               <li><a href="{{ url._id }}">{{ url._id }}</a> <span class="fade">({{ url.count }})</span></li>
             {% endfor %}
@@ -112,7 +112,7 @@
             <option value="30"{% if query['top_opens.days'] == '30' %} selected{%endif%}>Last 30 days</option>
           </select>
           <p><strong>Top Opens</strong></p>
-          <ul class="list break-words">
+          <ul class="list break-words u-cf">
             {% for open in data.opens %}
               <li><a href="mails/{{ open._id }}">{{ open.mail.subject }}</a> <span class="fade">({{ open.count }})</span></li>
             {% endfor %}

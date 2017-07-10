@@ -83,6 +83,7 @@ dbo.connect(function(err){
   require('./routes/auth.js')(app);
   require('./routes/domains.js')(app);
   require('./routes/app.js')(app);
+  require('./routes/connections.js')(app);
   require('./routes/static.js')(app);
 
   // No matching route

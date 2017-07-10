@@ -2,6 +2,8 @@ const Logs = require('../models/logs.js')
     , Mails = require('../models/mails.js')
     , Users = require('../models/users.js')
     , Accounts = require('../models/accounts.js')
+    , Domains = require('../models/domains.js')
+
     , render = require('../lib/utils.js').render
     , moment = require('moment')
     ;
@@ -30,8 +32,9 @@ module.exports = function(app){
     let domain = req.params.domain;
     // If domain exist
     if (req.session.account.domains.indexOf(domain) != -1 &&
-      req.session.account.active_domain != domain)
+      req.session.account.active_domain != domain) {
       req.session.account.active_domain = domain;
+    }
 
     res.redirect('back');
   });
@@ -144,12 +147,12 @@ module.exports = function(app){
     })
   });
 
-  app.get('/settings', function(req, res) {
-    res.render('settings', render(req, {
-      title: 'Settings'
+  app.get('/profile', function(req, res) {
+    res.render('profile', render(req, {
+      title: 'Profile'
     }));
   });
-  app.post('/settings', function(req, res) {
+  app.post('/profile', function(req, res) {
     if (req.body.email) {
       Accounts.updateEmail(req.session.account.id, req.body.email, function(err, status) {
         if (err) {
@@ -160,7 +163,7 @@ module.exports = function(app){
           req.session.account.email = status.email;
         }
 
-        return res.redirect('/settings');
+        return res.redirect('/profile');
       });
     }
     else if (req.body.password) {
@@ -171,10 +174,22 @@ module.exports = function(app){
         else
           req.flash('info', 'Password updated');
 
-        return res.redirect('/settings');
+        return res.redirect('/profile');
       });
     }
     else
-        return res.redirect('/settings');
+      return res.redirect('/profile');
+  });
+
+  app.get('/settings', function(req, res) {
+    Domains.getOne(req.session.account.id,
+      req.session.account.active_domain, function(err, domain){
+        res.render('settings', render(req, {
+          title: 'Settings',
+          host: process.env.HOST,
+          domain: domain,
+          client_id: process.env.SLACK_CLIENT_ID
+        }));
+    });
   });
 }

@@ -472,9 +472,12 @@ exports.updateEmail = function(uid, email, fn) {
   if (!/^\S+@\S+$/.test(email))
     return fn('Email invalid. Confirm and try again');
 
-  dbo.db().collection('accounts').findOne({_id: uid}, function(err, doc) {
+  dbo.db().collection('accounts').findOne({email: email}, function(err, doc) {
     if (err)
       return fn('There has been an internal error. Please try again later.');
+
+    if (doc && uid+'' != doc._id+'')
+      return fn('Email is already in use');
 
     dbo.db().collection('accounts').updateOne({_id: uid}, {$set: {email: email}},
       function(err, result) {

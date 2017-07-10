@@ -7,11 +7,13 @@
     <div class="row">
       <div class="six columns">
         <div class="box">
-          <p><strong>Update Email</strong></p>
-          <form method="post">
-            <p><input type="email" name="email" placeholder="Email" value="{{acc_email}}" class="u-full-width"></p>
-            <p><button class="button button-primary u-full-width">Update</button></p>
-          </form>
+          <p><strong>Connect Slack</strong></p>
+          <p>Get bounce and failure deliveries sent to your Slack account</p>
+          {% if domain.slack.team %}
+          <p><a href="disconnect/slack" onclick="return confirm('Disconnect from this Slack team?')" class="button button-secondary">Connected to <strong class="red">{{domain.slack.team}}</strong>. Disconnect</a></p>
+          {% else %}
+          <p><a href="https://slack.com/oauth/authorize?scope=incoming-webhook&client_id={{client_id}}&redirect_uri={{host}}/connect/slack"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a></p>
+          {% endif %}
         </div>
         <!--div class="box">
           <p><strong>Delete Account</strong></p>
@@ -23,16 +25,6 @@
         </div-->
       </div>
       <div class="six columns">
-        <div class="row">
-          <div class="box">
-            <p><strong>Update Password</strong></p>
-            <form method="post">
-              <p><input type="password" name="password" placeholder="Current password" class="u-full-width"></p>
-              <p><input type="password" name="new_password" placeholder="New password" class="u-full-width"></p>
-              <p><button class="button button-primary u-full-width">Update</button></p>
-            </form>
-          </div>
-        </div>
       </div>
     </div>
   </div>

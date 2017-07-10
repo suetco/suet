@@ -40,7 +40,9 @@ a.fade {
 a.fade:hover {
   color: #777;
 }
-.error {
+.error,
+.red
+ {
   color: #EA2028;
 }
 .info {
@@ -84,7 +86,11 @@ header ul a {
   color: #777;
   display: block;
   padding: 6px;
-  margin-left: 15px
+  margin-left: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px
 }
 header ul a:hover {
   color: #444;
@@ -121,10 +127,6 @@ header .subnav li {
 }
 .subnav a {
   padding: 3px 20px 3px 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px
 }
 .separator {
   height: 2px;
