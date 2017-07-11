@@ -3,10 +3,11 @@
 <head>
 
   <meta charset="utf-8">
-  <title>Detailed analytics for your Mailgun transactional emails</title>
+  <title>Detailed analytics and reporting for your Mailgun transactional emails</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Detailed analytics for your Mailgun transactional emails">
+  <meta name="description" content="Detailed analytics and reporting for your Mailgun transactional emails">
+  <meta name="slack-app-id" content="A6566DWTS">
   <link href="//fonts.googleapis.com/css?family=Rubik:400,500" rel="stylesheet" type="text/css">
 
   <link rel="stylesheet" href="css/normalize.css">
@@ -83,9 +84,9 @@
   <div class="container">
     <div class="row">
       <div class="one-half column">
-        <h5><a href="/"><i class="icon-bar-graph-2"></i> <span>suet</span></a></h5>
+        <h5><a href="/"><i class="icon-bar-graph-2"></i> <span>suet</span></a><span class="headway" style="position:absolute"></span></h5>
         <div class="hero">
-          <h5 class="title">Detailed analytics for your Mailgun transactional emails</h5>
+          <h5 class="title">Detailed analytics and reporting for your Mailgun transactional emails</h5>
           <p><a href="/signup" class="button button-primary">Signup</a>  <a href="/login" class="button"><i class="icon-skip-forward"></i> Login</a> <a href="http://github.com/kehers/suet" class="button"><i class="icon-arrow-down"></i> Download</a> </p>
         </div>
       </div>
@@ -100,12 +101,26 @@
         <p>Numbers, interactions across days, top items? Get a general overview of your mails' performance.</p>
       </div>
       <div class="three columns">
-        <p><strong>Live feed</strong></p>
-        <p>Get events from your mails as they happen. You can further filter based on the different event types.</p>
+        <p><strong>Get notifications on Slack</strong></p>
+        <p>Connect Slack and get failure, bounce and complaint notifications.</p>
       </div>
       <div class="three columns">
         <p><strong>Deliveries, opens and clicks</strong></p>
-        <p>Track deliveries, opens, clicks and uniques across mails and recipients</p>
+        <p>Track deliveries, opens, clicks and uniques across mails and recipients.</p>
+      </div>
+      <div class="three columns">
+        <p><strong>Live feed</strong></p>
+        <p>Get events from your mails as they happen. You can further filter based on the different event types.</p>
+      </div>
+    </div>
+    <p>&nbsp;</p>
+    <div class="row">
+      <div class="three columns">
+        <p></p>
+      </div>
+      <div class="three columns">
+        <p><strong>View emails</strong></p>
+        <p>See exactly what is sent to users. What does the delivered mail look like? What details were missing?</p>
       </div>
       <div class="three columns">
         <p><strong>Recipients and activity</strong></p>
@@ -145,7 +160,7 @@
       <div class="three columns">
         <div>
           <p><strong>More?</strong></p>
-          <p><a href="mailto:hello@suet.co">Get in touch</a></p>
+          <p><a href="http:://github.com/kehers/suet">Download</a> and self-host<br>or <a href="mailto:hello@suet.co">get in touch</a></p>
         </div>
       </div>
     </div>
@@ -157,7 +172,7 @@
     <div class="row">
       <div class="three columns">
         <p><strong>Why build this?</strong></p>
-        <p>I wanted a more detailed analytics for transactional mails sent for <a href="http://thefeed.press">thefeed.press</a> and <a href="http://obem.be/opeyemi">other projects</a>.</p>
+        <p>I wanted a more detailed analytics and reporting for transactional mails sent for <a href="http://thefeed.press">thefeed.press</a> and <a href="http://obem.be/opeyemi">other projects</a>.</p>
       </div>
       <div class="three columns">
         <p><strong>Why does it cost money?</strong></p>
@@ -188,21 +203,5 @@
     </div>
   </div>
 </section>
-<footer>
-    <div class="container">
-      <div class="row">
-        <p class="right">&copy; 2017, Suet</p>
-        <ul>
-          <li><a href="http://twitter.com/suet_co">@suet_co</a></li>
-          <!--li><a href="">Legal</a></li-->
-          <li><a href="mailto:hello@suet.co">Contact</a></li>
-          <li><a href="http://github.com/kehers/suet">Download</a></li>
-          <li><a href="http://updates.suet.co/">Changelog</a></li>
-          <li><a href="http://github.com/kehers/suet/issues">Issues</a></li>
-        </ul>
-      </div>
-    </div>
-</footer>
 
-</body>
-</html>
+{% include 'partials/footer' %}

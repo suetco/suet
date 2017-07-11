@@ -8,6 +8,7 @@ const dbClient = require('mongodb').MongoClient
   ;
 
 let dbUrl = process.env.DB_URL || '';
+let hook = process.env.HOOK || 'https://suet.co';
 
 // Actions:
 // Check if domain exist
@@ -15,13 +16,39 @@ let dbUrl = process.env.DB_URL || '';
 // Check against replay (check signature table and store signature if new)
 // Get email details
 // Get mail
+function sendToSlack(msg_id, webhook, recipient, type, color, subject, msg) {
+  if (!webhook) return;
+  let attachment = {
+    attachments: [{
+      fallback: msg,
+      color: color,
+      author_name: recipient,
+      author_link: "mailto:"+recipient,
+      fields: [{
+        title: type,
+        value: msg,
+        short: false
+      }]
+    }]
+  };
+  if (subject) {
+    attachment.attachments[0].title = subject;
+    attachment.attachments[0].title_link = [hook, '/mails/', msg_id].join('');
+  }
+  request.post({
+      url: webhook,
+      json: true,
+      body: attachment
+    });
+}
 
 exports.handler = function(req, res) {
 
   // Add multipart/form-data support
   parser(req, res, function(){
 
-    let event_data = req.body;
+    let event_data = req.body,
+        slack_webhook = null;
 
     if (!event_data.event)
       return res.send({error: "No event data"});
@@ -66,6 +93,10 @@ exports.handler = function(req, res) {
           if (hash != event_data.signature)
             return res.send({error: "Incorrect signature"});
 
+          // Is Slack connected? Get hook
+          if (doc.slack && doc.slack.webhook)
+            slack_webhook = doc.slack.webhook;
+
           return resolve(doc.key);
         });
       })
@@ -75,7 +106,7 @@ exports.handler = function(req, res) {
           db.collection('signatures').findOne({signature: event_data.signature}, function(err, doc){
             // There is an error or it's a replay
             if (err || doc)
-              return reject();
+              return reject('Signature replay');
 
             // Save this signature
             db.collection('signatures').insert({signature: event_data.signature});
@@ -147,7 +178,7 @@ exports.handler = function(req, res) {
                     date: new Date(body.Date)
                   });
 
-                  return resolve();
+                  return resolve(body.subject);
                 }
                 else
                   return resolve();
@@ -158,7 +189,7 @@ exports.handler = function(req, res) {
         });
       })
       // Track event
-      .then(function(){
+      .then(function(subject){
         return new Promise(function(resolve, reject){
           let event = event_data.event.toLowerCase()
               , email = event_data.recipient.toLowerCase()
@@ -185,10 +216,19 @@ exports.handler = function(req, res) {
             data.url = event_data.url;
           }
           else if (event == 'complained') {
-            // todo: Notify user of complaint
+            sendToSlack(messageId, slack_webhook, email,
+              'Complained', 'yellow', subject, 'The subscriber complained about your email');
           }
           else if (event == 'dropped') {
             // Notify of drops
+            if (event_data.description) {
+              let msg = event_data.description;
+              if (event_data.reason)
+                msg += ' #'+event_data.reason;
+
+              sendToSlack(messageId, slack_webhook, email,
+                'Dropped', 'danger', subject, msg);
+            }
             if (event_data.reason)
               data.reason = event_data.reason;
             if (event_data.code)
@@ -198,6 +238,11 @@ exports.handler = function(req, res) {
           }
           else if (event == 'bounced') {
             // Notify of bounce
+            if (event_data.error) {
+              sendToSlack(messageId, slack_webhook, email,
+                'Bounced', 'yellow', subject, event_data.error);
+            }
+
             if (event_data.error)
               data.error = event_data.error;
             if (event_data.code)

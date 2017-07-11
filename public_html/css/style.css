@@ -16,6 +16,9 @@ a {
   color: #0f5199;
   text-decoration: none
 }
+ul {
+  list-style-position: outside;
+}
 .break-words {
   word-break: break-all;
 }
@@ -245,7 +248,7 @@ tags > div {
 }
 
 footer {
-  padding-top: 30px;
+  padding: 40px 0 20px;
   border-top: 1px solid #eee;
 }
 footer ul {

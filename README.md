@@ -1,11 +1,12 @@
 ## Suet [![Build Status](https://travis-ci.org/kehers/suet.svg?branch=master)](https://travis-ci.org/kehers/suet)
 
-Suet is an analytics dashboard for Mailgun. It gives better insight into the performance of your transactional emails by providing answers to questions like: 
+Suet is an analytics dashboard and reporting tool for transactional emails through Mailgun. It gives better insight into the performance of your transactional emails by providing answers to questions like: 
 
 - Who received what email? Which ones were opened? What links were clicked? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/feed.png))
 - What’s user engagement like? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/users.png))
 - What device/platform are most used? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/dashboard.png))
 - Which email performed best? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/email.png))
+- Which email bounced or was complained about?
 
 ![Dashboard](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/dashboard.png)
 
