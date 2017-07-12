@@ -14,6 +14,12 @@ module.exports = function(app){
     }));
   });
 
+  app.get('/support', function(req, res) {
+    res.render('support', render(req, {
+      title: 'Support'
+    }));
+  });
+
   // Webhook (if you cant use Google cloud functions)
   // Use cloud functions if you can though
   app.all('/webhook', function(req, res) {
