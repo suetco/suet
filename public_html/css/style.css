@@ -242,6 +242,7 @@ tags > div {
   position: fixed;
   right: 0;
   top: 0;
+  z-index: 1;
   width: 60%;
   height: 100%;
   box-shadow: -2px 0px 5px 0px rgba(150,150,150,0.75);

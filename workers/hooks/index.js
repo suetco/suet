@@ -217,7 +217,7 @@ exports.handler = function(req, res) {
           }
           else if (event == 'complained') {
             sendToSlack(messageId, slack_webhook, email,
-              'Complained', 'yellow', subject, 'The subscriber complained about your email');
+              'Complained', 'warning', subject, 'The subscriber complained about your email');
           }
           else if (event == 'dropped') {
             // Notify of drops
@@ -240,7 +240,7 @@ exports.handler = function(req, res) {
             // Notify of bounce
             if (event_data.error) {
               sendToSlack(messageId, slack_webhook, email,
-                'Bounced', 'yellow', subject, event_data.error);
+                'Bounced', 'warning', subject, event_data.error);
             }
 
             if (event_data.error)
