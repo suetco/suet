@@ -19,6 +19,12 @@
     <div class="row">
       <div class="twelve columns">
         <div class="box">
+          <select name="engagement.days" class="right">
+            <option value="today"{% if query['engagement.days'] == 'today' %} selected{%endif%}>Today</option>
+            <option value="yesterday"{% if query['engagement.days'] == 'yesterday' %} selected{%endif%}>Yesterday</option>
+            <option value="7"{% if query['engagement.days'] == nil or query['engagement.days'] == '7' %} selected{%endif%}>Last 7 days</option>
+            <option value="30"{% if query['engagement.days'] == '30' %} selected{%endif%}>Last 30 days</option>
+          </select>
           <p><strong>Engagement</strong></p>
           <p>&nbsp;</p>
           <canvas id="chart-engagement"></canvas>

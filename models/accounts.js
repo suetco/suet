@@ -20,8 +20,24 @@ exports.dashboardData = function(domain, query, fn) {
       ;
   let p = new Promise(function(resolve, reject){
     // Main data
+    let eng_date = date;
+    if (query['engagement.days']) {
+      let from = query['engagement.days'].toLowerCase();
+      if (from == 'today')
+        eng_date = {$gte: moment().startOf('day').toDate()};
+      else if (from == 'yesterday')
+        eng_date = {
+          $gte: moment().subtract(1, 'days').startOf('day').toDate(),
+          $lte: moment().subtract(1, 'days').endOf('day').toDate()
+        };
+      else {
+        from = parseInt(from);
+        if (from > 0)
+          eng_date = {$gte: moment().subtract(from, 'days').toDate()};
+      }
+    }
     dbo.db().collection('logs').aggregate([
-      {$match: {domain: domain, date: date}},
+      {$match: {domain: domain, date: eng_date}},
       {$group: {
         _id: {
           date: {$dateToString: {format: "%Y-%m-%d", date: "$date"}},
