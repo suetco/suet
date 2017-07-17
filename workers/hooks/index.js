@@ -170,12 +170,13 @@ exports.handler = function(req, res) {
 
                 if (body.subject && body['stripped-html']) {
                   // Save
+                  let date = body.Date ? new Date(body.Date) : new Date();
                   db.collection('mails').insert({
                     msg_id: messageId,
                     domain: domain,
                     subject: body.subject,
                     body: body['stripped-html'],
-                    date: new Date(body.Date)
+                    date: date
                   });
 
                   return resolve(body.subject);

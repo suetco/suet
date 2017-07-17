@@ -297,6 +297,29 @@ input[type="button"].button-primary:focus {
   color: #f2eefc;
   background-color: #6d43db;
   border-color: #6d43db; }
+.button.button-delete,
+button.button-delete,
+input[type="submit"].button-delete,
+input[type="reset"].button-delete,
+input[type="button"].button-delete {
+  font-weight: 500;
+  color: #f2eefc;
+  background-color: #c93a27;
+  border-color: #ad3221; }
+.button.button-delete:hover,
+button.button-delete:hover,
+input[type="submit"].button-delete:hover,
+input[type="reset"].button-delete:hover,
+input[type="button"].button-delete:hover,
+.button.button-delete:focus,
+button.button-delete:focus,
+input[type="submit"].button-delete:focus,
+input[type="reset"].button-delete:focus,
+input[type="button"].button-delete:focus {
+  text-decoration: none;
+  color: #f2eefc;
+  background-color: #ad3221;
+  border-color: #ad3221; }
 
 /*
   Form field override
