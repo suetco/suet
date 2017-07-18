@@ -12,7 +12,7 @@ exports.feed = function(domain, options, fn) {
   let sort = 'date'
       , order = -1
       , allowedSort = ['date', 'email', 'event']
-      , allowedEvents = ['delivered', 'opened', 'bounced', 'clicked']
+      , allowedEvents = ['delivered', 'opened', 'bounced', 'dropped', 'clicked']
       ;
 
   let qs = {}
@@ -42,16 +42,16 @@ exports.feed = function(domain, options, fn) {
 
   let q = [
     {$match: qm},
-    {$sort: qs},
-    {$skip: parseInt(skip)},
-    {$limit: limit},
     {$lookup: {
       from: 'mails',
       localField: 'msg_id',
       foreignField: 'msg_id',
       as: 'mail'
     }},
-    {$unwind: '$mail'}
+    {$unwind: '$mail'},
+    {$sort: qs},
+    {$skip: parseInt(skip)},
+    {$limit: limit}
   ];
 
   let p = new Promise(function(resolve, reject){

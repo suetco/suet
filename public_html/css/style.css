@@ -218,6 +218,13 @@ header .subnav li {
 .tag.yellow {
   background-color:#ffefb9
 }
+.tag.pink {
+  background-color:#f4cdc8
+}
+.tag.red {
+  background-color:#c93a27;
+  color: #fdf3f2;
+}
 
 .bar {
   margin: 10px 0

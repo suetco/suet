@@ -36,9 +36,9 @@
                   <span class="tag green">{{ log.event }}</span>
                 {% elsif log.event == 'opened' %}
                   <span class="tag yellow">{{ log.event }}</span>
-                {% elsif log.event == 'dropped' %}
-                  <span class="tag red">{{ event.event }}</span>
                 {% elsif log.event == 'bounced' %}
+                  <span class="tag pink">{{ log.event }}</span>
+                {% elsif log.event == 'dropped' %}
                   <span class="tag red">{{ log.event }}</span>
                 {% else %}
                   <span class="tag">{{ log.event }}</span>
@@ -49,10 +49,13 @@
               </div>
               <div class="six columns">
                 {% if log.event == 'clicked' %}
-                  <p><a href="{{ log.url }}" class="break-words">{{ log.url }}</a></p>
-                {% endif %}
-                {% if log.event == 'opened' %}
-                  <p class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</p>
+                  <a href="{{ log.url }}" class="break-words">{{ log.url }}</a>
+                {% elsif log.event == 'opened' %}
+                  <span class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</span>
+                {% elsif log.event == 'bounced' %}
+                  {{ log.error }}
+                {% elsif log.event == 'dropped' %}
+                  {{ log.description }}
                 {% endif %}
               </div>
             </div>

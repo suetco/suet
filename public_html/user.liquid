@@ -39,9 +39,9 @@
                 {% elsif log.event == 'opened' %}
                   <span class="tag yellow">{{ log.event }}</span>
                 {% elsif log.event == 'dropped' %}
-                  <span class="tag red">{{ event.event }}</span>
-                {% elsif log.event == 'bounced' %}
                   <span class="tag red">{{ log.event }}</span>
+                {% elsif log.event == 'bounced' %}
+                  <span class="tag pink">{{ log.event }}</span>
                 {% else %}
                   <span class="tag">{{ log.event }}</span>
                 {% endif %}<br>
@@ -51,6 +51,12 @@
                 {% elsif log.event == 'opened' %}
                   <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
                   <small class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</small>
+                {% elsif log.event == 'dropped' %}
+                  <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
+                  <small class="fade">{{ log.description }}</small>
+                {% elsif log.event == 'bounced' %}
+                  <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
+                  <small class="fade">{{ log.error }}</small>
                 {% else %}
                   <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a>
                 {% endif %}
