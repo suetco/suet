@@ -37,25 +37,25 @@
           <div class="three columns">
             <div class="box">
               <p><strong>Delivered</strong></p>
-              <h5>{{ data.engagement.data.delivered | sum }}</h5>
+              <h5><a href="feed?filter[]=delivered">{{ data.engagement.data.delivered | sum }}</a></h5>
             </div>
           </div>
           <div class="three columns">
             <div class="box">
               <p><strong>Opened</strong></p>
-              <h5>{{ data.engagement.data.opened | sum }}</h5>
+              <h5><a href="feed?filter[]=opened">{{ data.engagement.data.opened | sum }}</a></h5>
             </div>
           </div>
           <div class="three columns">
             <div class="box">
               <p><strong>Clicked</strong></p>
-              <h5>{{ data.engagement.data.clicked | sum }}</h5>
+              <h5><a href="feed?filter[]=clicked">{{ data.engagement.data.clicked | sum }}</a></h5>
             </div>
           </div>
           <div class="three columns">
             <div class="box">
               <p><strong>Dropped</strong></p>
-              <h5>{{ data.engagement.data.dropped | sum }}</h5>
+              <h5><a href="feed?filter[]=dropped">{{ data.engagement.data.dropped | sum }}</a></h5>
             </div>
           </div>
         </div>
@@ -64,19 +64,19 @@
           <div class="four columns">
             <div class="box">
               <p><strong>Mails</strong></p>
-              <h4>{{ data.mails }}</h4>
+              <h4><a href="mails">{{ data.mails }}</a></h4>
             </div>
           </div>
           <div class="four columns">
             <div class="box">
               <p><strong>Users</strong></p>
-              <h4>{{ data.users }}</h4>
+              <h4><a href="users">{{ data.users }}</a></h4>
             </div>
           </div>
           <div class="four columns">
             <div class="box">
               <p><strong>Feed</strong></p>
-              <h4>{{ data.feed }}</h4>
+              <h4><a href="feed">{{ data.feed }}</a></h4>
             </div>
           </div>
         </div>
