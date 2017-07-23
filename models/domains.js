@@ -2,6 +2,7 @@ var dbo = require('../lib/db.js')
     , request = require('request')
     ;
 
+// Get list of domains connected to account
 exports.get = function(accId, fn) {
   if (!accId)
     return fn('Invalid account');
@@ -16,6 +17,7 @@ exports.get = function(accId, fn) {
   });
 }
 
+// Get a domain
 exports.getOne = function(accId, domain, fn) {
   if (!accId)
     return fn('Invalid account');
@@ -33,6 +35,7 @@ exports.getOne = function(accId, domain, fn) {
   });
 }
 
+// Get domains from Mailgun
 exports.getDomains = function(accId, key, fn) {
 
   if (!accId)
@@ -85,6 +88,7 @@ exports.getDomains = function(accId, key, fn) {
   });
 }
 
+// Connect Slack to the domain
 exports.saveSlackAcc = function(domain, params, fn) {
 
   if (!domain)
@@ -111,6 +115,7 @@ exports.saveSlackAcc = function(domain, params, fn) {
   });
 }
 
+// Disconnect Slack from the domain
 exports.removeSlack = function(domain, fn) {
 
   if (!domain)
@@ -123,6 +128,61 @@ exports.removeSlack = function(domain, fn) {
       return fn('Internal Error');
     }
 
-    fn(null);
+    fn();
+  });
+}
+
+// Remove a user account from profile
+exports.removeProfile = function(id, accId, fn) {
+
+  if (!id) {
+    if (fn)
+      return fn('No domain id provided');
+
+    return;
+  }
+
+  dbo.db().collection('domains').updateOne({
+    _id: dbo.id(id)
+  }, {$unset: {acc: dbo.id(accId)}}, function(err) {
+    if (!fn)
+      return;
+
+    if (err) {
+      return fn('Internal Error');
+    }
+
+    fn();
+  });
+}
+
+// Delete the domain
+exports.delete = function(id, fn) {
+
+  if (!id)
+    return fn('No domain id provided');
+
+  id = dbo.id(id);
+
+  // Get domain
+  dbo.db().collection('domains').findOne({
+    _id: id
+  }, function(err, doc) {
+    if (err)
+      return fn('Internal Error');
+
+    if (!doc)
+      return fn('Domain not found');
+
+    // Delete all
+    dbo.db().collection('logs').remove({domain: doc.domain});
+    dbo.db().collection('mails').remove({domain: doc.domain});
+    dbo.db().collection('users').remove({domain: doc.domain});
+    dbo.db().collection('domains').remove({_id: id}, function(err){
+      if (err)
+        return fn('Internal Error');
+
+      return fn();
+    });
   });
 }

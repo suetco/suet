@@ -177,6 +177,16 @@ module.exports = function(app){
         return res.redirect('/profile');
       });
     }
+    else if (req.body.delete) {
+      Accounts.deleteProfile(req.session.account.id, function(err, status) {
+        if (err) {
+          req.flash('error', err);
+          return res.redirect('/profile');
+        }
+
+        return res.redirect('/logout');
+      });
+    }
     else
       return res.redirect('/profile');
   });

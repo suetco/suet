@@ -551,3 +551,40 @@ exports.updatePassword = function(uid, oldPassword, password, fn) {
     });
   });
 }
+
+exports.deleteProfile = function(uid, fn) {
+
+  if (!uid)
+    return fn('User ID missing');
+
+  // Get domains for user
+  Domains.get(uid, function(err, domains){
+    if (err)
+      return fn(err);
+
+    let dp = domains.map(function(domain){
+      return new Promise(function(resolve, reject){
+        if (domain.accs.length === 1)
+          Domains.delete(domain._id, function(err){
+            if (err)
+              return reject();
+            return resolve();
+          });
+        else
+          Domains.removeProfile(domain._id, uid, function(err){
+            if (err)
+              return reject();
+            return resolve();
+          });
+      });
+    });
+
+    Promise.all(dp).then(function(){
+      dbo.db().collection('accounts').remove({_id: dbo.id(uid)}, function(err){
+        fn(err);
+      });
+    }).catch(function(reason) {
+      fn(reason);
+    });
+  });
+}

@@ -13,6 +13,15 @@
             <p><button class="button button-primary u-full-width">Update</button></p>
           </form>
         </div>
+        <div class="box">
+          <p><strong>Delete Account</strong></p>
+          <p>This is not a recoverable action. All data related to the profile&mdash;domains, data and profile will be deleted. Be sure you really want to do this before you continue.</p>
+          <form method="post">
+            <input type="hidden" name="delete" value="{{acc_id}}">
+            <button class="button button-delete u-full-width" style="display:none" id="del-btn" type="submit">Confirm Delete</button>
+            <button class="button u-full-width" type="button" onclick="this.style.display='none';document.getElementById('del-btn').style.display='block'">Delete</button>
+          </form>
+        </div>
       </div>
       <div class="six columns">
         <div class="row">

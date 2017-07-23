@@ -164,3 +164,31 @@ describe('Password Update', function() {
   });
 });
 
+describe('Delete account', function() {
+  it('must be passed user id parameter', function(done) {
+    Accounts.deleteProfile(undefined, function(err, status){
+      expect(err).to.be.a('string');
+      expect(status).to.be.undefined;
+      done();
+    });
+  });
+  // #todo, test for domains, logs, mails and users
+  it('must delete everything related to account', function(done) {
+    if (!store.uid)
+      return done('Didnt get user id');
+    Accounts.deleteProfile(store.uid, function(err){
+      expect(err).to.be.null;
+      done();
+    });
+  });
+  it('must not be able to login', function(done) {
+    if (!store.uid)
+      return done('Didnt get user id');
+    Accounts.login({email: store.new_email, password: '654321'}, function(err, doc){
+      expect(err).to.be.a('string');
+      expect(doc).to.be.undefined;
+      done();
+    });
+  });
+});
+

@@ -310,7 +310,7 @@ input[type="submit"].button-delete,
 input[type="reset"].button-delete,
 input[type="button"].button-delete {
   font-weight: 500;
-  color: #f2eefc;
+  color: #fff;
   background-color: #c93a27;
   border-color: #ad3221; }
 .button.button-delete:hover,
@@ -324,7 +324,7 @@ input[type="submit"].button-delete:focus,
 input[type="reset"].button-delete:focus,
 input[type="button"].button-delete:focus {
   text-decoration: none;
-  color: #f2eefc;
+  color: #fff;
   background-color: #ad3221;
   border-color: #ad3221; }
 
