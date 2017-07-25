@@ -3,3 +3,4 @@ demo.js
 node_modules/
 workers/hooks/node_modules
 haproxy.cfg
+.env

@@ -13,7 +13,9 @@ It is assumed you have MongoDB installed already. If not, [install MongoDB](http
 - Run `git clone https://github.com/kehers/suet` in the directory or just download and unzip right in
 - Run `npm install`
 
-Next, you will need to create the environmental variables. The email variables (prefixed with `EMAIL_`) are used to send password recovery emails. Suet uses [Mailgun’s API](https://documentation.mailgun.com/en/latest/quickstart-sending.html#how-to-start-sending-email) to send emails instead of normal SMTP. The Slack variables (prefixed with `SLACK_`) are used to sign in Slack accounts that should be connected to the Mailgun domains for notifications. (See [Connecting Slack](#connecting-slack))
+Next, you will need to update the environment variables. There is a `.env.example` file that contains the needed variables. Open the file, edit the variables and rename the file to `.env`. 
+
+The email variables (prefixed with `EMAIL_`) are used to send password recovery emails. (Suet uses [Mailgun’s API](https://documentation.mailgun.com/en/latest/quickstart-sending.html#how-to-start-sending-email) to send emails instead of normal SMTP). The Slack variables (prefixed with `SLACK_`) are used to sign in Slack accounts that should be connected to the Mailgun domains for notifications. (See [Connecting Slack](#connecting-slack))
 
 The environment variables are:
 
@@ -26,11 +28,7 @@ The environment variables are:
 - `SLACK_CLIENT_ID` (Your Slack app’s client ID. See [Connecting Slack](#connecting-slack))
 - `SLACK_CLIENT_SECRET` (Your Slack app’s client secret. See [Connecting Slack](#connecting-slack))
 
-Now you can start the app with the environmental variables. A straight forward way to do this is to simply run it in command line like this:
-
-`HOST="http://suet.some.paas" DB_URL="mongodb://localhost/suet" EMAIL_FROM="Suet <no-reply@mg-domain.co>" EMAIL_KEY="key-123" EMAIL_DOMAIN="mg-domain.co" SLACK_CLIENT_ID="123" SLACK_CLIENT_SECRET="abc" node app.js`
-
-*(Todo: Use file based config. This is becoming a mess :/)*
+Once set (and file renamed to `.env`), you can start Suet with `node app.js` or in your favourite way.
 
 ### Webhook Setup
 

@@ -1,4 +1,5 @@
-var express = require('express')
+require('dotenv').config();
+const express = require('express')
     , Liquid = require('shopify-liquid')
     , engine = Liquid()
     , moment = require('moment')
@@ -54,11 +55,11 @@ dbo.connect(function(err){
   });
 
   // Config
-  var app = express();
+  const app = express();
   app.listen(process.env.PORT || 3000);
 
   // Middlewares
-  var sess = {
+  const sess = {
     secret: 's1asfas53qedw',
     maxAge: 3600000 * 24 * 365,
     store: new sessionStore({

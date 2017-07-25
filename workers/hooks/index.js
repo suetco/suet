@@ -8,7 +8,7 @@ const dbClient = require('mongodb').MongoClient
   ;
 
 let dbUrl = process.env.DB_URL || '';
-let hook = process.env.HOOK || 'https://suet.co';
+let host = process.env.HOST || 'https://suet.co';
 
 // Actions:
 // Check if domain exist
@@ -33,7 +33,7 @@ function sendToSlack(msg_id, webhook, recipient, type, color, subject, msg) {
   };
   if (subject) {
     attachment.attachments[0].title = subject;
-    attachment.attachments[0].title_link = [hook, '/mails/', msg_id].join('');
+    attachment.attachments[0].title_link = [host, '/mails/', msg_id].join('');
   }
   request.post({
       url: webhook,

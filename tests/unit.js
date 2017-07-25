@@ -1,4 +1,4 @@
-
+require('dotenv').config();
 const expect = require('chai').expect
       , dbo = require('../lib/db.js')
       , store = require('./store')
