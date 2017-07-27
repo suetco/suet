@@ -56,6 +56,12 @@
   .price .three:last-child {
     border-right: 0;
   }
+  .faq {
+    background-color:#fff;
+  }
+  .faq .row {
+    margin-bottom: 10px
+  }
   footer {
     padding: 30px 0;
   }
@@ -186,7 +192,7 @@
     </div>
   </div>
 </section>
-<section style="background-color:#fff">
+<section class="faq">
   <div class="container">
     <h5 class="title">FAQ</h5>
     <div class="row">
@@ -209,9 +215,15 @@
     </div>
     <div class="row">
       <div class="six columns">
+        <p><strong>Does Suet handle bulk emails sent via Mailgun too?</strong></p>
+        <p>If you are using Mailgun to send bulk emails/campaigns like newsletters, you need to let Suet know to group the analytics. To do this, send the email through <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#batch-sending">Mailgun's batch sending API</a> (instead of SMTP). Batch sending is limited to 1000 emails per send though. Support for <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#tagging">tagging</a>, which is a better approach, coming soon.</p>
+      </div>
+      <div class="six columns">
         <p><strong>What if I exceed my allocated events for the month?</strong></p>
         <p>You will be notified but Suet will continue to receive your events (you won't be charged for the extra events). You can upgrade immediately or at the next billing cycle. If at the next cycle you do not upgrade and you exceed your limits again, you will need to upgrade to continue receiving the extra events.</p>
       </div>
+    </div>
+    <div class="row">
       <div class="three columns">
         <p><strong>Who are you?</strong></p>
         <p>My name is <a href="http://obem.be/opeyemi">Opeyemi Obembe</a>. I build things for web and mobile.</p>
