@@ -31,31 +31,51 @@
         </div>
       </div>
     </div>
+    {% assign delivered = data.engagement.data.delivered | sum %}
     <div class="row">
       <div class="six columns">
         <div class="row center">
-          <div class="three columns">
+          <div class="four columns">
             <div class="box">
               <p><strong>Delivered</strong></p>
-              <h5><a href="feed?filter[]=delivered">{{ data.engagement.data.delivered | sum }}</a></h5>
+              <h5><a href="feed?filter[]=delivered">{{ delivered | format }}</a></h5>
+              <strong><a href="feed?filter[]=dropped">{{ data.engagement.data.dropped | sum | format }}</a></strong><br>dropped
             </div>
           </div>
-          <div class="three columns">
+          <div class="four columns">
             <div class="box">
               <p><strong>Opened</strong></p>
-              <h5><a href="feed?filter[]=opened">{{ data.engagement.data.opened | sum }}</a></h5>
+              <h5><a href="feed?filter[]=opened">{{ data.engagement.data.opened | sum | format }}</a></h5>
+              <strong>{{ data.unique_opens | format }}</strong><br>unique
             </div>
           </div>
-          <div class="three columns">
+          <div class="four columns">
             <div class="box">
               <p><strong>Clicked</strong></p>
-              <h5><a href="feed?filter[]=clicked">{{ data.engagement.data.clicked | sum }}</a></h5>
+              <h5><a href="feed?filter[]=clicked">{{ data.engagement.data.clicked | sum | format }}</a></h5>
+              <strong>{{ data.unique_clicks | format }}</strong><br>unique
             </div>
           </div>
-          <div class="three columns">
+        </div>
+        {% assign or = data.unique_opens | times: 100 | divided_by: delivered %}
+        {% assign ctr = data.unique_clicks | times: 100 | divided_by: delivered %}
+        <div class="row center">
+          <div class="four columns">
             <div class="box">
-              <p><strong>Dropped</strong></p>
-              <h5><a href="feed?filter[]=dropped">{{ data.engagement.data.dropped | sum }}</a></h5>
+              <p><strong>Open Rate</strong></p>
+              <h5>{{ or }}%</h5>
+            </div>
+          </div>
+          <div class="four columns">
+            <div class="box">
+              <p><strong>CTR</strong></p>
+              <h5>{{ ctr }}%</h5>
+            </div>
+          </div>
+          <div class="four columns">
+            <div class="box">
+              <p><strong>CTO</strong></p>
+              <h5>{{ ctr | times: 100 | divided_by: or }}%</h5>
             </div>
           </div>
         </div>
@@ -64,19 +84,19 @@
           <div class="four columns">
             <div class="box">
               <p><strong>Mails</strong></p>
-              <h4><a href="mails">{{ data.mails }}</a></h4>
+              <h4><a href="mails">{{ data.mails | format }}</a></h4>
             </div>
           </div>
           <div class="four columns">
             <div class="box">
               <p><strong>Users</strong></p>
-              <h4><a href="users">{{ data.users }}</a></h4>
+              <h4><a href="users">{{ data.users | format }}</a></h4>
             </div>
           </div>
           <div class="four columns">
             <div class="box">
               <p><strong>Feed</strong></p>
-              <h4><a href="feed">{{ data.feed }}</a></h4>
+              <h4><a href="feed">{{ data.feed | format }}</a></h4>
             </div>
           </div>
         </div>

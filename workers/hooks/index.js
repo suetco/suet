@@ -78,6 +78,7 @@ exports.handler = function(req, res) {
       }
 
       messageId = messageId.replace(/[\>\<]/g, '');
+      // todo: X-Mailgun-Tag header (multiple) for tagging support
 
       // Who owns domain?
       let p = new Promise(function(resolve, reject){
@@ -118,6 +119,10 @@ exports.handler = function(req, res) {
       // todo: Allow turning this off
       .then(function(apiKey){
         return new Promise(function(resolve, reject){
+          /*
+          todo:
+          If tagged, get message Id and set as messageId
+          */
           // 1. Has the mail been pulled?
           db.collection('mails').findOne({
             msg_id: messageId

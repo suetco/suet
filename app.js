@@ -48,10 +48,15 @@ dbo.connect(function(err){
   });
   engine.registerFilter('sum', function(v){
     if (!v)
-      return;
+      return 0;
     return v.reduce(function(a, b) {
       return a + b;
     }, 0);
+  });
+  engine.registerFilter('format', function(v){
+    if (!v)
+      return 0;
+    return v.toLocaleString();
   });
 
   // Config

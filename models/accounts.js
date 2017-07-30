@@ -6,36 +6,60 @@ const dbo = require('../lib/db.js')
     , Domains = require('./domains.js')
     ;
 
+
+function unique(event, domain, date, fn) {
+  dbo.db().collection('logs').aggregate([
+    {$match: {domain: domain, event: event, date: date}},
+    {$group: {
+      _id: {
+        msg_id: "$msg_id",
+        email: "$email"
+      }
+    }},
+    {$group: {
+      _id: null,
+      count: {$sum: 1}
+    }}
+  ], function(err, d){
+    if (err || !d[0])
+      return fn(err);
+
+    return fn(err, d[0].count);
+  });
+}
+
 exports.dashboardData = function(domain, query, fn) {
   let data = {
         clicks: [],
         opens: [],
         platform: [],
         os: [],
+        unique_opens: 0,
+        unique_clicks: 0,
         mails: 0,
         feed: 0,
         users: 0
       }
       , date = {$gte: moment().subtract(7, 'days').toDate()} // last 7 days
       ;
+  let eng_date = date;
+  if (query['engagement.days']) {
+    let from = query['engagement.days'].toLowerCase();
+    if (from == 'today')
+      eng_date = {$gte: moment().startOf('day').toDate()};
+    else if (from == 'yesterday')
+      eng_date = {
+        $gte: moment().subtract(1, 'days').startOf('day').toDate(),
+        $lte: moment().subtract(1, 'days').endOf('day').toDate()
+      };
+    else {
+      from = parseInt(from);
+      if (from > 0)
+        eng_date = {$gte: moment().subtract(from, 'days').toDate()};
+    }
+  }
   let p = new Promise(function(resolve, reject){
     // Main data
-    let eng_date = date;
-    if (query['engagement.days']) {
-      let from = query['engagement.days'].toLowerCase();
-      if (from == 'today')
-        eng_date = {$gte: moment().startOf('day').toDate()};
-      else if (from == 'yesterday')
-        eng_date = {
-          $gte: moment().subtract(1, 'days').startOf('day').toDate(),
-          $lte: moment().subtract(1, 'days').endOf('day').toDate()
-        };
-      else {
-        from = parseInt(from);
-        if (from > 0)
-          eng_date = {$gte: moment().subtract(from, 'days').toDate()};
-      }
-    }
     dbo.db().collection('logs').aggregate([
       {$match: {domain: domain, date: eng_date}},
       {$group: {
@@ -261,10 +285,35 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
+  .then(function(){
+    // Unique opens
+    return new Promise(function(resolve, reject){
+      unique('opened', domain, eng_date, function(err, c){
+
+        if (c)
+          data.unique_opens = c;
+
+        resolve();
+      });
+    });
+  })
+  .then(function(){
+    // Unique clicks
+    return new Promise(function(resolve, reject){
+      unique('clicked', domain, eng_date, function(err, c){
+
+        if (c)
+          data.unique_clicks = c;
+
+        resolve();
+      });
+    });
+  })
   .then(function() {
     return fn(null, data);
   })
   .catch(function(err) {
+    console.log(err);
     return fn();
   });
 }
