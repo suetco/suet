@@ -23,6 +23,10 @@ module.exports = function(app){
   // Webhook (if you cant use Google cloud functions)
   // Use cloud functions if you can though
   app.all('/webhook', function(req, res) {
+    // If a webhook is set, ignore this
+    if (process.env.WEBHOOK)
+      return res.end();
+
     return hook.handler(req, res);
   });
 }
