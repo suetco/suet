@@ -48,7 +48,10 @@ exports.feed = function(domain, options, fn) {
       foreignField: 'msg_id',
       as: 'mail'
     }},
-    {$unwind: '$mail'},
+    {$unwind: {
+      path:'$mail',
+      preserveNullAndEmptyArrays: true
+    }},
     {$sort: qs},
     {$skip: parseInt(skip)},
     {$limit: limit}
@@ -66,12 +69,11 @@ exports.feed = function(domain, options, fn) {
     dbo.db().collection('logs').aggregate(q).toArray(function(err, docs){
 
       if (err) {
-        console.log(err);
         return fn('Internal Error');
       }
 
       for (let d of docs) {
-        d.subject = d.mail.subject;
+        d.subject = d.mail ? d.mail.subject : '';
         delete d.mail;
       }
 
