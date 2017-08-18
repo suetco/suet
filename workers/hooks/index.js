@@ -227,20 +227,20 @@ exports.handler = function(req, res) {
           }
           else if (event == 'dropped') {
             // Notify of drops
+            let msg = '';
             if (event_data.description) {
-              let msg = event_data.description;
-              if (event_data.reason)
-                msg += ' #'+event_data.reason;
-
-              sendToSlack(messageId, slack_webhook, email,
-                'Dropped', 'danger', subject, msg);
+              msg = event_data.description+' ';
+              data.description = event_data.description;
             }
-            if (event_data.reason)
+            if (event_data.reason) {
               data.reason = event_data.reason;
+              msg += '#'+event_data.reason;
+            }
             if (event_data.code)
               data.code = event_data.code;
-            if (event_data.description)
-              data.description = event_data.description;
+
+            sendToSlack(messageId, slack_webhook, email,
+                'Dropped', 'danger', subject, msg);
           }
           else if (event == 'bounced') {
             // Notify of bounce

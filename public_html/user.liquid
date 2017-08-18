@@ -53,7 +53,7 @@
                   <small class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</small>
                 {% elsif log.event == 'dropped' %}
                   <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
-                  <small class="fade">{{ log.description }}</small>
+                  <small class="fade">{{ log.description }} {% if log.reason %}#{{ log.reason }}{% endif %}</small>
                 {% elsif log.event == 'bounced' %}
                   <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
                   <small class="fade">{{ log.error }}</small>
