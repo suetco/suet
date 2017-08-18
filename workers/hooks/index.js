@@ -91,7 +91,7 @@ exports.handler = function(req, res) {
           let hash = crypto.createHmac('sha256', doc.key)
                              .update([event_data.timestamp, event_data.token].join(''))
                              .digest('hex');
-          if (hash != event_data.signature)
+          if (hash !== event_data.signature)
             return res.send({error: "Incorrect signature"});
 
           // Is Slack connected? Get hook
@@ -104,13 +104,13 @@ exports.handler = function(req, res) {
       // Signature Replay?
       .then(function(apiKey){
         return new Promise(function(resolve, reject){
-          db.collection('signatures').findOne({signature: event_data.signature}, function(err, doc){
+          db.collection('signatures').findOne({signature: event_data.signature, domain: domain}, function(err, doc){
             // There is an error or it's a replay
             if (err || doc)
               return reject('Signature replay');
 
             // Save this signature
-            db.collection('signatures').insert({signature: event_data.signature});
+            db.collection('signatures').insert({signature: event_data.signature, domain: domain});
             return resolve(apiKey);
           });
         });

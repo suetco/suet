@@ -389,6 +389,11 @@ exports.login = function(data, fn) {
         id: doc._id,
         email: doc.email
       };
+
+      // Update last login
+      dbo.db().collection('accounts').update({email: email},
+        {$set: {ll: new Date()}});
+
       // Get his domains
       Domains.get(doc._id, function(err, domains){
         if (domains && domains.length > 0) {
