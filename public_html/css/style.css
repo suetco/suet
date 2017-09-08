@@ -230,6 +230,14 @@ header .subnav li {
   margin: 10px 0
 }
 
+.grid .columns {
+  padding: 10px 0;
+  border-right: 1px dotted #bbb;
+}
+.grid .columns:last-child {
+  border-right: 0;
+}
+
 tags {
   border-radius: 4px;
   background-color: #fff
@@ -254,6 +262,12 @@ tags > div {
   height: 100%;
   background-color: #fff;
   box-shadow: -2px 0px 5px 0px rgba(150,150,150,0.75);
+}
+.modal .close {
+  display: inline-block;
+  padding: 5px 10px;
+  background: #ddd;
+  margin: 5px 0 0 0;
 }
 
 footer {

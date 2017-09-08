@@ -10,7 +10,7 @@
 
   <link rel="stylesheet" href="/css/normalize.css">
   <link rel="stylesheet" href="/css/skeleton.css">
-  <link rel="stylesheet" href="/css/style.css?14072016">
+  <link rel="stylesheet" href="/css/style.css?08092017">
   <link rel="stylesheet" href="/css/feather.css">
   {{ _css }}
 
@@ -28,8 +28,7 @@
           <li><a href="/mails"{% if page == 'mails' %} class="active"{% endif %}>Mails</a></li>
           <li><a href="/users"{% if page == 'users' %} class="active"{% endif %}>Users</a></li>
         </ul>
-        {% else %}&nbsp;
-        {% endif %}
+        {% else %}&nbsp;{% endif %}
       </div>
       <div class="two columns">
         <span class="headway" style="position:absolute"></span>
