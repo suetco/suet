@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express')
-    , Liquid = require('shopify-liquid')
+    , Liquid = require('liquidjs')
     , engine = Liquid()
     , moment = require('moment')
     , session = require('express-session')
