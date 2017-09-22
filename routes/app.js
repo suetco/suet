@@ -194,12 +194,42 @@ module.exports = function(app){
   app.get('/settings', function(req, res) {
     Domains.getOne(req.session.account.id,
       req.session.account.active_domain, function(err, domain){
+
+        // If removing a member
+        if (req.query.remove && domain) {
+          if (domain.owner !== req.session.account.id) {
+            req.flash('error', 'Only administrators can perform this action');
+            return res.redirect('/settings');
+          }
+
+          return Accounts.removeProfile(req.query.remove,
+            req.session.account.active_domain, function(err){
+            if (err)
+              req.flash('error', err);
+            else
+              req.flash('info', 'Member removed from domain');
+
+            return res.redirect('/settings');
+          });
+        }
+
         res.render('settings', render(req, {
           title: 'Settings',
           host: process.env.HOST,
           domain: domain,
           client_id: process.env.SLACK_CLIENT_ID
         }));
+    });
+  });
+  app.post('/settings', function(req, res) {
+    Accounts.add(req.session.account.email,
+      req.body.invite_email, req.session.account.active_domain, function(err, email){
+        if (err)
+          req.flash('error', err);
+        else
+          req.flash('info', 'Member invited to domain');
+
+        return res.redirect('/settings');
     });
   });
 }

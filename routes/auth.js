@@ -58,6 +58,8 @@ module.exports = function(app){
   });
 
   app.get('/reset/:hash/:id', function(req, res) {
+    // Clear any available session
+    req.session.destroy();
     Accounts.confirmReset(req.params.hash, req.params.id, function(err, status) {
       if (err) {
         req.flash('error', err);
@@ -77,6 +79,7 @@ module.exports = function(app){
       }
 
       req.flash('info', 'Password reset successful. Login to continue.');
+      // todo: auto login
       res.redirect('/login');
     })
   });

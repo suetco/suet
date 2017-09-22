@@ -1,0 +1,10 @@
+You have been invited to join the domain {{acc_domain}} by {{email}}.
+{% if uid %}
+Kindly follow the link below to setup your account.
+
+{{domain}}/reset/{{hash}}/{{uid}}
+{% else %}
+The domain will be available in your dashboard (under domain list) when you login.
+{% endif %}
+
+Regards.

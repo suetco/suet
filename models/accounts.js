@@ -3,6 +3,7 @@ const dbo = require('../lib/db.js')
     , request = require('request')
     , moment = require('moment')
 
+    , Mail = require('../lib/mail.js')
     , Domains = require('./domains.js')
     ;
 
@@ -362,6 +363,86 @@ exports.create = function(data, fn) {
   });
 }
 
+exports.add = function(from, email, domain, fn) {
+
+  if (!email)
+    return fn('No email provided.');
+
+  email = email.toLowerCase().trim();
+  if (!/^\S+@\S+$/.test(email))
+    return fn('Email invalid. Confirm and try again');
+
+  // Email valid, continue
+  dbo.db().collection('accounts').findOne({
+    email: email
+  }, function(err, doc) {
+    if (err)
+      return fn('There has been an internal error. Please try again later.');
+
+    let tmplObj = {
+      acc_domain: domain,
+      email: from,
+      domain: process.env.HOST
+    }
+
+    if (doc) {
+      // Get id and add to new account
+      // Add to domain
+      dbo.db().collection('domains').updateOne({
+        domain: domain
+      }, {
+        $addToSet: {accs: doc._id}
+      }, {upsert: true});
+
+      return Mail.send(email, 'You have been invited to '+domain+' on Suet', 'invite', tmplObj, function(){
+        // todo: what to do with error? Account created by mail not sent
+        return fn(null, email);
+      });
+    }
+
+    let password = crypto.randomBytes(2).toString('hex');
+    let salt = crypto.randomBytes(128).toString('base64');
+    crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+      if (err)
+        fn('There has been an internal error. Please try again later.');
+
+      // Create account
+      dbo.db().collection('accounts').insert({
+        email: email,
+        password: new Buffer(derivedKey).toString('base64'),
+        salt: salt,
+        force_reset: true,
+        reg_date: new Date()
+      }, function(err, result) {
+        let id = result.ops[0]._id;
+
+        // Add to domain
+        dbo.db().collection('domains').updateOne({
+          domain: domain
+        }, {
+          $addToSet: {accs: id}
+        }, {upsert: true});
+
+        let hash = new Buffer(derivedKey).toString('base64');
+        tmplObj.uid = id.toHexString();
+        // Add to recover
+        dbo.db().collection('recover').insert({
+            hash: hash,
+            uid: tmplObj.uid,
+            date: new Date()
+        }, function(err, result) {
+          tmplObj.hash = encodeURIComponent(hash);
+          // todo: what to do with err?
+          Mail.send(email, 'You have been invited to '+domain+' on Suet', 'invite', tmplObj, function(){
+            // todo: what to do with error? Account created by mail not sent
+            return fn(null, email);
+          });
+        });
+      });
+    });
+  });
+}
+
 exports.login = function(data, fn) {
   if (!data)
     return fn('No data provided.');
@@ -444,40 +525,7 @@ exports.recoverPassword = function(res, data, fn) {
             domain: process.env.HOST
           }
 
-          res.render('mail_templates/recover', tmplObj, function(err, html) {
-            if (err)
-              return fn('There has been an internal error. Please try again later.');
-
-            res.render('mail_templates/recover_txt', tmplObj, function(err, text) {
-
-              let params = {
-                from: process.env.EMAIL_FROM,
-                subject: 'Reset your password',
-                html: html,
-                to: email
-              }
-
-              if (!err && text)
-                params.text = text;
-
-              request.post({
-                url: 'https://api.mailgun.net/v3/'+process.env.EMAIL_DOMAIN+'/messages',
-                auth: {
-                  user: 'api',
-                  pass: process.env.EMAIL_KEY
-                },
-                sendImmediately: false,
-                form: params
-              }, function(err, response, body) {
-
-                if (err || response.statusCode != 200)
-                  return fn('There has been an error sending recovery mail. Please try again later.');
-
-                return fn();
-              });//*/
-
-            });
-          });
+          Mail.send(email, 'Reset your password', 'recover', tmplObj, fn);
         });
       });
   });
@@ -605,6 +653,34 @@ exports.updatePassword = function(uid, oldPassword, password, fn) {
     });
   });
 }
+
+exports.removeProfile = function(uid, domain, fn) {
+
+  if (!uid)
+    return fn('User ID missing');
+
+  uid = dbo.id(uid);
+
+  // Get domain
+  Domains.getOne(uid, domain, function(err, domain){
+    if (err)
+      return fn(err);
+
+    if (!domain)
+      return fn('Domain not found');
+
+    if (domain.owner == uid.toHexString())
+      return fn('You created this account. You cannot be removed.');
+
+    Domains.removeProfile(domain._id, uid, function(err){
+      if (err)
+        return fn(err);
+
+      return fn();
+    });
+  });
+}
+
 
 exports.deleteProfile = function(uid, fn) {
 

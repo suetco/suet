@@ -2,8 +2,8 @@
 
 <section>
   <div class="container">
-    {% if error %}<p class="error">{{ error }}</p>{% endif %}
-    {% if info %}<p class="info">{{ info }}</p>{% endif %}
+    {% if error %}<p class="error center">{{ error }}</p>{% endif %}
+    {% if info %}<p class="info center">{{ info }}</p>{% endif %}
     <div class="row">
       <div class="six columns">
         <div class="box">
@@ -17,9 +17,38 @@
         </div>
       </div>
       <div class="six columns">
+        {% if domain.owner == acc_id %}
+        <div class="box">
+          <p><strong>Team</strong></p>
+          <form method="post" class="bb">
+            <div class="row">
+              <input type="text" name="invite_email" class="eight columns" placeholder="Email">
+              <button class="button button-primary four columns" style="padding:0">Invite</button>
+            </div>
+            <!--p class="fade"><small>Only admin will have access to domain settings. User can view email content, follower can't.</small></p-->
+          </form>
+          {% for user in domain.users %}
+          <div class="row">
+            <div class="ten columns">
+              <p>{{ user.email }}{% if user.email == acc_email %} <span class="fade">(you)</span>{% endif %}</p>
+            </div>
+            <div class="two columns align-right">
+              {% if user.email == acc_email %}{% else %}<p><a href="?remove={{ user.id }}" class="remove"><i class="icon-cross"></i></a></p>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>
 </section>
+
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript">
+  $('.remove').on('click', function(){
+    return confirm('Remove this user from the domain?');
+  });
+</script>
 
 {% include 'partials/footer' %}

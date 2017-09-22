@@ -27,11 +27,24 @@ exports.getOne = function(accId, domain, fn) {
     accs: dbo.id(accId),
     domain: domain
   }, function(err, doc) {
-    if (err) {
+    if (err)
       return fn('Internal Error');
-    }
 
-    fn(null, doc);
+    if (!doc)
+      return fn();
+
+    doc.owner = doc.owner.toHexString();
+
+    dbo.db().collection('accounts').find({_id: {$in: doc.accs}}).toArray(function(err, users){
+      doc.users = [];
+      for (let user of users) {
+        doc.users.push({
+          id: user._id.toHexString(),
+          email: user.email
+        });
+      }
+      fn(null, doc);
+    });
   });
 }
 
@@ -144,7 +157,7 @@ exports.removeProfile = function(id, accId, fn) {
 
   dbo.db().collection('domains').updateOne({
     _id: dbo.id(id)
-  }, {$unset: {acc: dbo.id(accId)}}, function(err) {
+  }, {$pull: {accs: dbo.id(accId)}}, function(err) {
     if (!fn)
       return;
 

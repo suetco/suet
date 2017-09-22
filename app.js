@@ -6,9 +6,10 @@ const express = require('express')
     , session = require('express-session')
     , sessionStore = require('connect-mongo')(session)
     , bodyParser = require('body-parser')
+    , path = require('path')
     , flash = require('flash')
     , compression = require('compression')
-    //, favicon = require('serve-favicon')
+    , favicon = require('serve-favicon')
 
     // Libs
     , acl = require('./lib/acl.js')
@@ -79,6 +80,7 @@ dbo.connect(function(err){
   app.engine('liquid', engine.express());
   app.set('view engine', 'liquid');
   app.set('views', __dirname + '/public_html');
+  app.use(favicon(path.join(__dirname, 'public_html', 'favicon.ico')))
   app.use(flash());
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: false }));
