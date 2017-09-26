@@ -10,6 +10,23 @@ Suet is an analytics dashboard and reporting tool for transactional emails throu
 
 ![Dashboard](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/dashboard.png)
 
+## Features
+
+- Engagement overview
+Sent count, daily interactions, top items? Get a general overview of your mails' performance.
+- Get notifications on Slack
+Connect Slack and get failure, bounce and complaint notifications.
+- Deliveries, opens and clicks
+Track deliveries, opens, clicks and uniques across mails and recipients.
+- Live feed
+Get events from your mails as they happen. You can further filter based on the different event types.
+- View emails
+See exactly what is sent to users. What does the delivered mail look like? What details were missing?
+- Recipients and activity
+View recipient journey from delivery to open and clicks. Know who opened and clicked on what.
+- Bring your team
+Invite other members of your team to your analytics dashboard
+
 ## Usage
 
 The easiest way to use Suet is through the managed version at [suet.co](https://suet.co/) (costs as low as $5/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/kehers/suet/blob/master/docs/installation.md).
