@@ -12,19 +12,19 @@ Suet is an analytics dashboard and reporting tool for transactional emails throu
 
 ## Features
 
-- Engagement overview
+- Engagement overview   
 Sent count, daily interactions, top items? Get a general overview of your mails' performance.
-- Get notifications on Slack
+- Get notifications on Slack   
 Connect Slack and get failure, bounce and complaint notifications.
-- Deliveries, opens and clicks
+- Deliveries, opens and clicks   
 Track deliveries, opens, clicks and uniques across mails and recipients.
-- Live feed
+- Live feed   
 Get events from your mails as they happen. You can further filter based on the different event types.
-- View emails
+- View emails   
 See exactly what is sent to users. What does the delivered mail look like? What details were missing?
-- Recipients and activity
+- Recipients and activity   
 View recipient journey from delivery to open and clicks. Know who opened and clicked on what.
-- Bring your team
+- Bring your team   
 Invite other members of your team to your analytics dashboard
 
 ## Usage
