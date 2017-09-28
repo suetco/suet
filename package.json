@@ -1,7 +1,7 @@
 {
   "name": "suet",
   "version": "1.4.1",
-  "description": "",
+  "description": "Suet is an analytics dashboard and reporting tool for transactional emails through Mailgun",
   "main": "app.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha ./tests/unit.js --reporter spec --timeout 10000"
