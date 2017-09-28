@@ -411,7 +411,6 @@ exports.add = function(from, email, domain, fn) {
         email: email,
         password: new Buffer(derivedKey).toString('base64'),
         salt: salt,
-        force_reset: true,
         reg_date: new Date()
       }, function(err, result) {
         let id = result.ops[0]._id;

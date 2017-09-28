@@ -163,25 +163,29 @@
         <h5 class="title">Pricing</h5>
         <p>Pricing is based on the number of Mailgun events received per month irrespective of the number of domains in your account.</p>
         <p>An event is something that happens to an email. This could be a delivery, open, bounce or click on a link. Note that non-unique events are also tracked. This means if a recipient opens the same email twice, 2 events are tracked and not one.</p>
+        <p>At the end of the month, you will be sent an invoice for the number of events consumed by your account.</p>
       </div>
     </div>
     <div class="row price">
       <div class="three columns">
         <div>
           <p><strong>Dev</strong></p>
-          <p>$5/month<br>Up to 5k events/month</p>
+          <p>Up to 5k events/month</p>
+          <h2>$5</h2>
         </div>
       </div>
       <div class="three columns">
         <div>
           <p><strong>Pro</strong></p>
-          <p>$20/month<br>Up to 50k events/month</p>
+          <p>Up to 50k events/month</p>
+          <h2>$20</h2>
         </div>
       </div>
       <div class="three columns">
         <div>
           <p><strong>Biz</strong></p>
-          <p>$100/month<br>Up to 500k events/month</p>
+          <p>Up to 500k events/month</p>
+          <h2>$100</h2>
         </div>
       </div>
       <div class="three columns">
@@ -219,12 +223,6 @@
         <p><strong>Does Suet handle bulk emails sent via Mailgun too?</strong></p>
         <p>If you are using Mailgun to send bulk emails/campaigns like newsletters, you need to let Suet know to group the analytics. To do this, send the email through <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#batch-sending">Mailgun's batch sending API</a> (instead of SMTP). Batch sending is limited to 1000 emails per send though. Support for <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#tagging">tagging</a>, which is a better approach, coming soon.</p>
       </div>
-      <div class="six columns">
-        <p><strong>What if I exceed my allocated events for the month?</strong></p>
-        <p>You will be notified but Suet will continue to receive your events (you won't be charged for the extra events). You can upgrade immediately or at the next billing cycle. If at the next cycle you do not upgrade and you exceed your limits again, you will need to upgrade to continue receiving the extra events.</p>
-      </div>
-    </div>
-    <div class="row">
       <div class="three columns">
         <p><strong>I only see delivered events. What of opens and clicks?</strong></p>
         <p>Make sure you turn on open and click tracking in your Mailgun dashboard and also set the URLs in webhooks.</p>
@@ -233,6 +231,8 @@
         <p><strong>Who are you?</strong></p>
         <p>My name is <a href="http://obem.be/opeyemi">Opeyemi Obembe</a>. I build things for web and mobile.</p>
       </div>
+    </div>
+    <div class="row">
       <div class="three columns">
         <p><strong>I have other questions</strong></p>
         <p>Get in touch via <a href="http://twitter.com/suet_co">@suet_co</a> on Twitter or send an email to <a href="mailto:hello@suet.co">hello@suet.co</a>.</p>

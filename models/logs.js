@@ -25,16 +25,23 @@ exports.feed = function(domain, options, fn) {
     order = 1;
 
   // Filter
-  if (options.filter) {
+  if (options.action) {
     // Validate
-    if (Array.isArray(options.filter)) {
+    if (Array.isArray(options.action)) {
       let i = 0;
       while (i--) {
-        if (allowedEvents.indexOf(options.filter[i]) == -1)
-          options.filter.splice(i, 1);
+        if (allowedEvents.indexOf(options.action[i]) == -1)
+          options.action.splice(i, 1);
       }
-      if (options.filter.length)
-        qm.event = {$in: options.filter};
+      if (options.action.length)
+        qm.event = {$in: options.action};
+    }
+  }
+  if (options.date) {
+    let date = options.date.split(' to ');
+    if (date.length == 2) {
+      qm.date = {$gte: new Date(date[0]),
+                  $lte: new Date(date[1])}
     }
   }
 

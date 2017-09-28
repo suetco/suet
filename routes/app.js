@@ -57,8 +57,10 @@ module.exports = function(app){
       options.sort = req.query.sort;
     if (req.query.dir)
       options.dir = req.query.dir;
-    if (req.query.filter)
-      options.filter = req.query.filter;
+    if (req.query.action)
+      options.action = req.query.action;
+    if (req.query.date)
+      options.date = req.query.date;
     if (req.query.offset)
       options.offset = req.query.offset;
     Logs.feed(req.session.account.active_domain, options, function(err, data) {
@@ -72,7 +74,8 @@ module.exports = function(app){
         title: 'Feed',
         page: 'feed',
         query: req.query,
-        filter: req.query.filter,
+        action: req.query.action,
+        date: req.query.date,
         data: data
       }));
     })

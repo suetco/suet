@@ -64,6 +64,9 @@ a.fade:hover {
   border-bottom: 1px solid #ddd;
 }
 
+.container {
+  max-width: 1200px
+}
 .hero {
   margin-top: 50px
 }
@@ -258,7 +261,7 @@ tags > div {
   right: 0;
   top: 0;
   z-index: 1;
-  width: 60%;
+  width: 50%;
   height: 100%;
   background-color: #fff;
   box-shadow: -2px 0px 5px 0px rgba(150,150,150,0.75);
@@ -355,4 +358,29 @@ input[type="password"]:focus,
 textarea:focus,
 select:focus {
   border: 1px solid #aaa;
+}
+
+/*
+Stripe
+*/
+.StripeElement {
+  background-color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #D1D1D1;
+  /*box-shadow: 0 1px 3px 0 #e6ebf1;
+  -webkit-transition: box-shadow 150ms ease;
+  transition: box-shadow 150ms ease;*/
+}
+
+.StripeElement--focus {
+  border: 1px solid #aaa;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
 }

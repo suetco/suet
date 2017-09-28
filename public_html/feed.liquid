@@ -1,20 +1,20 @@
-{% assign _css = '<link rel="stylesheet" href="css/chosen.min.css">' %}
+{% assign _css = '<link rel="stylesheet" href="/css/chosen.min.css"><link rel="stylesheet" href="/css/daterangepicker.min.css">' %}
 {% include 'partials/header-dashboard' %}
 
 <section>
   <div class="container">
     <div class="bar">
       <div class="row">
-        <div class="six columns">
+        <div class="twelve columns">
           <form>
-          <select name="filter[]" data-placeholder="Action Filter" multiple="" style="width:80%">
-            <option value="opened"{% if filter contains 'opened' %} selected{% endif %}>Opened</option>
-            <option value="delivered"{% if filter contains 'delivered' %} selected{% endif %}>Delivered</option>
-            <option value="clicked"{% if filter contains 'clicked' %} selected{% endif %}>Clicked</option>
-            <option value="bounced"{% if filter contains 'bounced' %} selected{% endif %}>Bounced</option>
-            <option value="dropped"{% if filter contains 'dropped' %} selected{% endif %}>Dropped</option>
-          </select>
-          <button class="button button-primary" type="submit" style="padding:7px 10px;height:auto;line-height:normal"><i class="icon-menu"></i></button>
+            Filter: <select name="action[]" data-placeholder="All Actions" multiple="" style="width:40%">
+              <option value="opened"{% if action contains 'opened' %} selected{% endif %}>Opened</option>
+              <option value="delivered"{% if action contains 'delivered' %} selected{% endif %}>Delivered</option>
+              <option value="clicked"{% if action contains 'clicked' %} selected{% endif %}>Clicked</option>
+              <option value="bounced"{% if action contains 'bounced' %} selected{% endif %}>Bounced</option>
+              <option value="dropped"{% if action contains 'dropped' %} selected{% endif %}>Dropped</option>
+            </select> <input type="text" value="{{ date }}" name="date" value="" style="height:auto;top:1px;position:relative;" placeholder="All Time">
+            <button class="button button-primary" type="submit" style="padding:7px 10px;height:auto;line-height:normal"><i class="icon-menu"></i></button>
           </form>
         </div>
       </div>
@@ -22,13 +22,13 @@
     <div class="feed">
       <div class="row th">
         <div class="one columns">
-          <a href="?sort=date&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if filter %}&filter[]={{ filter | join: '&filter[]=' }}{% endif %}">@{% if query.sort == 'date' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+          <a href="?sort=date&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if action %}&action[]={{ action | join: '&action[]=' }}{% endif %}{% if date %}&date={{ date }}{% endif %}">@{% if query.sort == 'date' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
         <div class="three columns">
-          <a href="?sort=email&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if filter %}&filter[]={{ filter | join: '&filter[]=' }}{% endif %}">User{% if query.sort == 'email' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+          <a href="?sort=email&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if action %}&action[]={{ action | join: '&action[]=' }}{% endif %}{% if date %}&date={{ date }}{% endif %}">User{% if query.sort == 'email' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
         <div class="eight columns">
-          <a href="?sort=event&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if filter %}&filter[]={{ filter | join: '&filter[]=' }}{% endif %}">Action{% if query.sort == 'event' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+          <a href="?sort=event&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}{% if action %}&action[]={{ action | join: '&action[]=' }}{% endif %}{% if date %}&date={{ date }}{% endif %}">Action{% if query.sort == 'event' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
       </div>
       {% for event in data.data %}
@@ -70,14 +70,19 @@
     </div>
     {% assign next = data.offset | plus: data.count %}
     {% assign prev = data.offset | minus: data.limit %}
-    {% capture q %}?{{ query | remove: 'offset,filter' }}{% if filter %}&filter[]={{ filter | join: '&filter[]=' }}{% endif %}{% endcapture %}
+    {% capture q %}?{{ query | remove: 'offset,action,date' }}{% if action %}&action[]={{ action | join: '&action[]=' }}{% endif %}{% if date %}&date={{ date }}{% endif %}{% endcapture %}
     <p class="right top-20">{{ data.offset | plus: 1 }} to {{ next }} of {{ data.total }}</p>
     <p class="pagination">{% if data.offset > 0 %}<a href="{{ q }}{% if prev > 0 %}&offset={{ prev }}{% endif %}" class="button button-primary">Prev</a>{% endif %}{% if next < data.total %}<a href="{{ q }}&offset={{ data.offset | plus: data.count }}" class="button button-primary">Next</a>{% endif %}</p>
   </div>
 </section>
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/chosen.jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/moment.min.js"></script>
+<script type="text/javascript" src="/js/jquery.daterangepicker.min.js"></script>
+<script type="text/javascript" src="/js/chosen.jquery.min.js"></script>
 <script type="text/javascript">
-  $("select[name^=filter]").chosen();
+  $('input[name=date]').dateRangePicker({
+    endDate: new Date()
+  });
+  $("select[name^=action]").chosen();
 </script>
 {% include 'partials/footer' %}
