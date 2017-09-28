@@ -58,8 +58,6 @@ module.exports = function(app){
   });
 
   app.get('/reset/:hash/:id', function(req, res) {
-    // Clear any available session
-    req.session.destroy();
     Accounts.confirmReset(req.params.hash, req.params.id, function(err, status) {
       if (err) {
         req.flash('error', err);
