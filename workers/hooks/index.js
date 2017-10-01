@@ -14,12 +14,12 @@ const dbClient = require('mongodb').MongoClient
     551: "Mailbox does not exist on the recipient server.",
     552: "Mailbox does not have enough storage to accept message.",
     553: "Mailbox does not exist.",
-    554: "General failure",
+    554: "General failure"
     // Mailgun specific. Non standard
     //498: "General failure",
     //605: "General failure",
     //499: "General failure (request timeout)"
-  }
+  };
 
 let dbUrl = process.env.DB_URL || '';
 let host = process.env.HOST || 'https://suet.co';
