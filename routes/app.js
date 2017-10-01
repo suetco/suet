@@ -5,6 +5,7 @@ const Logs = require('../models/logs.js')
     , Domains = require('../models/domains.js')
 
     , render = require('../lib/utils.js').render
+    , smtpError = require('../lib/utils.js').getSMTPError
     , moment = require('moment')
     ;
 
@@ -67,6 +68,8 @@ module.exports = function(app){
       if (!err) {
         for (let d of data.data) {
           d.timeago = moment(d.date).fromNow();
+          if (!d.description)
+            d.description = smtpError(d.code);
         }
       }
 
@@ -141,6 +144,8 @@ module.exports = function(app){
       }
       for (let d of doc.logs) {
         d.timeago = moment(d.date).fromNow();
+        if (!d.description)
+          d.description = smtpError(d.code);
       }
       res.render('user', render(req, {
         title: doc.email,

@@ -47,7 +47,7 @@ module.exports = function(app){
       }));
     });
   app.post('/recover', function(req, res) {
-    Accounts.recoverPassword(res, req.body, function(err, doc){
+    Accounts.recoverPassword(req.body, function(err, doc){
       if (err)
         req.flash('error', err);
       else

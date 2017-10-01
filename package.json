@@ -1,6 +1,6 @@
 {
   "name": "suet",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Suet is an analytics dashboard and reporting tool for transactional emails through Mailgun",
   "main": "app.js",
   "scripts": {

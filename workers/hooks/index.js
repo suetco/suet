@@ -5,7 +5,21 @@ const dbClient = require('mongodb').MongoClient
   , request = require('request')
   , multer = require('multer')
   , parser = multer().none()
-  ;
+  , smtpErrors = {
+    421: "Recipient server not available.",
+    450: "User's mailbox temporarily not available.",
+    451: "Server error. Message failed.",
+    452: "Insufficient system storage",
+    550: "Mailbox is unavailable or recipient server rejected message.",
+    551: "Mailbox does not exist on the recipient server.",
+    552: "Mailbox does not have enough storage to accept message.",
+    553: "Mailbox does not exist.",
+    554: "General failure",
+    // Mailgun specific. Non standard
+    //498: "General failure",
+    //605: "General failure",
+    //499: "General failure (request timeout)"
+  }
 
 let dbUrl = process.env.DB_URL || '';
 let host = process.env.HOST || 'https://suet.co';
@@ -16,6 +30,7 @@ let host = process.env.HOST || 'https://suet.co';
 // Check against replay (check signature table and store signature if new)
 // Get email details
 // Get mail
+
 function sendToSlack(msg_id, webhook, recipient, type, color, subject, msg) {
   if (!webhook) return;
   let attachment = {
@@ -40,6 +55,10 @@ function sendToSlack(msg_id, webhook, recipient, type, color, subject, msg) {
       json: true,
       body: attachment
     });
+}
+
+function getSMTPError(code) {
+  return smtpErrors[code] ? smtpErrors[code] : "General failure";
 }
 
 exports.handler = function(req, res) {
@@ -232,12 +251,13 @@ exports.handler = function(req, res) {
               msg = event_data.description+' ';
               data.description = event_data.description;
             }
-            if (event_data.reason) {
-              data.reason = event_data.reason;
-              msg += '#'+event_data.reason;
-            }
-            if (event_data.code)
+            else if (event_data.code) {
+              msg = getSMTPError(event_data.code);
               data.code = event_data.code;
+            }
+            // Thinking of it, reason is really not useful
+            // if (event_data.reason)
+              //data.reason = event_data.reason;
 
             sendToSlack(messageId, slack_webhook, email,
                 'Dropped', 'danger', subject, msg);

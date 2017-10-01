@@ -13,6 +13,11 @@ module.exports = function(app){
       title: 'Privacy policy'
     }));
   });
+  app.get('/terms', function(req, res) {
+    res.render('tos', render(req, {
+      title: 'Terms of Service'
+    }));
+  });
 
   app.get('/support', function(req, res) {
     res.render('support', render(req, {

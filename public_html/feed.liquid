@@ -60,7 +60,7 @@
           {% elsif event.event == 'delivered' %}
             <a href="/mails/{{ event.msg_id }}">{% if event.subject %}{{ event.subject }}{% else %}{{ event.msg_id }}{% endif %}</a>
           {% elsif event.event == 'dropped' %}
-            {{ event.description }} {% if event.reason %}#{{ event.reason }}{% endif %}
+              {{ event.description }}
           {% elsif event.event == 'bounced' %}
             {{ event.error }}
           {% endif %}

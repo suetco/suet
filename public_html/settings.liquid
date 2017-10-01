@@ -5,7 +5,7 @@
     {% if error %}<p class="error center">{{ error }}</p>{% endif %}
     {% if info %}<p class="info center">{{ info }}</p>{% endif %}
     <div class="row">
-      <div class="six columns">
+      <div class="five columns offset-by-one">
         <div class="box">
           <p><strong>Connect Slack</strong></p>
           <p>Get bounce and failure deliveries sent to your Slack account</p>
@@ -16,7 +16,7 @@
           {% endif %}
         </div>
       </div>
-      <div class="six columns">
+      <div class="five columns">
         {% if domain.owner == acc_id %}
         <div class="box">
           <p><strong>Team</strong></p>

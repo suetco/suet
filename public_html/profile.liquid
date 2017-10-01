@@ -1,11 +1,12 @@
+{% assign _css = '<link rel="stylesheet" href="/css/tooltipster.bundle.min.css">' %}
 {% include 'partials/header-dashboard' %}
 
 <section>
   <div class="container">
-    {% if error %}<p class="error">{{ error }}</p>{% endif %}
-    {% if info %}<p class="info">{{ info }}</p>{% endif %}
+    {% if error %}<p class="error center">{{ error }}</p>{% endif %}
+    {% if info %}<p class="info center">{{ info }}</p>{% endif %}
     <div class="row">
-      <div class="six columns">
+      <div class="four columns offset-by-one">
         <div class="box">
           <p><strong>Update Email</strong></p>
           <form method="post">
@@ -14,24 +15,30 @@
           </form>
         </div>
         <div class="box">
-          <p><strong>Delete Account</strong></p>
-          <p>This is not a recoverable action. All data related to the profile&mdash;domains, data and profile will be deleted. Be sure you really want to do this before you continue.</p>
+          <p><strong>Update Password</strong></p>
           <form method="post">
-            <input type="hidden" name="delete" value="{{acc_id}}">
-            <button class="button button-delete u-full-width" style="display:none" id="del-btn" type="submit">Confirm Delete</button>
-            <button class="button u-full-width" type="button" onclick="this.style.display='none';document.getElementById('del-btn').style.display='block'">Delete</button>
+            <p><input type="password" name="password" placeholder="Current password" class="u-full-width"></p>
+            <p><input type="password" name="new_password" placeholder="New password" class="u-full-width"></p>
+            <p><button class="button button-primary u-full-width">Update</button></p>
           </form>
         </div>
       </div>
       <div class="six columns">
         <div class="row">
           <div class="box">
-            <p><strong>Update Password</strong></p>
+            <p><strong>Delete Account</strong></p>
+            <p>This is not a recoverable action. All data related to the profile&mdash;domains, data and profile will be deleted. Be sure you really want to do this before you continue.</p>
             <form method="post">
-              <p><input type="password" name="password" placeholder="Current password" class="u-full-width"></p>
-              <p><input type="password" name="new_password" placeholder="New password" class="u-full-width"></p>
-              <p><button class="button button-primary u-full-width">Update</button></p>
-            </form>
+              <input type="hidden" name="delete" value="{{acc_id}}">
+              <button class="button u-full-width tooltip" data-tooltip-content="#del_tooltip" type="button">Delete</button>
+              <div class="tooltip_templates">
+                <span id="del_tooltip">
+                  <form method="post">
+                    <input type="hidden" name="delete" value="{{acc_id}}">
+                    <button class="button button-delete u-full-width" type="submit">Confirm Delete Action</button>
+                  </form>
+                </span>
+              </div>
           </div>
         </div>
       </div>
@@ -39,4 +46,16 @@
   </div>
 </section>
 
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/tooltipster.bundle.min.js"></script>
+<script type="text/javascript">
+  $('.tooltip').tooltipster({
+     animation: 'fade',
+     delay: 200,
+     interactive: true,
+     maxWidth: 350,
+     //theme: 'tooltipster-punk',
+     trigger: 'click'
+  });
+</script>
 {% include 'partials/footer' %}
