@@ -172,13 +172,21 @@ exports.handler = function(req, res) {
               if (!body.items || body.items.length == 0)
                 return resolve();
 
-              body = body.items[0];
-              if (!body.storage || !body.storage.url)
+              let storageUrl;
+              // Loop through items
+              // Sometimes, storage is not always in first item
+              for (let item of body.items) {
+                if (item.storage && item.storage.url) {
+                  storageUrl = item.storage.url;
+                  break;
+                }
+              }
+              if (!storageUrl)
                 return resolve();
 
               // 3. Get the stored mail
               request.get({
-                'url': body.storage.url,
+                'url': storageUrl,
                 'gzip': true,
                 'auth': {
                   'user': 'api',
