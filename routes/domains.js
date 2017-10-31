@@ -22,9 +22,45 @@ module.exports = function(app){
         return res.redirect('/add-key');
       }
 
+      req.session.account.temp = {
+        domains: domains,
+        key: req.body.key
+      };
+
+      res.redirect('/select-domains');
+    });
+  });
+  // Select Domains
+  app.get('/select-domains', function(req, res) {
+    if (!req.session.account.temp)
+      return res.redirect('/add-key');
+
+    res.render('select-domains', render(req, {
+      title: 'Select Domains',
+      domains: req.session.account.temp.domains
+    }));
+  });
+  app.post('/select-domains', function(req, res) {
+    if (!req.body.domains) {
+      req.flash('error', 'You did not select any domain');
+      return res.redirect('/select-domains');
+    }
+
+    let domainHooks = {};
+    for (let _d of req.session.account.temp.domains) {
+      domainHooks[_d.name] = _d;
+    }
+
+    Domains.setupDomains(req.session.account.id, req.session.account.temp.key, req.body.domains,
+        domainHooks, function(err, domains){
+      if (err) {
+        req.flash('error', err);
+        return res.redirect('/select-domains');
+      }
+
+      delete req.session.account.temp;
       req.session.account.domains = domains;
-      if (domains.length > 0)
-        req.session.account.active_domain = domains[0];
+      req.session.account.active_domain = domains[0];
 
       res.redirect('/dashboard');
     });

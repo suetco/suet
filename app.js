@@ -83,7 +83,7 @@ dbo.connect(function(err){
   app.use(favicon(path.join(__dirname, 'public_html', 'favicon.ico')))
   app.use(flash());
   app.use(compression());
-  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.static(__dirname + '/public_html'));
   app.use(acl());
 

@@ -1,4 +1,4 @@
-var dbo = require('../lib/db.js')
+const dbo = require('../lib/db.js')
     , request = require('request')
     ;
 
@@ -8,7 +8,7 @@ exports.get = function(accId, fn) {
     return fn('Invalid account');
   dbo.db().collection('domains').find({
     accs: dbo.id(accId)
-  }).toArray(function(err, docs) {
+  }, {sort: {domain: 1}}).toArray(function(err, docs) {
     if (err) {
       return fn('Internal Error');
     }
@@ -81,22 +81,145 @@ exports.getDomains = function(accId, key, fn) {
         if (body.items.length == 0)
           return fn('No domains found in your account');
 
-        var domains = [];
+        let domains = [];
         for (var domain of body.items) {
           // Save domains in account
           domains.push(domain.name);
+        }
+
+        // Get webhooks
+        Promise.all(domains.map(function(domain){
+            return new Promise(function(resolve){
+              request.get({
+                'url': ['https://api.mailgun.net/v3/domains/', domain, '/webhooks'].join(''),
+                'gzip': true,
+                'auth': {
+                  'user': 'api',
+                  'pass': key,
+                  'sendImmediately': false
+                }
+              }, function(err, response, body) {
+                let obj = {name: domain};
+                if (err && response.statusCode != 200) {
+                  obj.error = true;
+                  return resolve(obj);
+                }
+
+                body = JSON.parse(body);
+                if (body.webhooks) {
+                  // Has webhooks set and not just unsubscribe webhook (not used)
+                  if (Object.keys(body.webhooks).length > 1 ||
+                    (Object.keys(body.webhooks).length == 1 && !body.webhooks.unsubscribe)) {
+                    obj.has_webhook = true;
+                    obj.hooks = [];
+                    for (let hook in body.webhooks) {
+                      obj.hooks.push(hook);
+                    }
+                  }
+                }
+
+                return resolve(obj);
+              });
+            });
+          })
+        ).then(function(domains){
+          return fn(null, domains);
+        });
+      }
+      else
+        return fn('There has been an error getting the domains. Try again later');
+    });
+  });
+}
+
+// Setup domains from Mailgun
+exports.setupDomains = function(accId, key, domains, domainHooks, fn) {
+
+  if (!accId)
+    return fn('Invalid account');
+  if (!domains || !Array.isArray(domains))
+    return fn('Select one or more domains.');
+  if (domains.length < 1)
+    return fn('Select one or more domains.');
+
+  accId = dbo.id(accId);
+  dbo.db().collection('accounts').findOne({_id: accId}, function(err, doc) {
+    if (!doc)
+      return fn('Invalid account');
+
+    let addedDomains = [];
+    let hooks = ['bounce', 'deliver', 'drop', 'spam', 'click', 'open'];
+    // Update webhooks
+    Promise.all(domains.map(function(domain){
+      return new Promise(function(resolve){
+        let endpoint = ['https://api.mailgun.net/v3/domains/', domain, '/webhooks'].join('');
+
+        Promise.all(hooks.map(function(hook){
+          return new Promise(function(resolveInner){
+
+            if (domainHooks[domain] && domainHooks[domain].hooks
+                  && domainHooks[domain].hooks.indexOf(hook) != -1) {
+              // Webhook exist for domain and id already
+              // Update
+              request.put({
+                'url': [endpoint, '/', hook].join(''),
+                'gzip': true,
+                'auth': {
+                  'user': 'api',
+                  'pass': key,
+                  'sendImmediately': false
+                },
+                'form': {
+                  'id': hook,
+                  'url': process.env.WEBHOOK
+                }
+              }, function(err, response, body) {
+                // So how do we even handle errors here? :/
+                resolveInner();
+              });
+            }
+            else {
+              // No existing webhook, create
+              request.post({
+                'url': endpoint,
+                'gzip': true,
+                'auth': {
+                  'user': 'api',
+                  'pass': key,
+                  'sendImmediately': false
+                },
+                'form': {
+                  'id': hook,
+                  'url': process.env.WEBHOOK
+                }
+              }, function(err, response, body) {
+                // So how do we even handle errors here? :/
+                resolveInner();
+              });
+            }
+          });
+        })).then(function(){
+          // Hooks updated, add to db
           dbo.db().collection('domains').updateOne({
-            domain: domain.name
+            domain: domain
           }, {
             $addToSet: {accs: accId},
             $set: {key: key, owner: accId}
-          }, {upsert: true});
-        }
+          }, {upsert: true}, function(err){
+            if (!err)
+              addedDomains.push(domain);
 
-        return fn(null, domains);
-      }
+            return resolve();
+          });
 
-      return fn('There has been an error getting the domains. Try again later');
+        }).catch(function(e){
+          return resolve();
+        });
+      });
+    })).then(function(){
+      return fn(null, addedDomains);
+    }).catch(function(){
+      return fn(null, addedDomains);
     });
   });
 }

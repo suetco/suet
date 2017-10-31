@@ -356,7 +356,8 @@ exports.create = function(data, fn) {
       }, function(err, result) {
         return fn(null, {
           id: result.ops[0]._id,
-          email: result.ops[0].email
+          email: result.ops[0].email,
+          reg_date: new Date()
         });
       });
     });
@@ -467,7 +468,8 @@ exports.login = function(data, fn) {
 
       let json = {
         id: doc._id,
-        email: doc.email
+        email: doc.email,
+        reg_date: doc.reg_date
       };
 
       // Update last login

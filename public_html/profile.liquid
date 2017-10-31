@@ -26,19 +26,26 @@
       <div class="six columns">
         <div class="row">
           <div class="box">
+            <p><strong>Add New Domains</strong></p>
+            <p>Add a new Mailgun API key to add new domains to your account.</p>
+            <form method="post" action="/add-key">
+              <p><input type="text" name="key" placeholder="API key" class="u-full-width"></p>
+              <p><button class="button button-primary u-full-width" type="submit">Get Domains</button></p>
+            </form>
+          </div>
+          <div class="box">
             <p><strong>Delete Account</strong></p>
             <p>This is not a recoverable action. All data related to the profile&mdash;domains, data and profile will be deleted. Be sure you really want to do this before you continue.</p>
-            <form method="post">
-              <input type="hidden" name="delete" value="{{acc_id}}">
-              <button class="button u-full-width tooltip" data-tooltip-content="#del_tooltip" type="button">Delete</button>
-              <div class="tooltip_templates">
-                <span id="del_tooltip">
-                  <form method="post">
-                    <input type="hidden" name="delete" value="{{acc_id}}">
-                    <button class="button button-delete u-full-width" type="submit">Confirm Delete Action</button>
-                  </form>
-                </span>
-              </div>
+            <input type="hidden" name="delete" value="{{acc_id}}">
+            <p><button class="button u-full-width tooltip" data-tooltip-content="#del_tooltip" type="button">Delete</button></p>
+            <div class="tooltip_templates">
+              <span id="del_tooltip">
+                <form method="post">
+                  <input type="hidden" name="delete" value="{{acc_id}}">
+                  <button class="button button-delete u-full-width" type="submit">Confirm Delete Action</button>
+                </form>
+              </span>
+            </div>
           </div>
         </div>
       </div>

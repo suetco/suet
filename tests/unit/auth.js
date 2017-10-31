@@ -29,7 +29,7 @@ describe('Signup', function() {
   it('should be successful with correct parameters', function(done) {
     Accounts.create({email: store.email, password: '123456'}, function(err, doc){
       expect(err).to.be.null;
-      expect(doc).to.be.have.keys(['id', 'email'])
+      expect(doc).to.be.have.keys(['id', 'email', 'reg_date'])
       done();
     });
   });
@@ -67,7 +67,7 @@ describe('Login', function() {
   it('should be successful with correct parameters', function(done) {
     Accounts.login({email: store.email, password: '123456'}, function(err, doc){
       expect(err).to.be.null;
-      expect(doc).to.be.have.keys(['id', 'email']);
+      expect(doc).to.be.have.keys(['id', 'email', 'reg_date']);
       if (doc && doc.id)
         store.uid = doc.id;
       done();
@@ -157,7 +157,7 @@ describe('Password Update', function() {
       // Login wih new password
       Accounts.login({email: store.email, password: '654321'}, function(err, doc){
         expect(err).to.be.null;
-        expect(doc).to.be.have.keys(['id', 'email']);
+        expect(doc).to.be.have.keys(['id', 'email', 'reg_date']);
         done();
       });
     });
