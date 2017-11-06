@@ -310,6 +310,8 @@ exports.delete = function(id, fn) {
     if (!doc)
       return fn('Domain not found');
 
+    // todo: Remove webhook
+
     // Delete all
     dbo.db().collection('logs').remove({domain: doc.domain});
     dbo.db().collection('mails').remove({domain: doc.domain});
