@@ -37,10 +37,10 @@ Follow [@suet_co](http://twitter.com/suet_co) on Twitter and the changelog at [u
 
 ## Issues
 
-You can submit an issue at [github.com/kehers/suet/issues](http://github.com/kehers/suet/issues). If you require email support, you will need to purchase a [one-time licence for $70](https://pay.paddle.com/checkout/515197).
+You can submit an issue at [github.com/kehers/suet/issues](http://github.com/kehers/suet/issues). If you require email support, you will need to [purchase a licence](https://pay.paddle.com/checkout/515197)(costs $70/year).
 
 ## Copyright/Licence
 
 Copyright (c) 2017 Opeyemi Obembe. Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
 
-If you use Suet for more than one Mailgun domain, make money from your list, want email support or just want to support development, consider purchasing a [one-time licence for $70](https://pay.paddle.com/checkout/515197).
+If you use Suet for more than one Mailgun domain, make money from any of your domains, want email support or just want to support development, consider purchasing a [licence for $70/year](https://pay.paddle.com/checkout/515197).

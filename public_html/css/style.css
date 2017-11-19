@@ -9,6 +9,9 @@ ul, li, input, form {
   margin: 0;
   padding: 0;
 }
+h6 {
+  font-size: 1.8rem
+}
 p {
   padding: 7px 0;
 }
@@ -62,6 +65,10 @@ a.fade:hover {
 .list li {
   padding: 5px 0;
   border-bottom: 1px solid #ddd;
+}
+.highlight {
+  background-color: #f1edc6;
+  color: #444;
 }
 
 .container {
@@ -293,9 +300,11 @@ footer {
   padding: 40px 0 20px;
   border-top: 1px solid #eee;
 }
+nav ul,
 footer ul {
   list-style: none;
 }
+nav ul li,
 footer ul li {
   display: inline-block;
   padding: 5px;

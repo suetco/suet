@@ -492,7 +492,7 @@ exports.login = function(data, fn) {
   });
 }
 
-exports.recoverPassword = function(res, data, fn) {
+exports.recoverPassword = function(data, fn) {
 
   let email = data.email || '';
   dbo.db().collection('accounts').findOne({email: email},
@@ -681,7 +681,6 @@ exports.removeProfile = function(uid, domain, fn) {
     });
   });
 }
-
 
 exports.deleteProfile = function(uid, fn) {
 

@@ -12,39 +12,55 @@
 
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?18112017">
   <link rel="stylesheet" href="css/feather.css">
 
   <style type="text/css">
   section {
-    padding: 150px 0;
-  }
-  header {
-    padding: 11% 0;
-    margin-bottom: 0;
-    background: #fff url(images/screenshots/browser.png) bottom right no-repeat;
-    background-size: 50%;
+    padding: 100px 0;
   }
   strong {
     color: #111;
   }
-  header h5 span {
+  header {
+    padding: 10% 0 0;
+    margin-bottom: 0;
+    box-shadow: none;
+  }
+  header h1 span {
     position: relative;
-    top: 3px;
+    top: 5px;
+  }
+  nav {
+    position: fixed;
+    text-align: right;
+    box-sizing: border-box;
+    width: 100%;
+    z-index: 2;
+    background-color: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-bottom: 1px solid #eee
   }
   .features {
-    background-image: linear-gradient( 135deg, #7c64ea 0%, #5637e4 100%);
-    color: #f0effb;
+    background-color: #fff;
   }
-  .features strong {
-    color: #fff;
+  .features img {
+    display: block;
+    margin: 40px 0;
   }
-  .slack img {
+  img {
+    max-width: 100%
+  }
+  img.bordered {
     border: 1px solid #ddd;
     display: block;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0px 1px 5px 0px rgba(150,150,150,0.2);
+  }
+  img.shadowed {
+    border-radius: 20px;
+    /*box-shadow: 1px 3px 1px 0px rgba(150,150,150,0.2);*/
   }
   .price {
     padding-top:50px
@@ -93,65 +109,90 @@
 </head>
 <body>
 
+<nav>
+  <ul>
+    <li><a href="/login">Login</a></li>
+    <li><a href="/signup">Signup</a></li>
+    <li><a href="http://github.com/kehers/suet" class="button button-primary" style="margin-bottom:0">Download</a></li>
+  </ul>
+</nav>
+
 <header>
   <div class="container">
     <div class="row">
-      <div class="one-half column">
-        <h5><a href="/"><i class="icon-bar-graph-2"></i> <span>suet</span></a><span class="headway" style="position:absolute"></span></h5>
+      <div class="six columns offset-by-three center">
+        <h1><a href="/"><i class="icon-bar-graph-2"></i> <span>suet</span></a><span class="headway" style="position:absolute"></span></h1>
         <div class="hero">
-          <h5 class="title">Detailed analytics and reporting for your Mailgun transactional emails</h5>
+          <h4 class="title">Detailed analytics and reporting for your Mailgun transactional emails</h4>
           <p><a href="/signup" class="button button-primary">Signup</a>  <a href="/login" class="button"><i class="icon-skip-forward"></i> Login</a></p>
         </div>
       </div>
     </div>
   </div>
 </header>
-<section class="features">
+<section style="background-color:#fff;padding-bottom:0">
   <div class="container">
     <div class="row">
-      <div class="three columns">
-        <p><strong>Engagement overview</strong></p>
-        <p>Sent count, daily interactions, top items? Get a general overview of your mails' performance.</p>
-      </div>
-      <div class="three columns">
-        <p><strong>Get notifications on Slack</strong></p>
-        <p>Connect Slack and get failure, bounce and complaint notifications.</p>
-      </div>
-      <div class="three columns">
-        <p><strong>Deliveries, opens and clicks</strong></p>
-        <p>Track deliveries, opens, clicks and uniques across mails and recipients.</p>
-      </div>
-      <div class="three columns">
-        <p><strong>Live feed</strong></p>
-        <p>Get events from your mails as they happen. You can further filter based on the different event types.</p>
-      </div>
-    </div>
-    <p>&nbsp;</p>
-    <div class="row">
-      <div class="three columns">
-        <p><strong>View emails</strong></p>
-        <p>See exactly what is sent to users. What does the delivered mail look like? What details were missing?</p>
-      </div>
-      <div class="three columns">
-        <p><strong>Recipients and activity</strong></p>
-        <p>View recipient journey from delivery to open and clicks. Know who opened and clicked on what.</p>
-      </div>
-      <div class="three columns">
-        <p><strong>Bring your team</strong></p>
-        <p>Invite other members of your team to your analytics dashboard<!--and grant access to different roles--></p>
+      <div class="eight columns offset-by-two">
+        <h6><i>"How many users got the update Mail? How well are mails performing?"</i></h6>
+        <h6>Suet connects to your <a href="https://mailgun.com/">Mailgun</a> account to provide more detailed analytics and reporting for Mails sent through Mailgun</h6>
+        <p>&nbsp;</p>
+        <img src="images/hero.png" class="">
       </div>
     </div>
   </div>
 </section>
-<section class="slack" style="background-color:#fff">
+<section class="features">
   <div class="container">
     <div class="row">
       <div class="six columns">
-        <h5 class="title">Slack</h5>
-        <p>Suet connects to your Slack account to send you complaints, bounce and failure notifications. Simply access <strong>Domain Settings</strong> in your dashboard and click the <strong>Add to Slack</strong> button.</p>
+        <h3>Features</h3>
+        <p>&nbsp;</p>
+        <div class="row">
+          <div class="six columns">
+            <h5>Engagement overview</strong></h5>
+            <p>Sent count, daily interactions, top items? Get a general overview of your mails' performance.</p>
+          </div>
+          <div class="six columns">
+            <h5>Get notifications on Slack</h5>
+            <p>Connect Slack and get failure, bounce and complaint notifications.</p>
+          </div>
+        </div>
+        <p>&nbsp;</p>
+        <div class="row">
+          <div class="six columns">
+            <h5>Deliveries, opens and clicks</h5>
+            <p>Track deliveries, opens, clicks and uniques across mails and recipients.</p>
+          </div>
+          <div class="six columns">
+            <h5>Live feed</h5>
+            <p>Get events from your mails as they happen. You can further filter based on the different event types.</p>
+          </div>
+        </div>
+        <p>&nbsp;</p>
+        <div class="row">
+          <div class="six columns">
+            <h5>View emails</h5>
+            <p>See exactly what is sent to users. What does the delivered mail look like? What details were missing?</p>
+          </div>
+          <div class="six columns">
+            <h5>Recipients and activity</h5>
+            <p>View recipient journey from delivery to open and clicks. Know who opened and clicked on what.</p>
+          </div>
+        </div>
+        <p>&nbsp;</p>
+        <div class="row">
+          <div class="six columns">
+            <h5>Bring your team</h5>
+            <p>Invite other members of your team to your analytics dashboard</p>
+          </div>
+        </div>
       </div>
       <div class="six columns">
         <img src="images/slack.png">
+        <img src="images/mails.png">
+        <img src="images/live.png">
+        <!--img src="images/clicks.png"-->
       </div>
     </div>
   </div>
@@ -159,8 +200,8 @@
 <section class="pricing" id="pricing">
   <div class="container">
     <div class="row">
-      <div class="eight columns">
-        <h5 class="title">Pricing</h5>
+      <div class="six columns offset-by-three">
+        <h3 class="title">Pricing</h3>
         <p>Pricing is based on the number of Mailgun events received per month irrespective of the number of domains in your account.</p>
         <p>An event is something that happens to an email. This could be a delivery, open, bounce or click on a link. Note that non-unique events are also tracked. This means if a recipient opens the same email twice, 2 events are tracked and not one.</p>
         <p>At the end of the month, you will be sent an invoice for the number of events consumed by your account.</p>
@@ -169,23 +210,29 @@
     <div class="row price">
       <div class="three columns">
         <div>
-          <p><strong>Dev</strong></p>
-          <p>Up to 5k events/month</p>
-          <h2>$5</h2>
+          <h4>Dev</h4>
+          <p>One month free trial<br>
+          Up to 5k events/month</p>
+          <h1>$5</h1>
+          <p><a href="/signup?dev" class="button button-primary">Signup</a></p>
         </div>
       </div>
       <div class="three columns">
         <div>
-          <p><strong>Pro</strong></p>
-          <p>Up to 50k events/month</p>
-          <h2>$20</h2>
+          <h4>Pro</h4>
+          <p>One month free trial<br>
+          Up to 50k events/month</p>
+          <h1>$20</h1>
+          <p><a href="/signup?pro" class="button button-primary">Signup</a></p>
         </div>
       </div>
       <div class="three columns">
         <div>
-          <p><strong>Biz</strong></p>
-          <p>Up to 500k events/month</p>
-          <h2>$100</h2>
+          <h4>Biz</h4>
+          <p>One month free trial<br>
+          Up to 500k events/month</p>
+          <h1>$100</h1>
+          <p><a href="/signup?biz" class="button button-primary">Signup</a></p>
         </div>
       </div>
       <div class="three columns">
@@ -199,15 +246,11 @@
 </section>
 <section class="faq">
   <div class="container">
-    <h5 class="title">FAQ</h5>
+    <h3 class="title">FAQ</h3>
     <div class="row">
-      <div class="three columns">
-        <p><strong>Why build this?</strong></p>
-        <p>I wanted a more detailed analytics and reporting for transactional mails sent for <a href="http://thefeed.press">thefeed.press</a> and <a href="http://obem.be/opeyemi">other projects</a>.</p>
-      </div>
-      <div class="three columns">
-        <p><strong>Why does it cost money?</strong></p>
-        <p>The fee covers hosting, development, support and maintaining the server and related services.</p>
+      <div class="six columns">
+        <p><strong>How is this different from the analytics in Mailgun dashboard?</strong></p>
+        <p>Suet gives more detailed analytics like uniques, click throughs, top interactions and on top of that presents it in an easy to follow way. It also connects to your Slack account to notify you of failures and bounces.</p>
       </div>
       <div class="three columns">
         <p><strong>Can I try it out without paying?</strong></p>
@@ -227,12 +270,6 @@
         <p><strong>I only see delivered events. What of opens and clicks?</strong></p>
         <p>Make sure you turn on open and click tracking in your Mailgun dashboard and also set the URLs in webhooks.</p>
       </div>
-      <div class="three columns">
-        <p><strong>Who are you?</strong></p>
-        <p>My name is <a href="http://obem.be/opeyemi">Opeyemi Obembe</a>. I build things for web and mobile.</p>
-      </div>
-    </div>
-    <div class="row">
       <div class="three columns">
         <p><strong>I have other questions</strong></p>
         <p>Get in touch via <a href="http://twitter.com/suet_co">@suet_co</a> on Twitter or send an email to <a href="mailto:hello@suet.co">hello@suet.co</a>.</p>
