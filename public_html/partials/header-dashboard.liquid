@@ -39,11 +39,11 @@
         {% if acc_active_domain %}
         <ul>
           <li class="has-sub">
-            <a href=""><strong>{{ acc_active_domain }}</strong> <i class="icon-head"></i></a>
+            <a href=""><strong>{{ acc_active_domain.domain }}</strong> <i class="icon-head"></i></a>
             <ul class="subnav">
               {% for domain in acc_domains %}
-              {% if domain != acc_active_domain %}
-              <li><a href="/switch/{{ domain }}"><strong>{{ domain }}</strong></a></li>
+              {% if domain.domain != acc_active_domain.domain %}
+              <li><a href="/switch/{{ domain.domain }}"><strong>{{ domain.domain }}</strong></a></li>
               {% endif %}
               {% endfor %}
               <li class="separator"></li>

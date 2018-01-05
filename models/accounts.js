@@ -21,7 +21,7 @@ function unique(event, domain, date, fn) {
       _id: null,
       count: {$sum: 1}
     }}
-  ], function(err, d){
+  ], (err, d) => {
     if (err || !d[0])
       return fn(err);
 
@@ -29,7 +29,7 @@ function unique(event, domain, date, fn) {
   });
 }
 
-exports.dashboardData = function(domain, query, fn) {
+exports.dashboardData = (domain, query, fn)  => {
   let data = {
         clicks: [],
         opens: [],
@@ -59,7 +59,7 @@ exports.dashboardData = function(domain, query, fn) {
         eng_date = {$gte: moment().subtract(from, 'days').toDate()};
     }
   }
-  let p = new Promise(function(resolve, reject){
+  let p = new Promise((resolve, reject) => {
     // Main data
     dbo.db().collection('logs').aggregate([
       {$match: {domain: domain, date: eng_date}},
@@ -75,7 +75,7 @@ exports.dashboardData = function(domain, query, fn) {
         event: {$push: {event: "$_id.event", count: "$count"}}
       }},
       {$sort: {'_id': 1}}
-    ]).toArray(function(err, docs){
+    ]).toArray((err, docs) => {
       if (err)
         return resolve();
 
@@ -108,7 +108,7 @@ exports.dashboardData = function(domain, query, fn) {
       resolve();
     });
   })
-  .then(function(){
+  .then(() => {
     // Get top clicks
 
     // Date filter
@@ -129,7 +129,7 @@ exports.dashboardData = function(domain, query, fn) {
       }
     }
 
-    return new Promise(function(resolve, reject){
+    return new Promise((resolve, reject) => {
       dbo.db().collection('logs').aggregate([
         {$match: {domain: domain, event: 'clicked', date: click_date}},
         {$group: {
@@ -138,7 +138,7 @@ exports.dashboardData = function(domain, query, fn) {
         }},
         {$sort: {count: -1}},
         {$limit: 5}
-      ]).toArray(function(err, docs){
+      ]).toArray((err, docs) => {
         if (err)
           return resolve();
 
@@ -147,7 +147,7 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function(){
+  .then(() => {
     // Get top opens
 
     // Date filter
@@ -167,7 +167,7 @@ exports.dashboardData = function(domain, query, fn) {
           open_date = {$gte: moment().subtract(from, 'days').toDate()};
       }
     }
-    return new Promise(function(resolve, reject){
+    return new Promise((resolve, reject) => {
 
       dbo.db().collection('logs').aggregate([
       {$match: {domain: domain, event: 'opened', date: open_date}},
@@ -184,7 +184,7 @@ exports.dashboardData = function(domain, query, fn) {
         as: 'mail'
       }},
       {$unwind: '$mail'}
-    ]).toArray(function(err, docs){
+    ]).toArray((err, docs) => {
         if (err)
           return resolve();
 
@@ -193,9 +193,9 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function(){
+  .then(() => {
     // Get platform
-    return new Promise(function(resolve, reject){
+    return new Promise((resolve, reject) => {
 
       dbo.db().collection('logs').aggregate([
       {$match: {domain: domain, platform: {$exists: true}}},
@@ -203,7 +203,7 @@ exports.dashboardData = function(domain, query, fn) {
         _id: '$platform',
         count: {$sum: 1}
       }}
-    ]).toArray(function(err, docs){
+    ]).toArray((err, docs) => {
         if (err)
           return resolve();
 
@@ -220,9 +220,9 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function(){
+  .then(() => {
     // Get OS
-    return new Promise(function(resolve, reject){
+    return new Promise((resolve, reject) => {
 
       dbo.db().collection('logs').aggregate([
       {$match: {domain: domain, os: {$exists: true}}},
@@ -230,7 +230,7 @@ exports.dashboardData = function(domain, query, fn) {
         _id: '$os',
         count: {$sum: 1}
       }}
-    ]).toArray(function(err, docs){
+    ]).toArray((err, docs) => {
         if (err)
           return resolve();
 
@@ -247,10 +247,10 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function(){
+  .then(() => {
     // Count mail
-    return new Promise(function(resolve, reject){
-      dbo.db().collection('mails').count({domain: domain}, function(err, c){
+    return new Promise((resolve, reject) => {
+      dbo.db().collection('mails').count({domain: domain}, (err, c) => {
         if (err)
           return reject(err);
 
@@ -260,10 +260,10 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function(){
+  .then(() => {
     // Count events
-    return new Promise(function(resolve, reject){
-      dbo.db().collection('logs').count({domain: domain}, function(err, c){
+    return new Promise((resolve, reject) => {
+      dbo.db().collection('logs').count({domain: domain}, (err, c) => {
         if (err)
           return reject(err);
 
@@ -273,10 +273,10 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function(){
+  .then(() => {
     // Count users
-    return new Promise(function(resolve, reject){
-      dbo.db().collection('users').count({domain: domain}, function(err, c){
+    return new Promise((resolve, reject) => {
+      dbo.db().collection('users').count({domain: domain}, (err, c) => {
         if (err)
           return reject(err);
 
@@ -286,10 +286,10 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function(){
+  .then(() => {
     // Unique opens
-    return new Promise(function(resolve, reject){
-      unique('opened', domain, eng_date, function(err, c){
+    return new Promise((resolve, reject) => {
+      unique('opened', domain, eng_date, (err, c) => {
 
         if (c)
           data.unique_opens = c;
@@ -298,10 +298,10 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function(){
+  .then(() => {
     // Unique clicks
-    return new Promise(function(resolve, reject){
-      unique('clicked', domain, eng_date, function(err, c){
+    return new Promise((resolve, reject) => {
+      unique('clicked', domain, eng_date, (err, c) => {
 
         if (c)
           data.unique_clicks = c;
@@ -310,16 +310,16 @@ exports.dashboardData = function(domain, query, fn) {
       });
     });
   })
-  .then(function() {
+  .then(() => {
     return fn(null, data);
   })
-  .catch(function(err) {
+  .catch(err => {
     console.log(err);
     return fn();
   });
 }
 
-exports.create = function(data, fn) {
+exports.create = (data, fn) => {
 
   if (!data)
     return fn('No data provided.');
@@ -336,7 +336,7 @@ exports.create = function(data, fn) {
   // Email valid, continue
   dbo.db().collection('accounts').findOne({
     email: email
-  }, function(err, doc) {
+  }, (err, doc) => {
     if (err)
       return fn('There has been an internal error. Please try again later.');
 
@@ -344,7 +344,7 @@ exports.create = function(data, fn) {
       return fn('This email is already in use.');
 
     let salt = crypto.randomBytes(128).toString('base64');
-    crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+    crypto.pbkdf2(password, salt, 5000, 32, 'sha512', (err, derivedKey) => {
       if (err)
         fn('There has been an internal error. Please try again later.');
 
@@ -353,7 +353,7 @@ exports.create = function(data, fn) {
         password: new Buffer(derivedKey).toString('base64'),
         salt: salt,
         reg_date: new Date()
-      }, function(err, result) {
+      }, (err, result) => {
         return fn(null, {
           id: result.ops[0]._id,
           email: result.ops[0].email,
@@ -364,7 +364,7 @@ exports.create = function(data, fn) {
   });
 }
 
-exports.add = function(from, email, domain, fn) {
+exports.add = (from, email, domain, fn) => {
 
   if (!email)
     return fn('No email provided.');
@@ -376,7 +376,7 @@ exports.add = function(from, email, domain, fn) {
   // Email valid, continue
   dbo.db().collection('accounts').findOne({
     email: email
-  }, function(err, doc) {
+  }, (err, doc) => {
     if (err)
       return fn('There has been an internal error. Please try again later.');
 
@@ -395,7 +395,7 @@ exports.add = function(from, email, domain, fn) {
         $addToSet: {accs: doc._id}
       }, {upsert: true});
 
-      return Mail.send(email, 'You have been invited to '+domain+' on Suet', 'invite', tmplObj, function(){
+      return Mail.send(email, 'You have been invited to '+domain+' on Suet', 'invite', tmplObj, () => {
         // todo: what to do with error? Account created by mail not sent
         return fn(null, email);
       });
@@ -403,7 +403,7 @@ exports.add = function(from, email, domain, fn) {
 
     let password = crypto.randomBytes(2).toString('hex');
     let salt = crypto.randomBytes(128).toString('base64');
-    crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+    crypto.pbkdf2(password, salt, 5000, 32, 'sha512', (err, derivedKey) => {
       if (err)
         fn('There has been an internal error. Please try again later.');
 
@@ -413,7 +413,7 @@ exports.add = function(from, email, domain, fn) {
         password: new Buffer(derivedKey).toString('base64'),
         salt: salt,
         reg_date: new Date()
-      }, function(err, result) {
+      }, (err, result) => {
         let id = result.ops[0]._id;
 
         // Add to domain
@@ -430,10 +430,10 @@ exports.add = function(from, email, domain, fn) {
             hash: hash,
             uid: tmplObj.uid,
             date: new Date()
-        }, function(err, result) {
+        }, (err, result) => {
           tmplObj.hash = encodeURIComponent(hash);
           // todo: what to do with err?
-          Mail.send(email, 'You have been invited to '+domain+' on Suet', 'invite', tmplObj, function(){
+          Mail.send(email, 'You have been invited to '+domain+' on Suet', 'invite', tmplObj, () => {
             // todo: what to do with error? Account created by mail not sent
             return fn(null, email);
           });
@@ -443,7 +443,7 @@ exports.add = function(from, email, domain, fn) {
   });
 }
 
-exports.login = function(data, fn) {
+exports.login = (data, fn) => {
   if (!data)
     return fn('No data provided.');
 
@@ -451,14 +451,14 @@ exports.login = function(data, fn) {
   let password = data.password || '';
 
   email = email.toLowerCase().trim();
-  dbo.db().collection('accounts').findOne({email: email}, function(err, doc) {
+  dbo.db().collection('accounts').findOne({email: email}, (err, doc) => {
     if (err)
       return fn('There has been an internal error. Please try again later.');
 
     if (!doc)
       return fn('Email not found.');
 
-    crypto.pbkdf2(password, doc.salt, 5000, 32, 'sha512', function(err, derivedKey) {
+    crypto.pbkdf2(password, doc.salt, 5000, 32, 'sha512', (err, derivedKey) => {
       if (err)
         return fn('There has been an internal error. Please try again later.');
 
@@ -477,13 +477,15 @@ exports.login = function(data, fn) {
         {$set: {ll: new Date()}});
 
       // Get his domains
-      Domains.get(doc._id, function(err, domains){
+      Domains.get(doc._id, (err, domains) => {
         if (domains && domains.length > 0) {
-          let _domains = [];
+          /*let _domains = [];
           for (let domain of domains)
             _domains.push(domain.domain)
           json.domains = _domains;
-          json.active_domain = _domains[0];
+          json.active_domain = _domains[0];*/
+          json.domains = domains;
+          json.active_domain = domains[0];
         }
 
         return fn(null, json);
@@ -492,11 +494,11 @@ exports.login = function(data, fn) {
   });
 }
 
-exports.recoverPassword = function(data, fn) {
+exports.recoverPassword = (data, fn) => {
 
   let email = data.email || '';
   dbo.db().collection('accounts').findOne({email: email},
-    function(err, doc) {
+    (err, doc) => {
       if (err)
         return fn('There has been an internal error. Please try again later.');
 
@@ -504,7 +506,7 @@ exports.recoverPassword = function(data, fn) {
         return fn('The specified email does not exist.');
 
       let salt = crypto.randomBytes(128).toString('base64');
-      crypto.pbkdf2(salt, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+      crypto.pbkdf2(salt, salt, 5000, 32, 'sha512', (err, derivedKey) => {
 
         if (err)
           return fn('There has been an internal error. Please try again later.');
@@ -518,7 +520,7 @@ exports.recoverPassword = function(data, fn) {
             hash: hash,
             uid: uid,
             date: new Date()
-        }, function(err, result) {
+        }, (err, result) => {
           // Send email
           let tmplObj = {
             hash: encodeURIComponent(hash),
@@ -532,10 +534,10 @@ exports.recoverPassword = function(data, fn) {
   });
 }
 
-exports.confirmReset = function(hash, uid, fn) {
+exports.confirmReset = (hash, uid, fn) => {
 
   dbo.db().collection('recover').findOne({uid: uid, hash: decodeURIComponent(hash)},
-    function(err, doc) {
+    (err, doc) => {
       if (err)
         return fn('There has been an internal error. Please try again later.');
 
@@ -546,7 +548,7 @@ exports.confirmReset = function(hash, uid, fn) {
   });
 }
 
-exports.resetPassword = function(hash, uid, data, fn) {
+exports.resetPassword = (hash, uid, data, fn) => {
 
     let password = data.password || '';
     let passwordb = data.passwordb || '';
@@ -557,7 +559,7 @@ exports.resetPassword = function(hash, uid, data, fn) {
       return fn('Your password should be at least 6 characters.');
 
     dbo.db().collection('recover').findOne({uid: uid, hash: decodeURIComponent(hash)},
-      function(err, doc) {
+      (err, doc) => {
         if (err)
           return fn('There has been an internal error. Please try again later.');
 
@@ -565,14 +567,14 @@ exports.resetPassword = function(hash, uid, data, fn) {
           return fn('Invalid reset details.');
 
         let salt = crypto.randomBytes(128).toString('base64');
-        crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+        crypto.pbkdf2(password, salt, 5000, 32, 'sha512', (err, derivedKey) => {
           if (err)
             return fn('There has been an internal error. Please try again later.');
 
           dbo.db().collection('accounts').update(
             {_id: dbo.id(uid)},
             {$set: {password: new Buffer(derivedKey).toString('base64'), salt: salt}},
-            function(err, result) {
+            (err, result) => {
               dbo.db().collection('recover').remove({uid: uid});
               return fn();
           });
@@ -581,7 +583,7 @@ exports.resetPassword = function(hash, uid, data, fn) {
     });
 }
 
-exports.updateEmail = function(uid, email, fn) {
+exports.updateEmail = (uid, email, fn) => {
   if (!uid)
     return fn('User id missing');
 
@@ -591,7 +593,7 @@ exports.updateEmail = function(uid, email, fn) {
   if (!/^\S+@\S+$/.test(email))
     return fn('Email invalid. Confirm and try again');
 
-  dbo.db().collection('accounts').findOne({email: email}, function(err, doc) {
+  dbo.db().collection('accounts').findOne({email: email}, (err, doc) => {
     if (err)
       return fn('There has been an internal error. Please try again later.');
 
@@ -599,7 +601,7 @@ exports.updateEmail = function(uid, email, fn) {
       return fn('Email is already in use');
 
     dbo.db().collection('accounts').updateOne({_id: uid}, {$set: {email: email}},
-      function(err, result) {
+      (err, result) => {
       if (err)
         return fn('There has been an internal error. Please try again later.');
 
@@ -608,7 +610,7 @@ exports.updateEmail = function(uid, email, fn) {
   });
 }
 
-exports.updatePassword = function(uid, oldPassword, password, fn) {
+exports.updatePassword = (uid, oldPassword, password, fn) => {
 
   if (!uid)
     return fn('User ID missing');
@@ -621,14 +623,14 @@ exports.updatePassword = function(uid, oldPassword, password, fn) {
   if (!password || password.length < 6)
     return fn('Your password should be at least 6 characters.');
 
-  dbo.db().collection('accounts').findOne({_id: uid}, function(err, doc) {
+  dbo.db().collection('accounts').findOne({_id: uid}, (err, doc) => {
     if (err)
       return fn('There has been an internal error. Please try again later.');
 
     if (!doc)
       return fn('Invalid account.');
 
-    crypto.pbkdf2(oldPassword, doc.salt, 5000, 32, 'sha512', function(err, derivedKey) {
+    crypto.pbkdf2(oldPassword, doc.salt, 5000, 32, 'sha512', (err, derivedKey) => {
       if (err)
         return fn('There has been an internal error. Please try again later.');
 
@@ -638,13 +640,13 @@ exports.updatePassword = function(uid, oldPassword, password, fn) {
 
       // Update password here
       let salt = crypto.randomBytes(128).toString('base64');
-      crypto.pbkdf2(password, salt, 5000, 32, 'sha512', function(err, derivedKey) {
+      crypto.pbkdf2(password, salt, 5000, 32, 'sha512', (err, derivedKey) => {
         if (err)
           return fn('There has been an internal error. Please try again later.');
 
         dbo.db().collection('accounts').update({_id: uid},
           {$set: {password: new Buffer(derivedKey).toString('base64'), salt: salt}},
-          function(err, result) {
+          (err, result) => {
           if (err)
             return fn('There has been an internal error. Please try again later.');
 
@@ -655,7 +657,7 @@ exports.updatePassword = function(uid, oldPassword, password, fn) {
   });
 }
 
-exports.removeProfile = function(uid, domain, fn) {
+exports.removeProfile = (uid, domain, fn) => {
 
   if (!uid)
     return fn('User ID missing');
@@ -663,7 +665,7 @@ exports.removeProfile = function(uid, domain, fn) {
   uid = dbo.id(uid);
 
   // Get domain
-  Domains.getOne(uid, domain, function(err, domain){
+  Domains.getOne(uid, domain, (err, domain) => {
     if (err)
       return fn(err);
 
@@ -673,7 +675,7 @@ exports.removeProfile = function(uid, domain, fn) {
     if (domain.owner == uid.toHexString())
       return fn('You created this account. You cannot be removed.');
 
-    Domains.removeProfile(domain._id, uid, function(err){
+    Domains.removeProfile(domain._id, uid, err => {
       if (err)
         return fn(err);
 
@@ -682,38 +684,39 @@ exports.removeProfile = function(uid, domain, fn) {
   });
 }
 
-exports.deleteProfile = function(uid, fn) {
+exports.deleteProfile = (uid, fn) => {
 
   if (!uid)
     return fn('User ID missing');
 
   // Get domains for user
-  Domains.get(uid, function(err, domains){
+  Domains.get(uid, (err, domains) => {
     if (err)
       return fn(err);
 
-    let dp = domains.map(function(domain){
-      return new Promise(function(resolve, reject){
+    let dp = domains.map(domain => {
+      return new Promise((resolve, reject) => {
         if (domain.accs.length === 1)
-          Domains.delete(domain._id, function(err){
+          Domains.delete(domain.domain, err => {
             if (err)
               return reject();
             return resolve();
           });
-        else
-          Domains.removeProfile(domain._id, uid, function(err){
+        else {
+          Domains.removeProfile(domain._id, uid, err => {
             if (err)
               return reject();
             return resolve();
           });
+        }
       });
     });
 
-    Promise.all(dp).then(function(){
-      dbo.db().collection('accounts').remove({_id: dbo.id(uid)}, function(err){
+    Promise.all(dp).then(() => {
+      dbo.db().collection('accounts').remove({_id: dbo.id(uid)}, err => {
         fn(err);
       });
-    }).catch(function(reason) {
+    }).catch(reason => {
       fn(reason);
     });
   });

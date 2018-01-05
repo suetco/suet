@@ -3,12 +3,12 @@ const dbo = require('../lib/db.js')
     ;
 
 // Get list of domains connected to account
-exports.get = function(accId, fn) {
+exports.get = (accId, fn) => {
   if (!accId)
     return fn('Invalid account');
   dbo.db().collection('domains').find({
     accs: dbo.id(accId)
-  }, {sort: {domain: 1}}).toArray(function(err, docs) {
+  }, {sort: {domain: 1}}).toArray((err, docs) => {
     if (err) {
       return fn('Internal Error');
     }
@@ -18,7 +18,7 @@ exports.get = function(accId, fn) {
 }
 
 // Get a domain
-exports.getOne = function(accId, domain, fn) {
+exports.getOne = (accId, domain, fn) => {
   if (!accId)
     return fn('Invalid account');
   if (!domain)
@@ -26,7 +26,7 @@ exports.getOne = function(accId, domain, fn) {
   dbo.db().collection('domains').findOne({
     accs: dbo.id(accId),
     domain: domain
-  }, function(err, doc) {
+  }, (err, doc) => {
     if (err)
       return fn('Internal Error');
 
@@ -35,7 +35,7 @@ exports.getOne = function(accId, domain, fn) {
 
     doc.owner = doc.owner.toHexString();
 
-    dbo.db().collection('accounts').find({_id: {$in: doc.accs}}).toArray(function(err, users){
+    dbo.db().collection('accounts').find({_id: {$in: doc.accs}}).toArray((err, users)=> {
       doc.users = [];
       for (let user of users) {
         doc.users.push({
@@ -49,7 +49,7 @@ exports.getOne = function(accId, domain, fn) {
 }
 
 // Get domains from Mailgun
-exports.getDomains = function(accId, key, fn) {
+exports.getDomains = (accId, key, fn) => {
 
   if (!accId)
     return fn('Invalid account');
@@ -57,7 +57,7 @@ exports.getDomains = function(accId, key, fn) {
     return fn('You missed the API key.');
 
   accId = dbo.id(accId);
-  dbo.db().collection('accounts').findOne({_id: accId}, function(err, doc) {
+  dbo.db().collection('accounts').findOne({_id: accId}, (err, doc) => {
     if (!doc)
       return fn('Invalid account');
 
@@ -69,7 +69,7 @@ exports.getDomains = function(accId, key, fn) {
         'user': 'api',
         'pass': key
       }
-    }, function(err, response, body) {
+    }, (err, response, body) => {
 
       if (err || response.statusCode != 200) {
         return fn('Error validating your Mailgun API key. Please try again later.');
@@ -88,8 +88,8 @@ exports.getDomains = function(accId, key, fn) {
         }
 
         // Get webhooks
-        Promise.all(domains.map(function(domain){
-            return new Promise(function(resolve){
+        Promise.all(domains.map(domain => {
+            return new Promise(resolve => {
               request.get({
                 'url': ['https://api.mailgun.net/v3/domains/', domain, '/webhooks'].join(''),
                 'gzip': true,
@@ -98,7 +98,7 @@ exports.getDomains = function(accId, key, fn) {
                   'pass': key,
                   'sendImmediately': false
                 }
-              }, function(err, response, body) {
+              }, (err, response, body) => {
                 let obj = {name: domain};
                 if (err && response.statusCode != 200) {
                   obj.error = true;
@@ -122,7 +122,7 @@ exports.getDomains = function(accId, key, fn) {
               });
             });
           })
-        ).then(function(domains){
+        ).then(domains => {
           return fn(null, domains);
         });
       }
@@ -133,7 +133,7 @@ exports.getDomains = function(accId, key, fn) {
 }
 
 // Setup domains from Mailgun
-exports.setupDomains = function(accId, key, domains, domainHooks, fn) {
+exports.setupDomains = (accId, key, domains, domainHooks, fn) => {
 
   if (!accId)
     return fn('Invalid account');
@@ -143,19 +143,19 @@ exports.setupDomains = function(accId, key, domains, domainHooks, fn) {
     return fn('Select one or more domains.');
 
   accId = dbo.id(accId);
-  dbo.db().collection('accounts').findOne({_id: accId}, function(err, doc) {
+  dbo.db().collection('accounts').findOne({_id: accId}, (err, doc) => {
     if (!doc)
       return fn('Invalid account');
 
     let addedDomains = [];
     let hooks = ['bounce', 'deliver', 'drop', 'spam', 'click', 'open'];
     // Update webhooks
-    Promise.all(domains.map(function(domain){
-      return new Promise(function(resolve){
+    Promise.all(domains.map(domain => {
+      return new Promise(resolve => {
         let endpoint = ['https://api.mailgun.net/v3/domains/', domain, '/webhooks'].join('');
 
-        Promise.all(hooks.map(function(hook){
-          return new Promise(function(resolveInner){
+        Promise.all(hooks.map(hook => {
+          return new Promise(resolveInner => {
 
             if (domainHooks[domain] && domainHooks[domain].hooks
                   && domainHooks[domain].hooks.indexOf(hook) != -1) {
@@ -173,7 +173,7 @@ exports.setupDomains = function(accId, key, domains, domainHooks, fn) {
                   'id': hook,
                   'url': process.env.WEBHOOK
                 }
-              }, function(err, response, body) {
+              }, (err, response, body) => {
                 // So how do we even handle errors here? :/
                 resolveInner();
               });
@@ -192,40 +192,40 @@ exports.setupDomains = function(accId, key, domains, domainHooks, fn) {
                   'id': hook,
                   'url': process.env.WEBHOOK
                 }
-              }, function(err, response, body) {
+              }, (err, response, body) => {
                 // So how do we even handle errors here? :/
                 resolveInner();
               });
             }
           });
-        })).then(function(){
+        })).then(() => {
           // Hooks updated, add to db
           dbo.db().collection('domains').updateOne({
             domain: domain
           }, {
             $addToSet: {accs: accId},
             $set: {key: key, owner: accId}
-          }, {upsert: true}, function(err){
+          }, {upsert: true}, err => {
             if (!err)
               addedDomains.push(domain);
 
             return resolve();
           });
 
-        }).catch(function(e){
+        }).catch(e => {
           return resolve();
         });
       });
-    })).then(function(){
+    })).then(() => {
       return fn(null, addedDomains);
-    }).catch(function(){
+    }).catch(() => {
       return fn(null, addedDomains);
     });
   });
 }
 
 // Connect Slack to the domain
-exports.saveSlackAcc = function(domain, params, fn) {
+exports.saveSlackAcc = (domain, params, fn) => {
 
   if (!domain)
     return fn('No domain provided');
@@ -242,7 +242,7 @@ exports.saveSlackAcc = function(domain, params, fn) {
         webhook: params.webhook
       }
     }
-  }, function(err, status) {
+  }, (err, status) => {
     if (err) {
       return fn('Internal Error');
     }
@@ -252,14 +252,14 @@ exports.saveSlackAcc = function(domain, params, fn) {
 }
 
 // Disconnect Slack from the domain
-exports.removeSlack = function(domain, fn) {
+exports.removeSlack = (domain, fn) => {
 
   if (!domain)
     return fn('No domain provided');
 
   dbo.db().collection('domains').updateOne({
     domain: domain
-  }, {$unset: {slack: true}}, function(err) {
+  }, {$unset: {slack: true}}, err => {
     if (err) {
       return fn('Internal Error');
     }
@@ -269,7 +269,7 @@ exports.removeSlack = function(domain, fn) {
 }
 
 // Remove a user account from profile
-exports.removeProfile = function(id, accId, fn) {
+exports.removeProfile = (id, accId, fn) => {
 
   if (!id) {
     if (fn)
@@ -280,7 +280,7 @@ exports.removeProfile = function(id, accId, fn) {
 
   dbo.db().collection('domains').updateOne({
     _id: dbo.id(id)
-  }, {$pull: {accs: dbo.id(accId)}}, function(err) {
+  }, {$pull: {accs: dbo.id(accId)}}, err => {
     if (!fn)
       return;
 
@@ -293,34 +293,76 @@ exports.removeProfile = function(id, accId, fn) {
 }
 
 // Delete the domain
-exports.delete = function(id, fn) {
+exports.delete = (domain, fn) => {
 
-  if (!id)
-    return fn('No domain id provided');
-
-  id = dbo.id(id);
+  if (!domain)
+    return fn('No domain provided');
 
   // Get domain
   dbo.db().collection('domains').findOne({
-    _id: id
-  }, function(err, doc) {
+    domain: domain
+  }, (err, doc) => {
     if (err)
       return fn('Internal Error');
 
     if (!doc)
       return fn('Domain not found');
 
-    // todo: Remove webhook
-
     // Delete all
-    dbo.db().collection('logs').remove({domain: doc.domain});
-    dbo.db().collection('mails').remove({domain: doc.domain});
-    dbo.db().collection('users').remove({domain: doc.domain});
-    dbo.db().collection('domains').remove({_id: id}, function(err){
+    dbo.db().collection('logs').remove({domain: domain});
+    dbo.db().collection('mails').remove({domain: domain});
+    dbo.db().collection('users').remove({domain: domain});
+    dbo.db().collection('domains').remove({domain: domain}, err => {
       if (err)
         return fn('Internal Error');
 
-      return fn();
+      // Remove webhooks from Mailgun
+      request.get({
+        'url': ['https://api.mailgun.net/v3/domains/', domain, '/webhooks'].join(''),
+        'gzip': true,
+        'auth': {
+          'user': 'api',
+          'pass': doc.key,
+          'sendImmediately': false
+        }
+      }, (err, response, body) => {
+        if (err && response.statusCode != 200)
+          return fn();
+
+        // Get all enabled webhook
+        let enabled = [];
+        body = JSON.parse(body);
+        if (body.webhooks) {
+          if (Object.keys(body.webhooks).length > 1) {
+            for (let hook in body.webhooks) {
+              if (body.webhooks[hook].url == process.env.WEBHOOK)
+                enabled.push(hook);
+            }
+          }
+        }
+        // remove enabled webhooks
+        // /domains/<domain>/webhooks/<webhookname>
+        Promise.all(enabled.map(hook => {
+            return new Promise(resolve => {
+              request.delete({
+                'url': ['https://api.mailgun.net/v3/domains/', domain, '/webhooks/', hook].join(''),
+                'gzip': true,
+                'auth': {
+                  'user': 'api',
+                  'pass': doc.key,
+                  'sendImmediately': false
+                }
+              }, (err, response, body) => {
+                return resolve();
+              });
+            });
+          })
+        ).then(() => {
+          return fn(null);
+        });
+
+      });
+
     });
   });
 }

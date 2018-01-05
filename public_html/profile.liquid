@@ -8,14 +8,14 @@
     <div class="row">
       <div class="four columns offset-by-one">
         <div class="box">
-          <p><strong>Update Email</strong></p>
+          <h5>Update Email</h5>
           <form method="post">
             <p><input type="email" name="email" placeholder="Email" value="{{acc_email}}" class="u-full-width"></p>
             <p><button class="button button-primary u-full-width">Update</button></p>
           </form>
         </div>
         <div class="box">
-          <p><strong>Update Password</strong></p>
+          <h5>Update Password</h5>
           <form method="post">
             <p><input type="password" name="password" placeholder="Current password" class="u-full-width"></p>
             <p><input type="password" name="new_password" placeholder="New password" class="u-full-width"></p>
@@ -26,7 +26,7 @@
       <div class="six columns">
         <div class="row">
           <div class="box">
-            <p><strong>Add New Domains</strong></p>
+            <h5>Add New Domains</h5>
             <p>Add a new Mailgun API key to add new domains to your account.</p>
             <form method="post" action="/add-key">
               <p><input type="text" name="key" placeholder="API key" class="u-full-width"></p>
@@ -34,7 +34,7 @@
             </form>
           </div>
           <div class="box">
-            <p><strong>Delete Account</strong></p>
+            <h5>Delete Account</h5>
             <p>This is not a recoverable action. All data related to the profile&mdash;domains, data and profile will be deleted. Be sure you really want to do this before you continue.</p>
             <input type="hidden" name="delete" value="{{acc_id}}">
             <p><button class="button u-full-width tooltip" data-tooltip-content="#del_tooltip" type="button">Delete</button></p>

@@ -2,7 +2,7 @@ const dbo = require('../lib/db.js')
     , moment = require('moment')
     ;
 
-exports.getAll = function(domain, options, fn) {
+exports.getAll = (domain, options, fn)  => {
   if (!domain)
     return fn('Domain not specified');
 
@@ -21,16 +21,16 @@ exports.getAll = function(domain, options, fn) {
   let qs = {limit: limit, skip: parseInt(skip), sort: {}};
   qs.sort[sort] = order;
 
-  let p = new Promise(function(resolve, reject){
-    dbo.db().collection('users').count({domain: domain}, function(err, c){
+  let p = new Promise((resolve, reject) => {
+    dbo.db().collection('users').count({domain: domain}, (err, c) => {
       if (err)
         return reject(err);
 
       resolve(c);
     });
   })
-  .then(function(total){
-    dbo.db().collection('users').find({domain: domain}, qs).toArray(function(err, docs) {
+  .then(total => {
+    dbo.db().collection('users').find({domain: domain}, qs).toArray((err, docs) => {
       if (err) {
         console.log(err);
         return fn('Internal Error');
@@ -45,12 +45,12 @@ exports.getAll = function(domain, options, fn) {
       });
     });
   })
-  .catch(function(err){
+  .catch(err => {
     fn(err);
   });
 }
 
-exports.get = function(email, domain, fn) {
+exports.get = (email, domain, fn) => {
   if (!domain)
     return fn('Domain not specified');
   if (!email)
@@ -68,7 +68,7 @@ exports.get = function(email, domain, fn) {
     {$sort: {date: -1}}
   ];
 
-  dbo.db().collection('logs').aggregate(q).toArray(function(err, logs){
+  dbo.db().collection('logs').aggregate(q).toArray((err, logs) => {
     if (err) {
       console.log(err);
       return fn('Internal Error');

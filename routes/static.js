@@ -2,24 +2,24 @@ var hook = require('../workers/hooks/index.js')
     , render = require('../lib/utils.js').render
     ;
 
-module.exports = function(app){
+module.exports = app => {
 
-  app.get('/', function(req, res) {
+  app.get('/', (req, res) => {
     res.render('index', render(req));
   });
 
-  app.get('/privacy', function(req, res) {
+  app.get('/privacy', (req, res) => {
     res.render('privacy', render(req, {
       title: 'Privacy policy'
     }));
   });
-  app.get('/terms', function(req, res) {
+  app.get('/terms', (req, res) => {
     res.render('tos', render(req, {
       title: 'Terms of Service'
     }));
   });
 
-  app.get('/support', function(req, res) {
+  app.get('/support', (req, res) => {
     res.render('support', render(req, {
       title: 'Support'
     }));
@@ -27,7 +27,7 @@ module.exports = function(app){
 
   // Webhook (if you cant use Google cloud functions)
   // Use cloud functions if you can though
-  app.all('/webhook', function(req, res) {
+  app.all('/webhook', (req, res) => {
     // If a webhook is set, ignore this
     if (process.env.WEBHOOK)
       return res.end();

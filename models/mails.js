@@ -2,7 +2,7 @@ const dbo = require('../lib/db.js')
     , moment = require('moment')
     ;
 
-exports.getAll = function(domain, options, fn) {
+exports.getAll = (domain, options, fn) => {
   if (!domain)
     return fn('Domain not specified');
 
@@ -21,16 +21,16 @@ exports.getAll = function(domain, options, fn) {
   let qs = {limit: limit, skip: parseInt(skip), sort: {}};
   qs.sort[sort] = order;
 
-  let p = new Promise(function(resolve, reject){
-    dbo.db().collection('mails').count({domain: domain}, function(err, c){
+  let p = new Promise((resolve, reject) => {
+    dbo.db().collection('mails').count({domain: domain}, (err, c) => {
       if (err)
         return reject(err);
 
       resolve(c);
     });
   })
-  .then(function(total){
-    dbo.db().collection('mails').find({domain: domain}, qs).toArray(function(err, docs) {
+  .then(total => {
+    dbo.db().collection('mails').find({domain: domain}, qs).toArray((err, docs) => {
       if (err) {
         console.log(err);
         return fn('Internal Error');
@@ -45,7 +45,7 @@ exports.getAll = function(domain, options, fn) {
       });
     });
   })
-  .catch(function(err){
+  .catch(err => {
     fn(err);
   });
 
@@ -93,11 +93,11 @@ exports.getAll = function(domain, options, fn) {
   });//*/
 }
 
-exports.get = function(msg_id, domain, fn) {
+exports.get = (msg_id, domain, fn) => {
   if (!domain)
     return fn('Domain not specified');
 
-  dbo.db().collection('mails').findOne({msg_id: msg_id, domain: domain}, function(err, doc) {
+  dbo.db().collection('mails').findOne({msg_id: msg_id, domain: domain}, (err, doc) => {
     if (err) {
       console.log(err);
       return fn('Internal Error');
@@ -108,7 +108,7 @@ exports.get = function(msg_id, domain, fn) {
 
     dbo.db().collection('logs').find({msg_id: msg_id, domain: domain}, {
       sort: {date: -1},
-    }).toArray(function(err, logs) {
+    }).toArray((err, logs) => {
       if (err) {
         console.log(err);
         return fn('Internal Error');

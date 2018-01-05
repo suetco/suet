@@ -16,7 +16,7 @@ const express = require('express')
     , dbo = require('./lib/db.js')
     ;
 
-dbo.connect(function(err){
+dbo.connect(err => {
 
   if (err) {
     // todo: Notify!!!
@@ -29,7 +29,7 @@ dbo.connect(function(err){
 
   // Filters
   // Override 'remove'
-  engine.registerFilter('remove', function(v, arg){
+  engine.registerFilter('remove', (v, arg) => {
     let arr = [],
         arg_arr = arg.split(',')
         ;
@@ -47,14 +47,14 @@ dbo.connect(function(err){
 
     return arr.join('&');
   });
-  engine.registerFilter('sum', function(v){
+  engine.registerFilter('sum', v => {
     if (!v)
       return 0;
-    return v.reduce(function(a, b) {
+    return v.reduce((a, b) => {
       return a + b;
     }, 0);
   });
-  engine.registerFilter('format', function(v){
+  engine.registerFilter('format', v => {
     if (!v)
       return 0;
     return v.toLocaleString();
@@ -95,7 +95,7 @@ dbo.connect(function(err){
   require('./routes/static.js')(app);
 
   // No matching route
-  app.use(function(err, req, res, next) {
+  app.use((err, req, res, next) => {
     res.status(err.status || 500);
     // todo: log err.message
     console.log(err.message);

@@ -27,21 +27,22 @@ moment.updateLocale('en', {
     }
 });
 
-module.exports = function(app){
+module.exports = app => {
 
-  app.get('/switch/:domain', function(req, res) {
-    let domain = req.params.domain;
+  app.get('/switch/:domain', (req, res) => {
     // If domain exist
-    if (req.session.account.domains.indexOf(domain) != -1 &&
-      req.session.account.active_domain != domain) {
-      req.session.account.active_domain = domain;
+    for (let domain of req.session.account.domains) {
+      if (domain.domain == req.params.domain) {
+        req.session.account.active_domain = domain;
+        break;
+      }
     }
 
     res.redirect('back');
   });
 
-  app.get('/dashboard', function(req, res) {
-    Accounts.dashboardData(req.session.account.active_domain, req.query, function(err, data) {
+  app.get('/dashboard', (req, res) => {
+    Accounts.dashboardData(req.session.account.active_domain.domain, req.query, (err, data) => {
       res.render('dashboard', render(req, {
         title: 'Dashboard',
         webhook: process.env.WEBHOOK || [process.env.HOST, '/webhook'].join(''),
@@ -52,7 +53,7 @@ module.exports = function(app){
     });
   });
 
-  app.get('/feed', function(req, res) {
+  app.get('/feed', (req, res) => {
     let options = {};
     if (req.query.sort)
       options.sort = req.query.sort;
@@ -64,7 +65,7 @@ module.exports = function(app){
       options.date = req.query.date;
     if (req.query.offset)
       options.offset = req.query.offset;
-    Logs.feed(req.session.account.active_domain, options, function(err, data) {
+    Logs.feed(req.session.account.active_domain.domain, options, (err, data) => {
       if (!err) {
         for (let d of data.data) {
           d.timeago = moment(d.date).fromNow();
@@ -84,11 +85,13 @@ module.exports = function(app){
     })
   });
 
-  app.get('/mails', function(req, res) {
+  app.get('/mails', (req, res) => {
     let options = {};
     if (req.query.sort)
       options.sort = req.query.sort;
-    Mails.getAll(req.session.account.active_domain, options, function(err, data) {
+    if (req.query.offset)
+      options.offset = req.query.offset;
+    Mails.getAll(req.session.account.active_domain.domain, options, (err, data) => {
       for (let d of data.data) {
         d.timeago = moment(d.date).fromNow();
       }
@@ -99,8 +102,8 @@ module.exports = function(app){
       }));
     })
   });
-  app.get('/mails/:id', function(req, res) {
-    Mails.get(req.params.id, req.session.account.active_domain, function(err, doc) {
+  app.get('/mails/:id', (req, res) => {
+    Mails.get(req.params.id, req.session.account.active_domain.domain, (err, doc) => {
       if (err || !doc) {
         req.flash('error', err);
         return res.redirect('/mails');
@@ -116,7 +119,7 @@ module.exports = function(app){
     })
   });
 
-  app.get('/users', function(req, res) {
+  app.get('/users', (req, res) => {
     let options = {sort: 'last_seen'};
     if (req.query.sort)
       options.sort = req.query.sort;
@@ -124,7 +127,7 @@ module.exports = function(app){
       options.dir = req.query.dir;
     if (req.query.offset)
       options.offset = req.query.offset;
-    Users.getAll(req.session.account.active_domain, options, function(err, data) {
+    Users.getAll(req.session.account.active_domain.domain, options, (err, data) => {
       for (let user of data.data) {
         user.timeago = moment(user.last_seen).fromNow();
       }
@@ -136,8 +139,8 @@ module.exports = function(app){
       }));
     })
   });
-  app.get('/users/:email', function(req, res) {
-    Users.get(req.params.email, req.session.account.active_domain, function(err, doc) {
+  app.get('/users/:email', (req, res) => {
+    Users.get(req.params.email, req.session.account.active_domain.domain, (err, doc) => {
       if (err || !doc) {
         req.flash('error', err);
         return res.redirect('/users');
@@ -155,14 +158,14 @@ module.exports = function(app){
     })
   });
 
-  app.get('/profile', function(req, res) {
+  app.get('/profile', (req, res) => {
     res.render('profile', render(req, {
       title: 'Profile'
     }));
   });
-  app.post('/profile', function(req, res) {
+  app.post('/profile', (req, res) => {
     if (req.body.email) {
-      Accounts.updateEmail(req.session.account.id, req.body.email, function(err, status) {
+      Accounts.updateEmail(req.session.account.id, req.body.email, (err, status) => {
         if (err) {
           req.flash('error', err);
         }
@@ -176,7 +179,7 @@ module.exports = function(app){
     }
     else if (req.body.password) {
       Accounts.updatePassword(req.session.account.id,
-        req.body.password, req.body.new_password, function(err, status) {
+        req.body.password, req.body.new_password, (err, status) => {
         if (err)
           req.flash('error', err);
         else
@@ -186,7 +189,7 @@ module.exports = function(app){
       });
     }
     else if (req.body.delete) {
-      Accounts.deleteProfile(req.session.account.id, function(err, status) {
+      Accounts.deleteProfile(req.session.account.id, (err, status) => {
         if (err) {
           req.flash('error', err);
           return res.redirect('/profile');
@@ -199,9 +202,9 @@ module.exports = function(app){
       return res.redirect('/profile');
   });
 
-  app.get('/settings', function(req, res) {
+  app.get('/settings', (req, res) => {
     Domains.getOne(req.session.account.id,
-      req.session.account.active_domain, function(err, domain){
+      req.session.account.active_domain.domain, (err, domain) => {
 
         // If removing a member
         if (req.query.remove && domain) {
@@ -211,7 +214,7 @@ module.exports = function(app){
           }
 
           return Accounts.removeProfile(req.query.remove,
-            req.session.account.active_domain, function(err){
+            req.session.account.active_domain.domain, err => {
             if (err)
               req.flash('error', err);
             else
@@ -229,15 +232,51 @@ module.exports = function(app){
         }));
     });
   });
-  app.post('/settings', function(req, res) {
-    Accounts.add(req.session.account.email,
-      req.body.invite_email, req.session.account.active_domain, function(err, email){
-        if (err)
-          req.flash('error', err);
-        else
-          req.flash('info', 'Member invited to domain');
-
+  app.post('/settings', (req, res) => {
+    Domains.getOne(req.session.account.id,
+      req.session.account.active_domain.domain, (err, domain) => {
+      if (domain.owner !== req.session.account.id) {
+        req.flash('error', 'Only administrators can perform this action');
         return res.redirect('/settings');
+      }
+
+      if (req.body.invite_email) {
+        Accounts.add(req.session.account.email,
+          req.body.invite_email, domain.domain, (err, email) => {
+            if (err)
+              req.flash('error', err);
+            else
+              req.flash('info', 'Member invited to domain');
+
+            return res.redirect('/settings');
+        });
+      }
+      else if (req.body.delete) {
+        Domains.delete(domain.domain, err => {
+          if (err)
+            req.flash('error', err);
+
+          // Remove from domains session
+          for (let i in req.session.account.domains) {
+            if (req.session.account.domains[i].domain == domain.domain) {
+              req.session.account.domains.splice(i, 1);
+              break;
+            }
+          }
+
+          // Remove active domain
+          req.flash('info', domain.domain+' was successfully removed from your Suet account');
+          delete req.session.account.active_domain;
+          // Redirect
+          if (req.session.account.domains.length > 0) {
+            req.session.account.active_domain = req.session.account.domains[0];
+            res.redirect('/dashboard');
+          }
+          else {
+            res.redirect('/add-key');
+          }
+        });
+      }
     });
   });
 }

@@ -2,7 +2,7 @@ const dbo = require('../lib/db.js')
     , moment = require('moment')
     ;
 
-exports.feed = function(domain, options, fn) {
+exports.feed = (domain, options, fn) => {
   if (!domain)
     return fn('Domain not specified');
 
@@ -56,7 +56,7 @@ exports.feed = function(domain, options, fn) {
       as: 'mail'
     }},
     {$unwind: {
-      path:'$mail',
+      path: '$mail',
       preserveNullAndEmptyArrays: true
     }},
     {$sort: qs},
@@ -64,16 +64,16 @@ exports.feed = function(domain, options, fn) {
     {$limit: limit}
   ];
 
-  let p = new Promise(function(resolve, reject){
-    dbo.db().collection('logs').count(qm, function(err, c){
+  let p = new Promise((resolve, reject) => {
+    dbo.db().collection('logs').count(qm, (err, c) => {
       if (err)
         return reject(err);
 
       resolve(c);
     });
   })
-  .then(function(total){
-    dbo.db().collection('logs').aggregate(q).toArray(function(err, docs){
+  .then(total => {
+    dbo.db().collection('logs').aggregate(q).toArray((err, docs) => {
 
       if (err) {
         return fn('Internal Error');
@@ -93,7 +93,7 @@ exports.feed = function(domain, options, fn) {
       });
     });
   })
-  .catch(function(err){
+  .catch(err => {
     fn(err);
   });
 }

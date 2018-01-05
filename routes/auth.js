@@ -2,16 +2,16 @@ var Accounts = require('../models/accounts.js')
     , render = require('../lib/utils.js').render
     ;
 
-module.exports = function(app){
+module.exports = app => {
 
   // Signup
-  app.get('/signup', function(req, res) {
+  app.get('/signup', (req, res) => {
       res.render('signup', render(req, {
         title: 'Signup'
       }));
     });
-  app.post('/signup', function(req, res) {
-    Accounts.create(req.body, function(err, doc){
+  app.post('/signup', (req, res) => {
+    Accounts.create(req.body, (err, doc)=> {
       if (err) {
         req.flash('error', err);
         return res.redirect('/signup');
@@ -23,31 +23,37 @@ module.exports = function(app){
   });
 
   // Login
-  app.get('/login', function(req, res) {
+  app.get('/login', (req, res) => {
       res.render('login', render(req, {
         title: 'Login'
       }));
     });
-  app.post('/login', function(req, res) {
-    Accounts.login(req.body, function(err, doc){
+  app.post('/login', (req, res) => {
+    Accounts.login(req.body, (err, doc)=> {
       if (err) {
         req.flash('error', err);
         return res.redirect('/login');
       }
 
       req.session.account = doc;
+      if (req.session.ref) {
+        let ref = req.session.ref;
+        delete req.session.ref;
+        return res.redirect(ref);
+      }
+
       return res.redirect('/dashboard');
     });
   });
 
   // Recover
-  app.get('/recover', function(req, res) {
+  app.get('/recover', (req, res) => {
       res.render('recover', render(req, {
         title: 'Recover password'
       }));
     });
-  app.post('/recover', function(req, res) {
-    Accounts.recoverPassword(req.body, function(err, doc){
+  app.post('/recover', (req, res) => {
+    Accounts.recoverPassword(req.body, (err, doc)=> {
       if (err)
         req.flash('error', err);
       else
@@ -57,8 +63,8 @@ module.exports = function(app){
     });
   });
 
-  app.get('/reset/:hash/:id', function(req, res) {
-    Accounts.confirmReset(req.params.hash, req.params.id, function(err, status) {
+  app.get('/reset/:hash/:id', (req, res) => {
+    Accounts.confirmReset(req.params.hash, req.params.id, (err, status) => {
       if (err) {
         req.flash('error', err);
         return res.redirect('/recover');
@@ -69,8 +75,8 @@ module.exports = function(app){
         }));
     })
   });
-  app.post('/reset/:hash/:id', function(req, res) {
-    Accounts.resetPassword(req.params.hash, req.params.id, req.body, function(err, status) {
+  app.post('/reset/:hash/:id', (req, res) => {
+    Accounts.resetPassword(req.params.hash, req.params.id, req.body, (err, status) => {
       if (err) {
         req.flash('error', err);
         return res.redirect('/reset/'+req.params.hash+'/'+req.params.id);
@@ -83,7 +89,7 @@ module.exports = function(app){
   });
 
   // Logout
-  app.get('/logout', function(req, res) {
+  app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
   });

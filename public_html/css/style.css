@@ -59,6 +59,9 @@ a.fade:hover {
   color: #000;
   font-size: 120%;
 }
+.box h5 {
+  color: #201336;
+}
 .list {
   list-style: none
 }
