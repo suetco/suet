@@ -33,7 +33,7 @@ The easiest way to use Suet is through the managed version at [suet.co](https://
 
 ## Staying up to date
 
-Follow [@suet_co](http://twitter.com/suet_co) on Twitter and the changelog at [updates.suet.co](http://updates.suet.co)
+Follow [@suet_co](http://twitter.com/suet_co) on Twitter and the changelog at [headwayapp.co/suet-changelog](https://headwayapp.co/suet-changelog)
 
 ## Issues
 
