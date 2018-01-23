@@ -60,7 +60,7 @@
         </div>
         {% endif %}
         {% assign or = data.unique_opens | times: 100 | divided_by: delivered %}
-        {% assign ctr = data.unique_clicks | times: 100 | divided_by: delivered %}
+        {% assign ctr = data.unique_clicks | times: 100 | divided_by: opened %}
         <div class="row center">
           <div class="four columns">
             <div class="box">
@@ -112,7 +112,7 @@
           <p><strong>Top Clicks</strong></p>
           <ul class="list break-words u-cf">
             {% for url in data.clicks %}
-              <li><a href="{{ url._id }}">{{ url._id }}</a> <span class="fade">({{ url.count }})</span></li>
+              <li><a href="/links/{{ url._id | url_encode }}">{{ url._id }}</a> <a href="{{ url._id }}" target="_blank" rel="noopener noreferrer"><i class="icon-open fade"></i></a> <span class="fade">({{ url.count }})</span></li>
             {% endfor %}
           </ul>
         </div>
@@ -142,7 +142,7 @@
           <p><strong>Top Opens</strong></p>
           <ul class="list break-words u-cf">
             {% for open in data.opens %}
-              <li><a href="mails/{{ open._id }}">{{ open.mail.subject }}</a> <span class="fade">({{ open.count }})</span></li>
+              <li><a href="/mails/{{ open._id }}">{{ open.mail.subject }}</a> <span class="fade">({{ open.count }})</span></li>
             {% endfor %}
           </ul>
         </div>

@@ -1,6 +1,7 @@
 const Logs = require('../models/logs.js')
     , Mails = require('../models/mails.js')
     , Users = require('../models/users.js')
+    , Links = require('../models/links.js')
     , Accounts = require('../models/accounts.js')
     , Domains = require('../models/domains.js')
 
@@ -153,6 +154,61 @@ module.exports = app => {
       res.render('user', render(req, {
         title: doc.email,
         page: 'users',
+        data: doc
+      }));
+    })
+  });
+
+  app.get('/links', (req, res) => {
+    let options = {sort: 'date', dir: 'desc'};
+    if (req.query.sort)
+      options.sort = req.query.sort;
+    if (req.query.dir)
+      options.dir = req.query.dir;
+    if (req.query.offset)
+      options.offset = req.query.offset;
+    Links.getAll(req.session.account.active_domain.domain, options, (err, data) => {
+      if (!err && data) {
+        for (let d of data.data) {
+          d.url = d._id;
+          delete d._id;
+          d.timeago = moment(d.date).fromNow();
+          let _emails = [];
+          for (let e of d.emails) {
+            _emails.push(`<a href="users/${e.email}">${e.email}</a>`);
+          }
+          d.clickers = "";
+          let l = _emails.length;
+          if (l > 4) {
+            d.clickers = _emails.slice(0, 4).join(', ');
+            d.clickers += ' and '+(l - 4)+' others';
+          }
+          else
+            d.clickers = _emails.join(', ');
+        }
+      }
+
+      res.render('links', render(req, {
+        title: 'Links',
+        page: 'links',
+        query: req.query,
+        data: data
+      }));
+    })
+  });
+  app.get('/links/:url', (req, res) => {
+    Links.get(req.params.url, req.session.account.active_domain.domain, (err, doc) => {
+      if (err || !doc) {
+        req.flash('error', err);
+        return res.redirect('/links');
+      }
+      for (let d of doc) {
+        d.timeago = moment(d.date).fromNow();
+      }
+
+      res.render('link', render(req, {
+        title: decodeURIComponent(req.params.url),
+        page: 'links',
         data: doc
       }));
     })

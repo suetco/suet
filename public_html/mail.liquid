@@ -12,23 +12,47 @@
       Time graph of engagement
     -->
     <div class="row pad-btm">
-      <h5>{{ data.subject }}</h5>
-      <small><a href="#" class="small-button view">view mail</a></small>
+      <div class="six columns">
+        <h5>{{ data.subject }}</h5>
+        <small><a href="#" class="small-button view">view mail</a></small>
+      </div>
+      {% assign or = data.unique_opens | times: 100 | divided_by: data.deliveries %}
+      {% assign ctr = data.unique_clicks | times: 100 | divided_by: data.opens %}
+      <div class="six columns">
+        <div class="row grid">
+          <div class="three columns">
+            deliveries <h5 class="inline">{{ data.deliveries }}</h5><br>
+            <span>&nbsp;</span>
+          </div>
+          <div class="five columns">
+            opens <h5 class="inline">{{ data.opens }}</h5><br>
+            <span class="fade">{{ data.unique_opens }} unique, {{ or }}% open rate</span>
+          </div>
+          <div class="four columns">
+            clicks <h5 class="inline">{{ data.clicks }}</h5><br>
+            <span class="fade">{{ data.unique_clicks }} unique, {{ ctr }}% CTR</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="row pad-btm grid">
-      <div class="three columns">
-        Deliveries: {{ data.deliveries }}
+    <!--div class="row pad-btm grid">
+      <div class="two columns">
+        <h5>{{ data.deliveries }}</h5>
+        Deliveries
       </div>
-      <div class="three columns">
-        Opens: {{ data.opens }}
+      <div class="four columns">
+        Opens
+        <h5>{{ data.opens }} </h5>
+        <p>(<strong>{{ data.unique_opens }}</strong> unique)</p>
+        <p>(<strong>{{ data.unique_opens }}</strong> open rate)</p>
       </div>
-      <div class="three columns">
-        Unique opens: {{ data.unique_opens }}
+      <div class="four columns">
+        Clicks
+        <h5>{{ data.clicks }}</h5>
+        <p>(<strong>{{ data.unique_clicks }}</strong> unique)</p>
+        <p>(<strong>{{ data.unique_clicks }}</strong> CTR)</p>
       </div>
-      <div class="three columns">
-        Clicks: {{ data.clicks }}
-      </div>
-    </div>
+    </div-->
     <div class="row">
       <div class="twelve columns">
         <div class="feed">
@@ -55,7 +79,7 @@
               </div>
               <div class="six columns">
                 {% if log.event == 'clicked' %}
-                  <a href="{{ log.url }}" class="break-words">{{ log.url }}</a>
+                  <a href="{{ log.url | url_encode }}" class="break-words">{{ log.url }}</a> <a href="{{ log.url }}" target="_blank" rel="noopener noreferrer"><i class="icon-open fade"></i></a>
                 {% elsif log.event == 'opened' %}
                   <span class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</span>
                 {% elsif log.event == 'bounced' %}

@@ -1,0 +1,42 @@
+{% include 'partials/header-dashboard' %}
+
+<section>
+  <div class="container">
+
+    <div class="row pad-btm">
+      <div class="twelve columns">
+        <h5>{{ title }}</h5>
+        <small><a href="{{ title }}" class="small-button view" target="_blank" rel="noopener noreferrer">visit link</a></small>
+      </div>
+    </div>
+
+    <div class="feed">
+      <div class="row th">
+        <div class="two columns" >
+          Date
+        </div>
+        <div class="six columns">
+          Mail
+        </div>
+        <div class="four columns">
+          User
+        </div>
+      </div>
+      {% for link in data %}
+      <div class="row">
+        <div class="two columns" >
+          {{ link.timeago }}
+        </div>
+        <div class="six columns">
+          <a href="/mails/{{ link.msg_id }}">{{ link.mail.subject }}</a></a>
+        </div>
+        <div class="four columns">
+          <a href="/users/{{ link.email }}">{{ link.email }}</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% include 'partials/footer' %}

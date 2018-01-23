@@ -22,6 +22,8 @@ Track deliveries, opens, clicks and uniques across mails and recipients.
 Get events from your mails as they happen. You can further filter based on the different event types.
 - View emails   
 See exactly what is sent to users. What does the delivered mail look like? What details were missing?
+- View links   
+Get summary of all clicks on all links. Know who clicked, when and on what mail.
 - Recipients and activity   
 View recipient journey from delivery to open and clicks. Know who opened and clicked on what.
 - Bring your team   
@@ -37,7 +39,7 @@ Follow [@suet_co](http://twitter.com/suet_co) on Twitter and the changelog at [h
 
 ## Issues
 
-You can submit an issue at [github.com/kehers/suet/issues](http://github.com/kehers/suet/issues). If you require email support, you will need to [purchase a licence](https://pay.paddle.com/checkout/515197)(costs $70/year).
+You can submit an issue at [github.com/kehers/suet/issues](http://github.com/kehers/suet/issues). If you require email support, you will need to [purchase a licence](https://pay.paddle.com/checkout/515197) (costs $70/year).
 
 ## Copyright/Licence
 

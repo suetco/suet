@@ -5,7 +5,7 @@
     <div class="feed">
       <div class="row th">
         <div class="one columns" >
-          <a href="?sort=date">@ <i class="icon-arrow-down"></i></a>
+          <a href="?sort=date&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">@{% if query.sort == 'date' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
         </div>
         <div class="eight columns">
           Mail
@@ -13,10 +13,10 @@
         <div class="three columns">
           <div class="row">
             <div class="six columns center" >
-              <a href="?sort=opened">Opens</a>
+              <a href="?sort=opened&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Opens{% if query.sort == 'opened' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
             </div>
             <div class="six columns center" >
-              <a href="?sort=clicked">Clicks</a>
+              <a href="?sort=clicked&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Clicks{% if query.sort == 'clicked' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
             </div>
           </div>
         </div>
@@ -42,11 +42,13 @@
       </div>
       {% endfor %}
     </div>
+    {% if data.data %}
     {% assign next = data.offset | plus: data.count %}
     {% assign prev = data.offset | minus: data.limit %}
     {% assign q = query | remove: 'offset' %}
     <p class="right top-20">{{ data.offset | plus: 1 }} to {{ next }} of {{ data.total }}</p>
     <p class="pagination">{% if data.offset > 0 %}<a href="?{{ q }}{% if prev > 0 %}&offset={{ prev }}{% endif %}" class="button button-primary">Prev</a>{% endif %}{% if next < data.total %}<a href="?{{ q }}&offset={{ data.offset | plus: data.count }}" class="button button-primary">Next</a>{% endif %}</p>
+    {% endif %}
   </div>
 </section>
 

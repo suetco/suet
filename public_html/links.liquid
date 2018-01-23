@@ -1,0 +1,47 @@
+{% include 'partials/header-dashboard' %}
+
+<section>
+  <div class="container">
+    <div class="feed">
+      <div class="row th">
+        <div class="one columns" >
+          <a href="?sort=date&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">@{% if query.sort == 'date' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+        </div>
+        <div class="six columns">
+          Link
+        </div>
+        <div class="four columns">
+          Users
+        </div>
+        <div class="one columns">
+          <a href="?sort=count&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Clicks{% if query.sort == 'count' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+        </div>
+      </div>
+      {% for link in data.data %}
+      <div class="row">
+        <div class="one columns" >
+          {{ link.timeago }}
+        </div>
+        <div class="six columns">
+          <a href="/links/{{ link.url | url_encode }}" class="break-words">{{ link.url }}</a> <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"><i class="icon-open fade"></i></a>
+        </div>
+        <div class="four columns">
+          {{ link.clickers }}
+        </div>
+        <div class="one columns">
+          {{ link.count }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if data.data %}
+    {% assign next = data.offset | plus: data.count %}
+    {% assign prev = data.offset | minus: data.limit %}
+    {% assign q = query | remove: 'offset' %}
+    <p class="right top-20">{{ data.offset | plus: 1 }} to {{ next }} of {{ data.total }}</p>
+    <p class="pagination">{% if data.offset > 0 %}<a href="?{{ q }}{% if prev > 0 %}&offset={{ prev }}{% endif %}" class="button button-primary">Prev</a>{% endif %}{% if next < data.total %}<a href="?{{ q }}&offset={{ data.offset | plus: data.count }}" class="button button-primary">Next</a>{% endif %}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% include 'partials/footer' %}

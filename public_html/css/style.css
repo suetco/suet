@@ -131,6 +131,7 @@ header .subnav {
   box-shadow: 2px 2px 5px 0px rgba(221,221,221,1);
   border: 1px solid #ddd;
   margin: 0;
+  right: 0;
   z-index: 10;
   padding: 5px 0;
   background-color: #fff;
@@ -173,6 +174,11 @@ header .subnav li {
 }
 .center {
   text-align: center
+}
+.inline {
+  display: inline;
+  position: relative;
+  top: 3px;
 }
 .right {
   float: right
@@ -251,6 +257,46 @@ header .subnav li {
 .tag.red {
   background-color:#c93a27;
   color: #fdf3f2;
+}
+
+.timeline {
+  list-style: none;
+  margin-left: 55px
+}
+.timeline li:first-child {
+  padding-top: 15px;
+}
+.timeline li {
+  padding-bottom: 15px;
+  position: relative;
+}
+.line {
+  content: "";
+  display: block;
+  width: 0;
+  height: 100%;
+  border: 1px solid #eee;
+  position: absolute;
+  top: 0;
+  left: -15px;
+}
+.line:before {
+  content: "";
+  display: block;
+  top: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #eee;
+  position: absolute;
+  left: -4px;
+}
+.timeline li:first-child .line:before {
+  top: 19px;
+}
+.timeline date {
+  position: absolute;
+  left: -55px;
 }
 
 .bar {

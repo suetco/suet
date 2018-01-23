@@ -12,64 +12,69 @@
       Time graph of engagement
     -->
     <div class="row pad-btm">
-      <div class="five columns">
-       <a href="/users">Users</a> <i class="icon-fast-forward"></i> <strong>{{ data.email }}</strong>
+      <div class="six columns">
+        <a href="/users">Users</a> <i class="icon-fast-forward"></i>
+        <h5>{{ data.email }}</h5>
       </div>
-      <div class="three columns align-right">
-        {{ data.opens }} opens ({{ data.unique_opens}} unique)
-      </div>
-      <div class="two columns">
-        {{ data.clicks }} clicks
-      </div>
-      <div class="two columns">
-        {{ data.deliveries }} deliveries
+      {% assign or = data.unique_opens | times: 100 | divided_by: data.deliveries %}
+      {% assign ctr = data.urls | size | times: 100 | divided_by: data.opens %}
+      <div class="six columns">
+        <div class="row grid">
+          <div class="three columns">
+            deliveries <h5 class="inline">{{ data.deliveries }}</h5><br>
+            <span>&nbsp;</span>
+          </div>
+          <div class="five columns">
+            opens <h5 class="inline">{{ data.opens }}</h5><br>
+            <span class="fade">{{ data.unique_opens }} unique, {{ or }}% open rate</span>
+          </div>
+          <div class="four columns">
+            clicks <h5 class="inline">{{ data.clicks }}</h5><br>
+            <span class="fade">{{ data.urls | size }} unique, {{ ctr }}% CTR</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="row">
       <div class="eight columns">
         <div class="feed">
+          {% assign last_msg_id = "" %}
           {% for log in data.logs %}
+
+            {% if log.msg_id != last_msg_id %}
+            {% if last_msg_id != "" %}</ul></div></div>{% endif %}
             <div class="row">
-              <div class="one columns">
-               {{ log.timeago }}
-              </div>
-              <div class="eleven columns">
-                {% if log.event == 'clicked' %}
-                  <span class="tag green">{{ log.event }}</span>
-                {% elsif log.event == 'opened' %}
-                  <span class="tag yellow">{{ log.event }}</span>
-                {% elsif log.event == 'dropped' %}
-                  <span class="tag red">{{ log.event }}</span>
-                {% elsif log.event == 'bounced' %}
-                  <span class="tag pink">{{ log.event }}</span>
-                {% else %}
-                  <span class="tag">{{ log.event }}</span>
-                {% endif %}<br>
-                {% if log.event == 'clicked' %}
-                  <a href="{{ log.url }}" class="break-words">{{ log.url }}</a><br>
-                  <small><a href="/mails/{{ log.msg_id }}" class="fade">{{ log.subject }}</a></small>
-                {% elsif log.event == 'opened' %}
-                  <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
-                  <small class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</small>
-                {% elsif log.event == 'dropped' %}
-                  <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
-                  <small class="fade">{{ log.description }}</small>
-                {% elsif log.event == 'bounced' %}
-                  <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a><br>
-                  <small class="fade">{{ log.error }}</small>
-                {% else %}
-                  <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a>
+              <div class="twelve columns">
+                <a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a>
+                <ul class="timeline">
                 {% endif %}
-              </div>
-            </div>
-          {% endfor %}
-        </div>
+
+                <li>
+                  <div class="line"></div>
+                  <date>{{ log.timeago }}</date>
+                  {% if log.event == 'clicked' %}
+                    <span class="tag green">{{ log.event }}</span> <a href="/links/{{ log.url | url_encode }}" class="break-words">{{ log.url }}</a> <a href="{{ log.url }}" target="_blank" rel="noopener noreferrer"><i class="icon-open fade"></i></a>
+                  {% elsif log.event == 'opened' %}
+                    <span class="tag yellow">{{ log.event }}</span> <span class="fade">{{ log.client }} on {{ log.os }} ({{ log.platform }}){%if log.city != 'Unknown' %}, {{ log.city }}{% endif %}{%if log.country != 'Unknown' %}, {{ log.country }}{% endif %}</span>
+                  {% elsif log.event == 'dropped' %}
+                    <span class="tag red">{{ log.event }}</span> <span class="fade">{{ log.description }}</span>
+                  {% elsif log.event == 'bounced' %}
+                    <span class="tag pink">{{ log.event }}</span><span class="fade">{{ log.error }}</span>
+                  {% else %}
+                    <span class="tag">{{ log.event }}</span><!--a href="/mails/{{ log.msg_id }}">{{ log.subject }}</a-->
+                  {% endif %}
+                </li>
+
+              {% assign last_msg_id = log.msg_id %}
+            {% endfor %}
+            {% if last_msg_id != "" %}</ul></div></div>{% endif %}
+          </div>
         </div>
       <div class="four columns">
         <p><strong>Clicks</strong></p>
         <ul class="list break-words">
           {% for url in data.urls %}
-            <li><a href="{{ url }}">{{ url }}</a></li>
+            <li><a href="/links/{{ url | url_encode }}">{{ url }}</a> <a href="{{ url }}" target="_blank" rel="noopener noreferrer"><i class="icon-open fade"></i></a></li>
           {% endfor %}
         </ul>
       </div>
