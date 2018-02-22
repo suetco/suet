@@ -1,5 +1,6 @@
 const dbo = require('../lib/db.js')
     , moment = require('moment')
+    , request = require('request')
     ;
 
 exports.getAll = (domain, options, fn) => {
@@ -104,5 +105,34 @@ exports.get = (msg_id, domain, fn) => {
       fn(null, doc);
     });
 
+  });
+}
+
+exports.send = (to, domain, data, fn) => {
+  console.log(data);
+  if (!to || !data.name || !data.from || !data.subject || !data.body)
+    return fn('Some fields empty');
+
+  let mailOptions = {
+    from: `"${data.name}" <${data.from}>`,
+    to: to,
+    subject: data.subject,
+    text: data.body,
+    //html: '<b>Hello world</b>'
+  };
+  request.post({
+    'url': `https://api.mailgun.net/v3/${domain.domain}/messages`,
+    'auth': {
+      'user': 'api',
+      'pass': domain.key,
+      'sendImmediately': false
+    },
+    'form': mailOptions
+  }, (err, response, body) => {
+    if (err) {
+      return fn(err);
+    }
+
+    fn();
   });
 }

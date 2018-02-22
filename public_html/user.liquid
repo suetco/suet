@@ -15,6 +15,9 @@
       <div class="six columns">
         <a href="/users">Users</a> <i class="icon-fast-forward"></i>
         <h5>{{ data.email }}</h5>
+        <small><a href="#" class="small-button mail">Quick Mail</a></small>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+        {% if info %}<p class="info">{{ info }}</p>{% endif %}
       </div>
       {% assign or = data.unique_opens | times: 100 | divided_by: data.deliveries %}
       {% assign ctr = data.urls | size | times: 100 | divided_by: data.opens %}
@@ -81,5 +84,45 @@
     </div>
   </div>
 </section>
+
+<div class="modal hide">
+  <a href="#" class="close">Close <i class="icon-cross"></i></a>
+  <div style="margin:100px 50px">
+    <form method="post">
+      <h5><span class="fade">To:</span> {{ data.email }}</h5>
+      <div class="row top-10">
+        <div class="six columns">
+          <label>From (name)</label>
+          <input type="text" name="name" class="u-full-width" required>
+        </div>
+        <div class="six columns">
+          <label>From (email)</label>
+          <input type="email" name="from" class="u-full-width" required>
+        </div>
+      </div>
+      <label class="top-10">Subject</label>
+      <input type="text" name="subject" class="u-full-width" required>
+      <label class="top-10">Body</label>
+      <textarea name="body" class="u-full-width" style="height:300px" required></textarea>
+      <button type="submit" class="u-full-width button-primary">Send</button>
+    </form>
+  </div>
+</div>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$('.mail, .close').on('click', function() {
+  $('.modal').toggleClass('hide');
+  return false;
+});
+$(document).keyup(function(e) {
+  if (e.keyCode == 27) {
+    if (!$('.modal').hasClass('hide'))
+      $('.modal').toggleClass('hide');
+  }
+});
+$('.modal form').on('submit', function() {
+  $(this).find(':button').attr('disabled', 'disabled');
+});
+</script>
 
 {% include 'partials/footer' %}

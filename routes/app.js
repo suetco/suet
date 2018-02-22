@@ -158,6 +158,16 @@ module.exports = app => {
       }));
     })
   });
+  app.post('/users/:email', (req, res) => {
+    Mails.send(req.params.email, req.session.account.active_domain, req.body, (err) => {
+      if (err)
+        req.flash('error', err);
+      else
+        req.flash('info', 'Mail sent');
+
+      return res.redirect(`/users/${req.params.email}`);
+    })
+  });
 
   app.get('/links', (req, res) => {
     let options = {sort: 'date', dir: 'desc'};

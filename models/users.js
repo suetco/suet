@@ -57,7 +57,7 @@ exports.get = (email, domain, fn) => {
     return fn('User not specified');
 
   let q = [
-    {$match: {email: email, domain: domain}},
+    {$match: {domain: domain, email: email}},
     {$lookup: {
       from: 'mails',
       localField: 'msg_id',
