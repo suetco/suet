@@ -1,7 +1,14 @@
-{% include 'partials/header-dashboard' %}
+{% include 'partials/header-dashboard.liquid' %}
 
 <section>
   <div class="container">
+    <div class="bar">
+      <div class="row">
+        <div class="twelve columns">
+          <!--a href="?export" class="right">Export <i class="icon-cloud-download"></i></a-->
+        </div>
+      </div>
+    </div>
     <div class="feed">
       <div class="row th">
         <div class="one columns" >
@@ -38,10 +45,10 @@
     {% assign next = data.offset | plus: data.count %}
     {% assign prev = data.offset | minus: data.limit %}
     {% assign q = query | remove: 'offset' %}
-    <p class="right top-20">{{ data.offset | plus: 1 }} to {{ next }} of {{ data.total }}</p>
+    <p class="right top-20">{{ data.offset | plus: 1 }} to {{ next }} of {{ data.total | format }}</p>
     <p class="pagination">{% if data.offset > 0 %}<a href="?{{ q }}{% if prev > 0 %}&offset={{ prev }}{% endif %}" class="button button-primary">Prev</a>{% endif %}{% if next < data.total %}<a href="?{{ q }}&offset={{ data.offset | plus: data.count }}" class="button button-primary">Next</a>{% endif %}</p>
     {% endif %}
   </div>
 </section>
 
-{% include 'partials/footer' %}
+{% include 'partials/footer.liquid' %}

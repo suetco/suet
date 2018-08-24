@@ -45,10 +45,17 @@ exports.feed = (domain, options, fn) => {
     }
   }
 
+  if (options.tag) {
+    qm.tags = options.tag;
+  }
+
   qs[sort] = order;
 
   let q = [
     {$match: qm},
+    {$sort: qs},
+    {$skip: parseInt(skip)},
+    {$limit: limit},
     {$lookup: {
       from: 'mails',
       localField: 'msg_id',
@@ -58,11 +65,10 @@ exports.feed = (domain, options, fn) => {
     {$unwind: {
       path: '$mail',
       preserveNullAndEmptyArrays: true
-    }},
-    {$sort: qs},
-    {$skip: parseInt(skip)},
-    {$limit: limit}
+    }}
   ];
+
+  //console.log(q);
 
   let p = new Promise((resolve, reject) => {
     dbo.db().collection('logs').count(qm, (err, c) => {
@@ -74,6 +80,7 @@ exports.feed = (domain, options, fn) => {
   })
   .then(total => {
     dbo.db().collection('logs').aggregate(q).toArray((err, docs) => {
+      //console.log(JSON.stringify(docs[0].stages, null, 4));
 
       if (err) {
         return fn('Internal Error');

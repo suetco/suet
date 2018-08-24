@@ -1,6 +1,6 @@
 {
   "name": "hooks",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,10 @@
   "author": "Opeyemi Obembe <kehers@gmail.com> (http://obem.be/opeyemi)",
   "license": "GPLv3",
   "dependencies": {
-    "mongodb": "^2.2.28",
+    "bugsnag": "^2.4.1",
+    "cheerio": "^1.0.0-rc.2",
+    "elasticsearch": "^14.2.2",
+    "mongodb": "^2.2.35",
     "multer": "^1.3.0",
     "request": "^2.81.0"
   }

@@ -1,4 +1,4 @@
-{% include 'partials/header' %}
+{% include 'partials/header.liquid' %}
 
 <section style="margin:50px 0">
   <div class="container">
@@ -10,22 +10,37 @@
           <h5>Privacy Policy</h5>
           <p>This service is committed to protecting your privacy. This page details how information is collected and used by the managed service.</p>
 
-          <p><strong>Information collected</strong></p>
-          <p>When you sign up, the service collects your email and a password for identification purpose. These credentials allow you access the managed service and provides an identifier to map everything related to you on the service to.</p>
+          <p><strong>Information collected and how it is used</strong></p>
+          <p>When you sign up, the service collects your email and a password for identification purpose. These credentials allow you access the managed service and provides an identifier to map everything related to you on the service to. Without this, you will not be able to access the service. We also use your email to communicate with you and send you weekly reports about your domains.</p>
 
-          <p>We also ask you provide the Mailgun API Key for the domain you want to add. This is to allow the service get information related to the domain and be able to provide the necessary reporting and analytics.</p>
+          <p>We also ask you provide the Mailgun API Key. This is used to get information related to the account domains, set an endpoint (<a href="https://documentation.mailgun.com/en/latest/api-webhooks.html">webhook</a>) where mail events can be sent to and send quick mail from the Suet dashboard. In plain terms, we collect this information to be able to provide the necessary reporting and analytics.</p>
 
-          <p>You can connect a Slack account to get notifications on. When you do, the service redirects you to Slack for access authorisation. The scope of the access is limited to just what it is needed for&mdash;to send the required notifications to your selected Slack channel. It can not do anything else, e.g., read your Slack conversations.</p>
+          <p>You can connect a Slack account to get notifications and reports on. When you do, the service redirects you to Slack for access authorisation. The scope of the access is limited to just what it is needed for&mdash;to send the required notifications to your selected Slack channel. It can not do anything else, e.g., read your Slack conversations. The information we collect from Slack are your team name and a [webhook] URL we can send reports to.</p>
+
+          <p>We use third party tools like Google Analytics (analytics), Small chat (customer support chat widget), Headway (updates notification) and Stripe (payment). These tools use tracking technologies and collect data like IP address, Device identifiers, Web browser information, Page view statistics, Browsing history, Usage information and Log data (e.g. access times, hardware and software information). This data is used to analyse usage, provide support for you, protect against fraudulent, illegal or harmful actions and facilitate payment.</p>
 
           <p>When you login, a tiny piece of information (called cookies) is stored on your browser for authentication purpose. These cookies only last during the browsing session and does not contain any sensitive data about you.</p>
 
-          <p>Your data is yours and you can delete your account anytime. Simply login to your dashboard and go to your profile settings to do so. All data related to you will be completely removed from the system.<p>
+          <p>Your data is yours and you can delete your account anytime. Simply login to your dashboard and go to your profile settings to do so. All data related to you will be completely removed from the system. You can also export your logs any time.<p>
 
           <p><strong>Information Disclosure</strong></p>
 
-          <p>We will not give, sell, rent, or loan any information related to you to any third party. We may provide non-personal statistics about the service use and traffic patterns to reputable third-party vendors, but these statistics will include no personally identifying information.</p>
+          <p>We will not give, sell, rent, or loan any information related to you to any third party. We may provide non-personal statistics about the service use and traffic patterns to reputable third-party vendors, but these statistics will include no personally identifying information. Here are trusted entities your data is shared with:</p>
+
+          <ul>
+            <li>Stripe: <a href="https://stripe.com/">Stripe</a> is a leader in online payments. Suet uses Stripe to manage payments. When you enter your card details, it is securely sent to Stripe with your email. Stripe uses this to process the necessary payment.</li>
+            <li>Google Analytics: Browser, device and usage data for analytics. No personal data is shared</li>
+            <li>Headway: Browser and device data. No personal data shared</li>
+            <li>Small Chat: Browser and device data. No personal data shared</li>
+            <li>Linode, Amazon EC2 and DigitalOcean: Source, database and Search hosting</li>
+          </ul>
 
           <p>All collected data are protected by using reasonable security safeguards against loss or theft, as well as unauthorized access, disclosure, copying, use or modification.</p>
+
+          <p>You can request access to information Suet has about you by sending a mail to <a href="mailto:hello@suet.co">hello@suet.co</a>. We will send you a copy electronically.</p>
+
+          <p><strong>Minors</strong></p>
+          <p>We do not knowingly collect or solicit Personal Data from anyone under the age of 13. If you are under 13, please do not attempt to register for the Services or send any Personal Data about yourself to us. </p>
 
           <p><strong>Changes to Policy</strong></p>
 
@@ -33,10 +48,10 @@
 
           <p><strong>Contact</strong></p>
 
-          <p>All questions and concerns about your privacy can be sent to <a href="http://twitter.com/suet_co">@suet_co</a> or <a href="mailto:hello@suet.co">hello@suet.co</a></p>
+          <p>All questions and concerns about your privacy can be sent to <a href="http://twitter.com/suet_co">@suet_co</a> or <a href="mailto:hello@suet.co">hello@suet.co</a>.</p>
       </div>
     </div>
   </div>
 </section>
 
-{% include 'partials/footer' %}
+{% include 'partials/footer.liquid' %}

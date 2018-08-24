@@ -1,4 +1,4 @@
-{% include 'partials/header-dashboard' %}
+{% include 'partials/header-dashboard.liquid' %}
 
 <section>
   <div class="container">
@@ -19,8 +19,8 @@
         {% if error %}<p class="error">{{ error }}</p>{% endif %}
         {% if info %}<p class="info">{{ info }}</p>{% endif %}
       </div>
-      {% assign or = data.unique_opens | times: 100 | divided_by: data.deliveries %}
-      {% assign ctr = data.urls | size | times: 100 | divided_by: data.opens %}
+      {% assign or = data.unique_opens | times: 100 | divided_by: data.deliveries | round: 2 %}
+      {% assign ctr = data.urls | size | times: 100 | divided_by: data.deliveries | round: 2 %}
       <div class="six columns">
         <div class="row grid">
           <div class="three columns">
@@ -125,4 +125,4 @@ $('.modal form').on('submit', function() {
 });
 </script>
 
-{% include 'partials/footer' %}
+{% include 'partials/footer.liquid' %}

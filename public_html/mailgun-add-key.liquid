@@ -1,0 +1,25 @@
+{% include 'partials/header.liquid' %}
+
+<section style="margin-top:10%">
+  <div class="container">
+    <div class="row">
+      <div class="six columns offset-by-three">
+        <h5 class="center pad-btm"><a href="/"><i class="icon-bar-graph-2"></i></a></h5>
+        <div class="box">
+          <form method="post">
+            <p><strong>Add your Mailgun API key</strong></p>
+            <p>Enter your Mailgun API key below. You can find it in the domain page of your Mailgun dashboard<!-- todo: see how link here-->.</p>
+            <p><span class="highlight">Your API key is used to get your domains, set event tracking for them and send quick mails from the Suet dashboard. <a href="/privacy" target="_blank">Learn more</a></span></p>
+            {% if error %}<p class="error">{{ error }}</p>{% endif %}
+            <p><input type="text" name="key" placeholder="Mailgun API key" class="u-full-width"></p>
+            <p><button class="button button-primary u-full-width" type="submit">Get Domains</button></p>
+          </form>
+        </div>
+        <p class="center"><a href="/logout">Logout</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

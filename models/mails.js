@@ -1,7 +1,48 @@
 const dbo = require('../lib/db.js')
+    , decrypt = require('../lib/utils.js').decrypt
     , moment = require('moment')
     , request = require('request')
+    , elasticsearch = require('elasticsearch')
+    , esc = new elasticsearch.Client({
+      host: process.env.ES_HOST,
+      httpAuth: process.env.ES_AUTH,
+      log: 'error'
+    })
     ;
+
+exports.search = (domain, q, fn) => {
+  esc.search({
+    index: 'suet',
+    type: 'mails',
+    body: {
+      query: {
+        bool: {
+          must: {
+            multi_match: {
+              query: q,
+              fields : ['subject^2', 'body', 'to'],
+              operator: 'and'
+            }
+          },
+          filter: {
+            term: {domain: domain}
+          }
+        }
+      }
+    }
+  }, function (error, response) {
+    if (error)
+      return fn(error);
+
+    //console.log(response.hits.hits);
+    let data = response.hits.hits.map(h => {
+      h._source.id = h._id;
+      return h._source;
+    });
+
+    fn(null, data);
+  });
+}
 
 exports.getAll = (domain, options, fn) => {
   if (!domain)
@@ -19,11 +60,15 @@ exports.getAll = (domain, options, fn) => {
   if (options.dir && options.dir == 'asc')
     order = 1;
 
+  let q = {domain: domain};
+  if (options.tag)
+    q.tags = options.tag;
+
   let qs = {limit: limit, skip: parseInt(skip), sort: {}};
   qs.sort[sort] = order;
 
   let p = new Promise((resolve, reject) => {
-    dbo.db().collection('mails').count({domain: domain}, (err, c) => {
+    dbo.db().collection('mails').count(q, (err, c) => {
       if (err)
         return reject(err);
 
@@ -31,7 +76,7 @@ exports.getAll = (domain, options, fn) => {
     });
   })
   .then(total => {
-    dbo.db().collection('mails').find({domain: domain}, qs).toArray((err, docs) => {
+    dbo.db().collection('mails').find(q, qs).toArray((err, docs) => {
       if (err) {
         return fn('Internal Error');
       }
@@ -124,7 +169,7 @@ exports.send = (to, domain, data, fn) => {
     'url': `https://api.mailgun.net/v3/${domain.domain}/messages`,
     'auth': {
       'user': 'api',
-      'pass': domain.key,
+      'pass': decrypt(domain.key),
       'sendImmediately': false
     },
     'form': mailOptions

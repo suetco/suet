@@ -32,7 +32,7 @@ exports.getAll = (domain, options, fn) => {
         _id: null,
         count: {$sum: 1}
       }}
-    ], (err, d) => {
+    ]).toArray((err, d) => {
       if (err || !d[0])
         return reject(err);
 

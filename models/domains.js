@@ -1,5 +1,14 @@
 const dbo = require('../lib/db.js')
+    , encrypt = require('../lib/utils.js').encrypt
+    , decrypt = require('../lib/utils.js').decrypt
     , request = require('request')
+    , elasticsearch = require('elasticsearch')
+    , esc = new elasticsearch.Client({
+      host: process.env.ES_HOST,
+      httpAuth: process.env.ES_AUTH,
+      log: 'error'
+    })
+    //, AWS = require('aws-sdk')
     ;
 
 // Get list of domains connected to account
@@ -49,7 +58,7 @@ exports.getOne = (accId, domain, fn) => {
 }
 
 // Get domains from Mailgun
-exports.getDomains = (accId, key, fn) => {
+exports.getMGDomains = (accId, key, fn) => {
 
   if (!accId)
     return fn('Invalid account');
@@ -131,9 +140,8 @@ exports.getDomains = (accId, key, fn) => {
     });
   });
 }
-
 // Setup domains from Mailgun
-exports.setupDomains = (accId, key, domains, domainHooks, fn) => {
+exports.setupMGDomains = (accId, key, domains, domainHooks, fn) => {
 
   if (!accId)
     return fn('Invalid account');
@@ -143,6 +151,7 @@ exports.setupDomains = (accId, key, domains, domainHooks, fn) => {
     return fn('Select one or more domains.');
 
   accId = dbo.id(accId);
+  let encryptedKey = encrypt(key);
   dbo.db().collection('accounts').findOne({_id: accId}, (err, doc) => {
     if (!doc)
       return fn('Invalid account');
@@ -204,7 +213,7 @@ exports.setupDomains = (accId, key, domains, domainHooks, fn) => {
             domain: domain
           }, {
             $addToSet: {accs: accId},
-            $set: {key: key, owner: accId}
+            $set: {key: encryptedKey, owner: accId}
           }, {upsert: true}, err => {
             if (!err)
               addedDomains.push(domain);
@@ -322,7 +331,7 @@ exports.delete = (domain, fn) => {
         'gzip': true,
         'auth': {
           'user': 'api',
-          'pass': doc.key,
+          'pass': decrypt(doc.key),
           'sendImmediately': false
         }
       }, (err, response, body) => {
@@ -340,20 +349,32 @@ exports.delete = (domain, fn) => {
             }
           }
         }
+
         // remove enabled webhooks
         // /domains/<domain>/webhooks/<webhookname>
         Promise.all(enabled.map(hook => {
             return new Promise(resolve => {
               request.delete({
-                'url': ['https://api.mailgun.net/v3/domains/', domain, '/webhooks/', hook].join(''),
+                'url': `https://api.mailgun.net/v3/domains/${domain}/webhooks/${hook}`,
                 'gzip': true,
                 'auth': {
                   'user': 'api',
-                  'pass': doc.key,
+                  'pass': decrypt(doc.key),
                   'sendImmediately': false
                 }
               }, (err, response, body) => {
-                return resolve();
+                // Delete search index
+                esc.deleteByQuery({
+                  index: 'suet',
+                  type: 'mails',
+                  body: {
+                    query: {
+                      term: {domain: domain}
+                    }
+                  }
+                }, (err, status) => {
+                  return resolve();
+                });
               });
             });
           })

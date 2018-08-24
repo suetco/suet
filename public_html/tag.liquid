@@ -2,56 +2,56 @@
 
 <section>
   <div class="container">
-    <!--
-      Country
-      Device OS
-      Clients
-      Platform (mobile/desktop~)
-      Top clicks
-      Top opens
-      Time graph of engagement
-    -->
+    <h5 class="title">{{ data.tag.tag }}</h5>
     {% if info %}<p class="info center">{{ info }}</p>{% endif %}
     <div class="row">
       <div class="twelve columns">
         <div class="box">
-          <select name="engagement.days" class="right">
-            <option value="today"{% if query['engagement.days'] == 'today' %} selected{%endif%}>Today</option>
-            <option value="yesterday"{% if query['engagement.days'] == 'yesterday' %} selected{%endif%}>Yesterday</option>
-            <option value="7"{% if query['engagement.days'] == nil or query['engagement.days'] == '7' %} selected{%endif%}>Last 7 days</option>
-            <option value="30"{% if query['engagement.days'] == '30' %} selected{%endif%}>Last 30 days</option>
-          </select>
-          <p><strong>Engagement</strong></p>
+          <p><strong>Engagement (Last 7 days)</strong></p>
           <p>&nbsp;</p>
           <canvas id="chart-engagement"></canvas>
         </div>
       </div>
     </div>
-    {% assign delivered = data.engagement.data.delivered | sum %}
-    {% assign opened = data.engagement.data.opened | sum %}
-    {% assign clicked = data.engagement.data.clicked | sum %}
+    {% assign delivered = data.delivered %}
+    {% assign opened = data.opened %}
+    {% assign clicked = data.clicked %}
     <div class="row">
       <div class="six columns">
         <div class="row center">
           <div class="four columns">
             <div class="box">
               <p><strong>Delivered</strong></p>
-              <h5><a href="feed?action[]=delivered">{{ delivered | format }}</a></h5>
-              <strong><a href="feed?action[]=dropped">{{ data.engagement.data.dropped | sum | format }}</a></strong><br>dropped
+              <h5><a href="/feed?action[]=delivered&tag={{ data.tag.tag }}">{{ delivered | format }}</a></h5>
+              <strong><a href="/feed?action[]=dropped&tag={{ data.tag.tag }}">{{ data.engagement.data.dropped | sum | format }}</a></strong><br>dropped
             </div>
           </div>
           <div class="four columns">
             <div class="box">
               <p><strong>Opened</strong></p>
-              <h5><a href="feed?action[]=opened">{{ opened | format }}</a></h5>
+              <h5><a href="/feed?action[]=opened&tag={{ data.tag.tag }}">{{ opened | format }}</a></h5>
               <strong>{{ data.unique_opens | format }}</strong><br>unique
             </div>
           </div>
           <div class="four columns">
             <div class="box">
               <p><strong>Clicked</strong></p>
-              <h5><a href="feed?action[]=clicked">{{ clicked | format }}</a></h5>
+              <h5><a href="/feed?action[]=clicked&tag={{ data.tag.tag }}">{{ clicked | format }}</a></h5>
               <strong>{{ data.unique_clicks | format }}</strong><br>unique
+            </div>
+          </div>
+        </div>
+        <div class="row center">
+          <div class="six columns">
+            <div class="box">
+              <p><strong>Mails</strong></p>
+              <h4><a href="/mails?tag={{ data.tag.tag }}">{{ data.mails | format }}</a></h4>
+            </div>
+          </div>
+          <div class="six columns">
+            <div class="box">
+              <p><strong>Feed</strong></p>
+              <h4><a href="/feed?tag={{ data.tag.tag }}">{{ data.feed | format }}</a></h4>
             </div>
           </div>
         </div>
@@ -82,41 +82,6 @@
             </div>
           </div>
         </div>
-        <!--div class="box">Country</div-->
-        <div class="row center">
-          <div class="four columns">
-            <div class="box">
-              <p><strong>Mails</strong></p>
-              <h4><a href="mails">{{ data.mails | format }}</a></h4>
-            </div>
-          </div>
-          <div class="four columns">
-            <div class="box">
-              <p><strong>Users</strong></p>
-              <h4><a href="users">{{ data.users | format }}</a></h4>
-            </div>
-          </div>
-          <div class="four columns">
-            <div class="box">
-              <p><strong>Feed</strong></p>
-              <h4><a href="feed">{{ data.feed | format }}</a></h4>
-            </div>
-          </div>
-        </div>
-        <div class="box">
-          <select name="top_clicks.days" class="right">
-            <option value="today"{% if query['top_clicks.days'] == 'today' %} selected{%endif%}>Today</option>
-            <option value="yesterday"{% if query['top_clicks.days'] == 'yesterday' %} selected{%endif%}>Yesterday</option>
-            <option value="7"{% if query['top_clicks.days'] == nil or query['top_clicks.days'] == '7' %} selected{%endif%}>Last 7 days</option>
-            <option value="30"{% if query['top_clicks.days'] == '30' %} selected{%endif%}>Last 30 days</option>
-          </select>
-          <p><strong>Top Clicks</strong></p>
-          <ul class="list break-words u-cf">
-            {% for url in data.clicks %}
-              <li><a href="/links/{{ url._id | url_encode }}">{{ url._id }}</a> <a href="{{ url._id }}" target="_blank" rel="noopener noreferrer"><i class="icon-open fade"></i></a> <span class="fade">({{ url.count }})</span></li>
-            {% endfor %}
-          </ul>
-        </div>
       </div>
       <div class="six columns">
         <div class="row">
@@ -133,20 +98,6 @@
             </div>
           </div>
         </div>
-        <div class="box">
-          <select name="top_opens.days" class="right">
-            <option value="today"{% if query['top_opens.days'] == 'today' %} selected{%endif%}>Today</option>
-            <option value="yesterday"{% if query['top_opens.days'] == 'yesterday' %} selected{%endif%}>Yesterday</option>
-            <option value="7"{% if query['top_opens.days'] == nil or query['top_opens.days'] == '7' %} selected{%endif%}>Last 7 days</option>
-            <option value="30"{% if query['top_opens.days'] == '30' %} selected{%endif%}>Last 30 days</option>
-          </select>
-          <p><strong>Top Opens</strong></p>
-          <ul class="list break-words u-cf">
-            {% for open in data.opens %}
-              <li><a href="/mails/{{ open._id }}">{{ open.mail.subject }}</a> <span class="fade">({{ open.count }})</span></li>
-            {% endfor %}
-          </ul>
-        </div>
       </div>
     </div>
   </div>
@@ -155,11 +106,6 @@
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/js/Chart.min.js"></script>
 <script type="text/javascript">
-  let query = {{query}};
-  $('select').on('change', function(){
-    query[$(this).attr("name")] = $(this).val();
-    window.location = '?'+$.param(query);
-  });
 
   //window.onload = function() {
     Chart.defaults.global.defaultFontFamily='"Rubik", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif';

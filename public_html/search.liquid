@@ -1,0 +1,28 @@
+{% assign _css = '<link rel="stylesheet" href="/css/chosen.min.css"><link rel="stylesheet" href="/css/daterangepicker.min.css">' %}
+{% include 'partials/header-dashboard.liquid' %}
+
+<section>
+  <div class="container">
+    <div class="feed">
+      <div class="row th">
+        <div class="one columns">Date</div>
+        <div class="four columns">Users</div>
+        <div class="seven columns">Mail</div>
+      </div>
+      {% for v in data %}
+      <div class="row">
+        <div class="one columns" title="{{ v.date | date: "%a, %b %d, %y" }}">
+          {{ v.timeago }}
+        </div>
+        <div class="four columns">
+          {{ v.to }}
+        </div>
+        <div class="seven columns">
+          <a href="/mails/{{ v.id }}">{{ v.subject }}</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% include 'partials/footer.liquid' %}

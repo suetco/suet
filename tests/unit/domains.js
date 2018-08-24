@@ -8,21 +8,21 @@ describe('Domains', function() {
 
   describe('Get domains from Mailgun from API key', function() {
     it('must be passed account id', function(done) {
-      Domains.getDomains(undefined, 'key-12345', function(err, doc){
+      Domains.getMGDomains(undefined, 'key-12345', function(err, doc){
         expect(err).to.be.a('string');
         expect(doc).to.be.undefined;
         done();
       });
     });
     it('must be passed API key parameter', function(done) {
-      Domains.getDomains(store.uid, undefined, function(err, doc){
+      Domains.getMGDomains(store.uid, undefined, function(err, doc){
         expect(err).to.be.a('string');
         expect(doc).to.be.undefined;
         done();
       });
     });
     it('must return invalid key error', function(done) {
-      Domains.getDomains(store.uid, 'key-12345', function(err, doc){
+      Domains.getMGDomains(store.uid, 'key-12345', function(err, doc){
         expect(err).to.be.a('string');
         expect(doc).to.be.undefined;
         done();

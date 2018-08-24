@@ -1,4 +1,4 @@
-var Accounts = require('../models/accounts.js')
+const Accounts = require('../models/accounts.js')
     , render = require('../lib/utils.js').render
     ;
 

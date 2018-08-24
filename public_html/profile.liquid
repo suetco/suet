@@ -1,5 +1,5 @@
 {% assign _css = '<link rel="stylesheet" href="/css/tooltipster.bundle.min.css">' %}
-{% include 'partials/header-dashboard' %}
+{% include 'partials/header-dashboard.liquid' %}
 
 <section>
   <div class="container">
@@ -28,7 +28,7 @@
           <div class="box">
             <h5>Add New Domains</h5>
             <p>Add a new Mailgun API key to add new domains to your account.</p>
-            <form method="post" action="/add-key">
+            <form method="post" action="/mailgun/add-key">
               <p><input type="text" name="key" placeholder="API key" class="u-full-width"></p>
               <p><button class="button button-primary u-full-width" type="submit">Get Domains</button></p>
             </form>
@@ -65,4 +65,4 @@
      trigger: 'click'
   });
 </script>
-{% include 'partials/footer' %}
+{% include 'partials/footer.liquid' %}

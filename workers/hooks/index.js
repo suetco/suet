@@ -5,6 +5,15 @@ const dbClient = require('mongodb').MongoClient
   , request = require('request')
   , multer = require('multer')
   , parser = multer().none()
+  , elasticsearch = require('elasticsearch')
+  , esc = new elasticsearch.Client({
+    host: process.env.ES_HOST,
+    httpAuth: process.env.ES_AUTH,
+    log: 'error'
+  })
+  , cheerio = require('cheerio')
+  , bugsnag = require('bugsnag')
+
   , smtpErrors = {
     421: "Recipient server not available.",
     450: "User's mailbox temporarily not available.",
@@ -19,10 +28,15 @@ const dbClient = require('mongodb').MongoClient
     //498: "General failure",
     //605: "General failure",
     //499: "General failure (request timeout)"
-  };
+  }
+
+  , algorithm = 'aes-256-ctr'
+  ;
 
 let dbUrl = process.env.DB_URL || '';
 let host = process.env.HOST || 'https://suet.co';
+
+bugsnag.register(process.env.BS_KEY);
 
 // Actions:
 // Check if domain exist
@@ -30,6 +44,17 @@ let host = process.env.HOST || 'https://suet.co';
 // Check against replay (check signature table and store signature if new)
 // Get email details
 // Get mail
+function decrypt(text) {
+  let decipher = crypto.createDecipher(algorithm, process.env.AES_KEY);
+  let dec = '';
+  try {
+    dec = decipher.update(text, 'hex', 'utf8');
+    dec += decipher.final('utf8');
+  }
+  catch(ex) {}
+
+  return dec;
+}
 
 function sendToSlack(msg_id, webhook, recipient, type, color, subject, msg) {
   if (!webhook) return;
@@ -64,10 +89,10 @@ function getSMTPError(code) {
 exports.handler = function(req, res) {
 
   // Add multipart/form-data support
-  parser(req, res, function(){
+  parser(req, res, () => {
 
-    let event_data = req.body,
-        slack_webhook = null;
+    let event_data = req.body
+        , slack_webhook = null;
 
     if (!event_data.event)
       return res.send({error: "No event data"});
@@ -81,33 +106,41 @@ exports.handler = function(req, res) {
       || !event_data.token || !event_data.domain)
       return res.send({error: "Core data missing"});
 
-    dbClient.connect(dbUrl, function(err, db) {
+    let event = event_data.event.toLowerCase();
+
+    dbClient.connect(dbUrl, (err, db) => {
 
       // DB connection error
       if (err) {
-        console.log(err);
+        bugsnag.notify(err);
         return res.send({error: "Db error"});
       }
 
       let domain = event_data.domain;
       // Inconsistency in mailgun's API
       let messageId = event_data['message-id'] || event_data['Message-Id'];
-      if (!messageId) {
+      if (!messageId)
         return res.send({error: 'Could not get message id'});
-      }
 
       messageId = messageId.replace(/[\>\<]/g, '');
-      // todo: X-Mailgun-Tag header (multiple) for tagging support
+      let tags = event_data.tag || event_data['X-Mailgun-Tag'] || null;
+      if (tags && !Array.isArray(tags))
+        tags = [tags];
 
       // Who owns domain?
-      let p = new Promise(function(resolve, reject){
-        db.collection('domains').findOne({domain: domain}, function(err, doc){
+      new Promise((resolve, reject) => {
+        db.collection('domains').findOne({domain: domain}, (err, doc) => {
           // There is an error or no doc
           if (err || !doc)
             return res.send({error: "Domain not found"});
 
+          if (doc.disabled)
+            return res.send({error: "Domain disabled"});
+
+          let key = decrypt(doc.key);
+
           // Verify event
-          let hash = crypto.createHmac('sha256', doc.key)
+          let hash = crypto.createHmac('sha256', key)
                              .update([event_data.timestamp, event_data.token].join(''))
                              .digest('hex');
           if (hash !== event_data.signature)
@@ -117,7 +150,7 @@ exports.handler = function(req, res) {
           if (doc.slack && doc.slack.webhook)
             slack_webhook = doc.slack.webhook;
 
-          return resolve(doc.key);
+          return resolve(key);
         });
       })
       // Signature Replay?
@@ -138,17 +171,24 @@ exports.handler = function(req, res) {
       // todo: Allow turning this off
       .then(function(apiKey){
         return new Promise(function(resolve, reject){
-          /*
-          todo:
-          If tagged, get message Id and set as messageId
-          */
           // 1. Has the mail been pulled?
           db.collection('mails').findOne({
             msg_id: messageId
           }, function(err, doc){
-            // There is an error or no doc
-            if (err || doc)
-              return resolve();
+            // There is an error or mail found
+            if (err || doc) {
+              // Add receiver
+              return esc.update({
+                index: 'suet',
+                type: 'mails',
+                id: messageId,
+                body: {
+                  script: "if (ctx._source.to.contains('"+event_data.recipient.toLowerCase()+"')) { ctx.op = 'none' } else { ctx._source.to.add('"+event_data.recipient.toLowerCase()+"') }",
+                }
+              }, function(){
+                return resolve();
+              });
+            }
 
             // 2. Get the related event
             request.get({
@@ -164,13 +204,15 @@ exports.handler = function(req, res) {
             }, function(err, response, body) {
 
               // No body content for you :/
-              if (err || response.statusCode != 200)
+              if (err || response.statusCode != 200) {
                 return resolve();
+              }
 
               body = JSON.parse(body);
 
-              if (!body.items || body.items.length == 0)
+              if (!body.items || body.items.length == 0) {
                 return resolve();
+              }
 
               let storageUrl;
               // Loop through items
@@ -181,8 +223,9 @@ exports.handler = function(req, res) {
                   break;
                 }
               }
-              if (!storageUrl)
+              if (!storageUrl) {
                 return resolve();
+              }
 
               // 3. Get the stored mail
               request.get({
@@ -195,23 +238,54 @@ exports.handler = function(req, res) {
               }, function(err, response, body) {
 
                 // No body content for you :/
-                if (err || response.statusCode != 200)
+                if (err || response.statusCode != 200) {
                   return resolve();
+                }
 
                 body = JSON.parse(body);
 
-                if (body.subject && body['stripped-html']) {
+                if (body.subject && body.subject.length && (body['stripped-html'] || body['body-plain'])) {
                   // Save
                   let date = body.Date ? new Date(body.Date) : new Date();
-                  db.collection('mails').insert({
+                  let content = body['stripped-html'] || body['body-plain'];
+
+                  // Search here
+                  let o = {
                     msg_id: messageId,
                     domain: domain,
                     subject: body.subject,
-                    body: body['stripped-html'],
+                    body: content,
                     date: date
+                  };
+                  if (tags)
+                    o.tags = tags;
+                  db.collection('mails').insert(o);
+
+                  // Index for search
+                  let bodyText = '';
+                  let $ = cheerio.load(content);
+                  $('style,script,footer,header,menu,nav,frame,font,frameset,embed,object,applet,menu,link,form,aside').remove();
+                  let bodyEl = $('body');
+                  if (bodyEl)
+                    bodyText = bodyEl.text();
+                  else
+                    bodyText = content;
+
+                  esc.index({
+                    index: 'suet',
+                    type: 'mails',
+                    id: messageId,
+                    body: {
+                      subject: body.subject,
+                      body: bodyText.replace(/(<([^>]+)>)/ig, ""),
+                      domain: domain,
+                      to: [event_data.recipient.toLowerCase()],
+                      date: new Date()
+                    }
+                  }, function (error, response) {
+                    return resolve(body.subject);
                   });
 
-                  return resolve(body.subject);
                 }
                 else
                   return resolve();
@@ -224,9 +298,7 @@ exports.handler = function(req, res) {
       // Track event
       .then(function(subject){
         return new Promise(function(resolve, reject){
-          let event = event_data.event.toLowerCase()
-              , email = event_data.recipient.toLowerCase()
-
+          let email = event_data.recipient.toLowerCase()
               , data = {
                 msg_id: messageId,
                 email: email,
@@ -234,6 +306,8 @@ exports.handler = function(req, res) {
                 domain: domain
               }
 
+          if (tags)
+            data.tags = tags;
           if (event_data.country)
             data.country = event_data.country;
           if (event_data.city)
@@ -263,9 +337,6 @@ exports.handler = function(req, res) {
               msg = getSMTPError(event_data.code);
               data.code = event_data.code;
             }
-            // Thinking of it, reason is really not useful
-            // if (event_data.reason)
-              //data.reason = event_data.reason;
 
             sendToSlack(messageId, slack_webhook, email,
                 'Dropped', 'danger', subject, msg);
@@ -288,9 +359,8 @@ exports.handler = function(req, res) {
           data.date = new Date(event_data.timestamp*1000);
 
           db.collection('logs').insert(data, function(err) {
-            if (err) {
-              return res.send({error: "DB collection error"});
-            }
+            if (err)
+              return Promise.reject("DB collection error");
 
             let setParams = {
               email: email,
@@ -324,9 +394,9 @@ exports.handler = function(req, res) {
           });
         });
       })
-      .then(function(setParams){
+      .then(setParams => {
         let inc = {};
-        inc[event_data.event] = 1;
+        inc[event] = 1;
         db.collection('users').updateOne({
           email: setParams.email,
           domain: setParams.domain
@@ -335,15 +405,72 @@ exports.handler = function(req, res) {
           $inc: inc
         }, {upsert: true});
 
-        return res.send({status:"ok"});
+        return;
       })
-      .catch(function(err){
-        console.log(err);
+      .then(() => {
 
+        if (!tags)
+          return res.send({status:"ok"});
+
+        // Update Tag counts...
+        let tagPromises = tags.map(tag => {
+          return new Promise((resolve, reject) => {
+            // based on event
+            if (event == 'clicked') {
+              db.collection('logs').distinct('url', {
+                domain: domain, tags: tag, event: 'clicked'
+              }, (err, docs) => {
+                if (!err)
+                  db.collection('tags').updateOne({domain: domain, tag: tag}, {
+                    $set: {unique_clicks: docs.length},
+                    $inc: {clicked: 1}
+                  }, {upsert: true});
+
+                return resolve();
+              });
+            }
+            else if (event == 'delivered') {
+              db.collection('tags').updateOne({domain: domain, tag: tag}, {$inc: {delivered: 1}}, {upsert: true});
+              return resolve();
+            }
+            else if (event == 'opened') {
+              db.collection('logs').distinct('email', {
+                domain: domain, tags: tag, event: 'opened'
+              }, (err, docs) => {
+                if (!err)
+                  db.collection('tags').updateOne({domain: domain, tag: tag}, {
+                    $set: {unique_opens: docs.length},
+                    $inc: {opened: 1}
+                  }, {upsert: true});
+
+                return resolve();
+              });
+            }
+            else if (event == 'complained') {
+              db.collection('tags').updateOne({domain: domain, tag: tag}, {$inc: {complained: 1}}, {upsert: true});
+              return resolve();
+            }
+            else if (event == 'dropped') {
+              db.collection('tags').updateOne({domain: domain, tag: tag}, {$inc: {dropped: 1}}, {upsert: true});
+              return resolve();
+            }
+            else if (event == 'bounced') {
+              db.collection('tags').updateOne({domain: domain, tag: tag}, {$inc: {bounced: 1}}, {upsert: true});
+              return resolve();
+            }
+            else
+              return resolve();
+          })
+        });
+        Promise.all(tagPromises)
+        .then(done => res.send({status:"ok"}))
+        .catch(err => res.send({status:"ok"}))
+        ;
+      })
+      .catch(err => {
+        bugsnag.notify(err);
         return res.send({error: "Something went wrong"});
       });
-
     });
-
   });
 }

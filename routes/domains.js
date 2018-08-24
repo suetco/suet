@@ -1,25 +1,24 @@
-var Domains = require('../models/domains.js')
+const Domains = require('../models/domains.js')
     , render = require('../lib/utils.js').render
     ;
 
 module.exports = app => {
 
-  // Add key
-  app.get('/add-key', (req, res) => {
-      res.render('add-key', render(req, {
+  app.get('/mailgun/add-key', (req, res) => {
+      res.render('mailgun-add-key', render(req, {
         title: 'Add API key'
       }));
     });
-  app.post('/add-key', (req, res) => {
+  app.post('/mailgun/add-key', (req, res) => {
     if (!req.body.key) {
       req.flash('error', 'You missed the API key');
-      return res.redirect('/add-key');
+      return res.redirect('/mailgun/add-key');
     }
 
-    Domains.getDomains(req.session.account.id, req.body.key, (err, domains) => {
+    Domains.getMGDomains(req.session.account.id, req.body.key, (err, domains) => {
       if (err) {
         req.flash('error', err);
-        return res.redirect('/add-key');
+        return res.redirect('/mailgun/add-key');
       }
 
       req.session.account.temp = {
@@ -27,23 +26,24 @@ module.exports = app => {
         key: req.body.key
       };
 
-      res.redirect('/select-domains');
+      res.redirect('/mailgun/select-domains');
     });
   });
+
   // Select Domains
-  app.get('/select-domains', (req, res) => {
+  app.get('/mailgun/select-domains', (req, res) => {
     if (!req.session.account.temp)
       return res.redirect('/add-key');
 
-    res.render('select-domains', render(req, {
+    res.render('mailgun-select-domains', render(req, {
       title: 'Select Domains',
       domains: req.session.account.temp.domains
     }));
   });
-  app.post('/select-domains', (req, res) => {
+  app.post('/mailgun/select-domains', (req, res) => {
     if (!req.body.domains) {
       req.flash('error', 'You did not select any domain');
-      return res.redirect('/select-domains');
+      return res.redirect('/mailgun/select-domains');
     }
 
     let domainHooks = {};
@@ -51,11 +51,11 @@ module.exports = app => {
       domainHooks[_d.name] = _d;
     }
 
-    Domains.setupDomains(req.session.account.id, req.session.account.temp.key, req.body.domains,
+    Domains.setupMGDomains(req.session.account.id, req.session.account.temp.key, req.body.domains,
         domainHooks, err => {
       if (err) {
         req.flash('error', err);
-        return res.redirect('/select-domains');
+        return res.redirect('/mailgun/select-domains');
       }
 
       delete req.session.account.temp;

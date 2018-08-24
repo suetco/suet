@@ -1,0 +1,74 @@
+{% include 'partials/header-dashboard.liquid' %}
+
+<section>
+  <div class="container">
+    <div class="bar">
+      <div class="row">
+        <div class="twelve columns">
+          <!--a href="?export" class="right">Export <i class="icon-cloud-download"></i></a-->
+        </div>
+      </div>
+    </div>
+    <div class="feed">
+      <div class="row th">
+        <div class="three columns">
+          Tag
+        </div>
+        <div class="nine columns center">
+          <div class="row">
+            <div class="two columns" >
+              <a href="?sort=opened&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Delivered{% if query.sort == 'opened' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+            </div>
+            <div class="three columns">
+              <a href="?sort=opened&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Opened{% if query.sort == 'opened' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a> (<a href="?sort=opened&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Unique{% if query.sort == 'opened' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>)
+            </div>
+            <div class="three columns" >
+              <a href="?sort=clicked&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Clicked{% if query.sort == 'clicked' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a> (<a href="?sort=opened&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Unique{% if query.sort == 'opened' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>)
+            </div>
+            <div class="two columns" >
+              <a href="?sort=clicked&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Bounced{% if query.sort == 'clicked' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+            </div>
+            <div class="two columns" >
+              <a href="?sort=clicked&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Complained{% if query.sort == 'clicked' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% for tag in data.data %}
+      <div class="row">
+        <div class="three columns" >
+          <a href="/tags/{{ tag.tag }}">{{ tag.tag }}</a>
+        </div>
+        <div class="nine columns center">
+          <div class="row">
+            <div class="two columns" >
+              {{ tag.delivered | default: '0' | format }}
+            </div>
+            <div class="three columns">
+              {{ tag.opened | default: '0' | format }}{% if tag.unique_opens != '' and tag.unique_opens != 0  %} <span class="fade">({{ tag.unique_opens | default: '0' | format }})</span>{% endif %}
+            </div>
+            <div class="three columns" >
+              {{ tag.clicked | default: '0' | format }}{% if tag.unique_clicks != '' and tag.unique_clicks != 0  %} <span class="fade">({{ tag.unique_clicks | default: '0' | format }})</span>{% endif %}
+            </div>
+            <div class="two columns" >
+              {{ tag.bounced | default: '0' | format }}
+            </div>
+            <div class="two columns" >
+              {{ tag.complained | default: '0' | format }}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if data.data %}
+    {% assign next = data.offset | plus: data.count %}
+    {% assign prev = data.offset | minus: data.limit %}
+    {% assign q = query | remove: 'offset' %}
+    <p class="right top-20">{{ data.offset | plus: 1 | format }} to {{ next | format }} of {{ data.total }}</p>
+    <p class="pagination">{% if data.offset > 0 %}<a href="?{{ q }}{% if prev > 0 %}&offset={{ prev }}{% endif %}" class="button button-primary">Prev</a>{% endif %}{% if next < data.total %}<a href="?{{ q }}&offset={{ data.offset | plus: data.count }}" class="button button-primary">Next</a>{% endif %}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% include 'partials/footer.liquid' %}

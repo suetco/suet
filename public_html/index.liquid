@@ -3,10 +3,10 @@
 <head>
 
   <meta charset="utf-8">
-  <title>Detailed analytics and reporting for your Mailgun transactional emails</title>
+  <title>Detailed analytics and reporting for your Mailgun transactional emails and campaigns</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Detailed analytics and reporting for your Mailgun transactional emails">
+  <meta name="description" content="Detailed analytics and reporting for your Mailgun transactional emails and campaigns">
   <meta name="slack-app-id" content="A6566DWTS">
   <link href="//fonts.googleapis.com/css?family=Rubik:400,500" rel="stylesheet" type="text/css">
 
@@ -146,8 +146,7 @@
   <div class="container">
     <div class="row">
       <div class="eight columns offset-by-two">
-        <h6><i>"How many users got the update Mail? How well are mails performing?"</i></h6>
-        <h6>Suet connects to your <a href="https://mailgun.com/">Mailgun</a> account to provide more detailed analytics and reporting for Mails sent through Mailgun</h6>
+        <h6>Suet connects to your <a href="https://mailgun.com/">Mailgun</a> account to provide more detailed analytics and reporting for transactional mails and campaigns sent through Mailgun. See what emails your users are getting and how well they are performing</h6>
         <p>&nbsp;</p>
         <img src="images/hero.png" class="">
       </div>
@@ -177,8 +176,8 @@
             <p>Track deliveries, opens, clicks and uniques across mails and recipients.</p>
           </div>
           <div class="six columns">
-            <h5>View links</h5>
-            <p>Get summary of all clicks on all links. Know who clicked, when and on what mail.</p>
+            <h5>Campaigns/Tags performance</h5>
+            <p>View your campaigns and tags and see how they perform. Get engagement, open rate, click-through rate and more.</p>
           </div>
         </div>
         <p>&nbsp;</p>
@@ -188,15 +187,26 @@
             <p>See exactly what is sent to users. What does the delivered mail look like? What details were missing?</p>
           </div>
           <div class="six columns">
+            <h5>View links</h5>
+            <p>Get summary of all clicks on all links. Know who clicked, when and on what mail.</p>
+          </div>
+        </div>
+        <p>&nbsp;</p>
+        <div class="row">
+          <div class="six columns">
             <h5>Live feed</h5>
             <p>Get events from your mails as they happen. You can further filter based on the different event types.</p>
+          </div>
+          <div class="six columns">
+            <h5>Powerful Search</h5>
+            <p>Easily search for mails using keywords in subject or mail body.</p>
           </div>
         </div>
         <p>&nbsp;</p>
         <div class="row">
           <div class="six columns">
             <h5>Bring your team</h5>
-            <p>Invite other members of your team to your analytics dashboard</p>
+            <p>Invite other members of your team to your analytics dashboard.</p>
           </div>
           <div class="six columns">
             <h5>Recipients and activity</h5>
@@ -229,7 +239,7 @@
           <h4>Dev</h4>
           <p>One month free trial<br>
           Up to 5k events/month</p>
-          <h1>$5</h1>
+          <h1>$10</h1>
           <p><a href="/signup?dev" class="button button-primary">Signup</a></p>
         </div>
       </div>
@@ -238,7 +248,7 @@
           <h4>Pro</h4>
           <p>One month free trial<br>
           Up to 50k events/month</p>
-          <h1>$20</h1>
+          <h1>$30</h1>
           <p><a href="/signup?pro" class="button button-primary">Signup</a></p>
         </div>
       </div>
@@ -246,7 +256,7 @@
         <div>
           <h4>Biz</h4>
           <p>One month free trial<br>
-          Up to 500k events/month</p>
+          Up to 400k events/month</p>
           <h1>$100</h1>
           <p><a href="/signup?biz" class="button button-primary">Signup</a></p>
         </div>
@@ -270,7 +280,7 @@
       </div>
       <div class="three columns">
         <p><strong>Can I try it out without paying?</strong></p>
-        <p>Absolutely. <a href="signup">Sign up</a> for free and try it out for a month. Pay only if convinced.</p>
+        <p>Absolutely. <a href="signup">Sign up</a> and you can try it out for a month or for your first 50k events; whichever comes first. Pay only if convinced.</p>
       </div>
       <div class="three columns">
         <p><strong>Can I host it on my own server?</strong></p>
@@ -280,7 +290,7 @@
     <div class="row">
       <div class="six columns">
         <p><strong>Does Suet handle bulk emails sent via Mailgun too?</strong></p>
-        <p>If you are using Mailgun to send bulk emails/campaigns like newsletters, you need to let Suet know to group the analytics. To do this, send the email through <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#batch-sending">Mailgun's batch sending API</a> (instead of SMTP). Batch sending is limited to 1000 emails per send though. Support for <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#tagging">tagging</a>, which is a better approach, coming soon.</p>
+        <p>If you are using Mailgun to send bulk emails/campaigns like newsletters, you need to let Suet know to group the analytics. To do this, either send the email through <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#batch-sending">Mailgun's batch sending API</a> (instead of SMTP) or <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#tagging">tag</a> the mail.</p>
       </div>
       <div class="three columns">
         <p><strong>I only see delivered events. What of opens and clicks?</strong></p>
@@ -294,4 +304,4 @@
   </div>
 </section>
 
-{% include 'partials/footer' %}
+{% include 'partials/footer.liquid' %}

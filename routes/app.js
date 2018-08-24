@@ -1,5 +1,6 @@
 const Logs = require('../models/logs.js')
     , Mails = require('../models/mails.js')
+    , Tags = require('../models/tags.js')
     , Users = require('../models/users.js')
     , Links = require('../models/links.js')
     , Accounts = require('../models/accounts.js')
@@ -8,6 +9,8 @@ const Logs = require('../models/logs.js')
     , render = require('../lib/utils.js').render
     , smtpError = require('../lib/utils.js').getSMTPError
     , moment = require('moment')
+
+    , fastCsv = require('fast-csv')
     ;
 
 moment.updateLocale('en', {
@@ -54,7 +57,31 @@ module.exports = app => {
     });
   });
 
+  app.get('/search', (req, res) => {
+    let q = req.query.q || '';
+    q = q.replace(/[\*\+\-=~><\"\?^\${}\(\)\:\!\/[\]\\\s]/g, '\\$&') // replace single character special characters
+        .replace(/\|\|/g, '\\||') // replace ||
+        .replace(/\&\&/g, '\\&&'); // replace &&
+
+    Mails.search(req.session.account.active_domain.domain, q, (err, data) => {
+      if (!err) {
+        for (let d of data) {
+          d.timeago = moment(d.date).fromNow();
+          d.to = d.to.join(', ');
+        }
+      }
+
+      res.render('search', render(req, {
+        title: 'Search',
+        page: 'search',
+        q: req.query.q,
+        data: data
+      }));
+    });
+  });
+
   app.get('/feed', (req, res) => {
+
     let options = {};
     if (req.query.sort)
       options.sort = req.query.sort;
@@ -66,6 +93,15 @@ module.exports = app => {
       options.date = req.query.date;
     if (req.query.offset)
       options.offset = req.query.offset;
+    if (req.query.tag)
+      options.tag = req.query.tag;
+
+    // Exporting?
+    /*if (typeof req.query.export != "undefined") {
+      options.limit = 50000;
+      options.offset = 0;
+    }*/
+
     Logs.feed(req.session.account.active_domain.domain, options, (err, data) => {
       if (!err) {
         for (let d of data.data) {
@@ -75,13 +111,102 @@ module.exports = app => {
         }
       }
 
+      /*if (typeof req.query.export != "undefined") {
+        res.setHeader('Content-disposition', 'attachment; filename=feed.csv');
+        res.writeHead(200, { 'Content-Type': 'text/csv' });
+        res.flushHeaders();
+
+        let csvStream = fastCsv
+            .createWriteStream({headers: true});
+        csvStream.pipe(res);
+        let meta;
+        for (let d of data.data) {
+          meta = d.subject;
+          if (d.event == 'clicked')
+            meta = d.url;
+          else if (d.event == 'dropped')
+            meta = d.description;
+          else if (d.event == 'bounced')
+            meta = d.error;
+
+          csvStream.write({
+                'Date': d.date.toISOString(),
+                'Email': d.email,
+                'Event': d.event,
+                'Meta': meta
+              });
+        }
+
+        csvStream.end();
+        return;
+      }//*/
+
       res.render('feed', render(req, {
         title: 'Feed',
         page: 'feed',
         query: req.query,
         action: req.query.action,
         date: req.query.date,
+        tag: req.query.tag,
         data: data
+      }));
+    })
+  });
+
+  app.get('/tags', (req, res) => {
+    let options = {};
+    if (req.query.sort)
+      options.sort = req.query.sort;
+    if (req.query.offset)
+      options.offset = req.query.offset;
+
+    // Exporting?
+    /*if (typeof req.query.export != "undefined") {
+      options.limit = 50000;
+      options.offset = 0;
+    }//*/
+
+    Tags.all(req.session.account.active_domain.domain, options, (err, data) => {
+
+      /*if (typeof req.query.export != "undefined") {
+        res.setHeader('Content-disposition', 'attachment; filename=mails.csv');
+        res.writeHead(200, { 'Content-Type': 'text/csv' });
+        res.flushHeaders();
+
+        let csvStream = fastCsv
+            .createWriteStream({headers: true});
+        csvStream.pipe(res);
+        for (let d of data.data) {
+          csvStream.write({
+                'When': d.date.toISOString(),
+                'Subject': d.subject,
+                'Opened': d.opened || 0,
+                'Failed': d.failed || 0,
+                'Clicked': d.clicked || 0
+              });
+        }
+        csvStream.end();
+        return;
+      }//*/
+
+      res.render('tags', render(req, {
+        title: 'Tags',
+        page: 'tags',
+        data: data
+      }));
+    })
+  });
+  app.get('/tags/:tag', (req, res) => {
+    Tags.get(req.session.account.active_domain.domain, req.params.tag, req.query, (err, doc) => {
+      if (err || !doc) {
+        req.flash('error', err);
+        return res.redirect('/tags');
+      }
+
+      res.render('tag', render(req, {
+        title: doc.tag.tag,
+        page: 'tags',
+        data: doc
       }));
     })
   });
@@ -92,13 +217,45 @@ module.exports = app => {
       options.sort = req.query.sort;
     if (req.query.offset)
       options.offset = req.query.offset;
+    if (req.query.tag)
+      options.tag = req.query.tag;
+
+    // Exporting?
+    /*if (typeof req.query.export != "undefined") {
+      options.limit = 50000;
+      options.offset = 0;
+    }//*/
+
     Mails.getAll(req.session.account.active_domain.domain, options, (err, data) => {
       for (let d of data.data) {
         d.timeago = moment(d.date).fromNow();
       }
+
+      /*if (typeof req.query.export != "undefined") {
+        res.setHeader('Content-disposition', 'attachment; filename=mails.csv');
+        res.writeHead(200, { 'Content-Type': 'text/csv' });
+        res.flushHeaders();
+
+        let csvStream = fastCsv
+            .createWriteStream({headers: true});
+        csvStream.pipe(res);
+        for (let d of data.data) {
+          csvStream.write({
+                'When': d.date.toISOString(),
+                'Subject': d.subject,
+                'Opened': d.opened || 0,
+                'Failed': d.failed || 0,
+                'Clicked': d.clicked || 0
+              });
+        }
+        csvStream.end();
+        return;
+      }*/
+
       res.render('mails', render(req, {
         title: 'Mails',
         page: 'mails',
+        query: req.query,
         data: data
       }));
     })
@@ -112,6 +269,37 @@ module.exports = app => {
       for (let d of doc.logs) {
         d.timeago = moment(d.date).fromNow();
       }
+
+      if (typeof req.query.export != "undefined") {
+        res.setHeader('Content-disposition', 'attachment; filename=mail.csv');
+        res.writeHead(200, { 'Content-Type': 'text/csv' });
+        res.flushHeaders();
+
+        let csvStream = fastCsv
+            .createWriteStream({headers: true});
+        csvStream.pipe(res);
+        let meta = '';
+        for (let d of doc.logs) {
+          if (d.event == 'clicked')
+            meta = d.url;
+          else if (d.event == 'opened')
+            meta = `${d.client} on ${d.os} (${d.platform})`;
+          else if (d.event == 'bounced')
+            meta = d.error;
+          else if (d.event == 'dropped')
+            meta = d.description;
+
+          csvStream.write({
+                'When': d.date.toISOString(),
+                'Email': d.email,
+                'Event': d.event,
+                'Meta': meta
+              });
+        }
+        csvStream.end();
+        return;
+      }
+
       res.render('mail', render(req, {
         title: doc.subject,
         page: 'mails',
@@ -128,10 +316,42 @@ module.exports = app => {
       options.dir = req.query.dir;
     if (req.query.offset)
       options.offset = req.query.offset;
+
+    /*if (typeof req.query.export != "undefined") {
+      options.limit = 50000;
+      options.offset = 0;
+    }//*/
+
     Users.getAll(req.session.account.active_domain.domain, options, (err, data) => {
       for (let user of data.data) {
         user.timeago = moment(user.last_seen).fromNow();
       }
+
+      /*if (typeof req.query.export != "undefined") {
+        res.setHeader('Content-disposition', 'attachment; filename=users.csv');
+        res.writeHead(200, { 'Content-Type': 'text/csv' });
+        res.flushHeaders();
+
+        let csvStream = fastCsv
+            .createWriteStream({headers: true});
+        csvStream.pipe(res);
+        for (let d of data.data) {
+          csvStream.write({
+                'Last Interaction': d.last_seen.toISOString(),
+                'Email': d.email,
+                'Deliveries': d.delivered,
+                'Bounce': d.bounced || 0,
+                'Opens': d.opened || 0,
+                'Unique Opens': d.unique_opens || 0,
+                'Clicks': d.clicked || 0,
+                'Unique Clicks': d.unique_clicks || 0
+              });
+        }
+
+        csvStream.end();
+        return;
+      }//*/
+
       res.render('users', render(req, {
         title: 'Users',
         page: 'users',
@@ -197,6 +417,27 @@ module.exports = app => {
             d.clickers = _emails.join(', ');
         }
       }
+
+      /*if (typeof req.query.export != "undefined") {
+        res.setHeader('Content-disposition', 'attachment; filename=links.csv');
+        res.writeHead(200, { 'Content-Type': 'text/csv' });
+        res.flushHeaders();
+
+        let csvStream = fastCsv
+            .createWriteStream({headers: true});
+        csvStream.pipe(res);
+        for (let d of data.data) {
+          csvStream.write({
+                'Date': d.date.toISOString(),
+                'Link': d.url,
+                'Users': d.emails.map(e => e.email).join(', '),
+                'Clicks': d.count || 0
+              });
+        }
+
+        csvStream.end();
+        return;
+      }//*/
 
       res.render('links', render(req, {
         title: 'Links',
@@ -339,7 +580,7 @@ module.exports = app => {
             res.redirect('/dashboard');
           }
           else {
-            res.redirect('/add-key');
+            res.redirect('/mailgun/add-key');
           }
         });
       }

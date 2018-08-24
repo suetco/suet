@@ -21,22 +21,26 @@
 <header>
   <div class="container">
     <div class="row">
-      <div class="five columns">
+      <div class="one columns">
+        <span class="headway" style="position:absolute;left:24px"></span>
+        <h5><a href="/"><i class="icon-bar-graph-2"></i></a></h5>
+      </div>
+      <div class="nine columns">
         {% if acc_active_domain %}
-        <ul>
+        <ul class="left">
           <li><a href="/dashboard"{% if page == 'dashboard' %} class="active"{% endif %}>Dashboard</a></li>
           <li><a href="/feed"{% if page == 'feed' %} class="active"{% endif %}>Feed</a></li>
+          <li><a href="/tags"{% if page == 'tags' %} class="active"{% endif %}>Tags</a></li>
           <li><a href="/mails"{% if page == 'mails' %} class="active"{% endif %}>Mails</a></li>
           <li><a href="/users"{% if page == 'users' %} class="active"{% endif %}>Users</a></li>
           <li><a href="/links"{% if page == 'links' %} class="active"{% endif %}>Links</a></li>
         </ul>
+        <div class="left search">
+          <form method="get" action="/search"><input type="text" placeholder="Search" name="q" value="{{q}}"> <button type="submit"><i class="icon-search"></i></button></form>
+        </div>
         {% else %}&nbsp;{% endif %}
       </div>
-      <div class="two columns">
-        <span class="headway" style="position:absolute"></span>
-        <h5 class="center"><a href="/"><i class="icon-bar-graph-2"></i></a></h5>
-      </div>
-      <div class="five columns align-right">
+      <div class="two columns align-right">
         {% if acc_active_domain %}
         <ul>
           <li class="has-sub">

@@ -6,23 +6,30 @@ const express = require('express')
     , session = require('express-session')
     , sessionStore = require('connect-mongo')(session)
     , bodyParser = require('body-parser')
+    , helmet = require('helmet')
     , path = require('path')
     , flash = require('flash')
     , compression = require('compression')
     , favicon = require('serve-favicon')
+    , bugsnag = require('bugsnag')
 
     // Libs
     , acl = require('./lib/acl.js')
     , dbo = require('./lib/db.js')
     ;
 
+bugsnag.register(process.env.BS_KEY);
+
 dbo.connect(err => {
 
-  if (err) {
-    // todo: Notify!!!
-    console.log(err);
-    return process.exit(0);
-  }
+  // Config
+  const app = express();
+  app.listen(process.env.PORT || 3000);
+  //app.use(helmet());
+  app.use(bugsnag.requestHandler);
+
+  if (err)
+    bugsnag.notify(err);
 
   // Index DB
   require('./lib/indexes.js')(dbo);
@@ -59,28 +66,39 @@ dbo.connect(err => {
       return 0;
     return v.toLocaleString();
   });
-
-  // Config
-  const app = express();
-  app.listen(process.env.PORT || 3000);
+  engine.registerFilter('literal_escape', v => {
+    v = v.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<script[^>]*>[\s\S]*/gi, '').replace(/`/g, '\\`')
+    return v;
+  });
+  engine.registerFilter('colour', v => {
+    var hash = 0;
+    if (v.length == 0) return hash;
+    for (let i = 0; i < v.length; i++) {
+      hash = v.charCodeAt(i) + ((hash << 5) - hash);
+      hash = hash & hash;
+    }
+    shortened = hash % 360;
+    return "hsl(" + shortened + ",90%,70%)";
+  })
 
   // Middlewares
   const sess = {
-    secret: 's1asfas53qedw',
+    secret: process.env.SESSION_KEY,
     maxAge: 3600000 * 24 * 365,
     store: new sessionStore({
       db: dbo.db(),
       ttl: 3600000 * 24 * 365
     }),
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    unset: 'destroy'
   }
   app.use(session(sess));
 
   app.engine('liquid', engine.express());
   app.set('view engine', 'liquid');
   app.set('views', __dirname + '/public_html');
-  app.use(favicon(path.join(__dirname, 'public_html', 'favicon.ico')))
+  app.use(favicon(path.join(__dirname, 'public_html', 'favicon.ico')));
   app.use(flash());
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: true }));

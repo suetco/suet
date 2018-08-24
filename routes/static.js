@@ -1,4 +1,4 @@
-var hook = require('../workers/hooks/index.js')
+const hook = require('../workers/hooks/index.js')
     , render = require('../lib/utils.js').render
     ;
 

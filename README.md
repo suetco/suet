@@ -2,13 +2,13 @@
 
 Suet is an analytics dashboard and reporting tool for transactional emails through Mailgun. It gives better insight into the performance of your transactional emails by providing answers to questions like: 
 
-- Who received what email? Which ones were opened? What links were clicked? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/feed.png))
-- What’s user engagement like? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/users.png))
-- What device/platform are most used? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/dashboard.png))
-- Which email performed best? ([Screenshot](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/email.png))
+- Who received what email? Which ones were opened? What links were clicked? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/feed.png))
+- What’s user engagement like? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/users.png))
+- What device/platform are most used? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/dashboard.png))
+- Which email performed best? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/email.png))
 - Which email bounced or was complained about?
 
-![Dashboard](https://github.com/kehers/suet/raw/master/public_html/images/screenshots/dashboard.png)
+![Dashboard](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/dashboard.png)
 
 ## Features
 
@@ -31,7 +31,7 @@ Invite other members of your team to your analytics dashboard
 
 ## Usage
 
-The easiest way to use Suet is through the managed version at [suet.co](https://suet.co/) (costs as low as $5/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/kehers/suet/blob/master/docs/installation.md).
+The easiest way to use Suet is through the managed version at [suet.co](https://suet.co/) (costs as low as $5/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/suetco/suet/blob/master/docs/installation.md).
 
 ## Staying up to date
 
@@ -39,7 +39,7 @@ Follow [@suet_co](http://twitter.com/suet_co) on Twitter and the changelog at [h
 
 ## Issues
 
-You can submit an issue at [github.com/kehers/suet/issues](http://github.com/kehers/suet/issues). If you require email support, you will need to [purchase a licence](https://pay.paddle.com/checkout/515197) (costs $70/year).
+You can submit an issue at [github.com/suetco/suet/issues](http://github.com/suetco/suet/issues). If you require email support, you will need to [purchase a licence](https://pay.paddle.com/checkout/515197) (costs $70/year).
 
 ## Copyright/Licence
 

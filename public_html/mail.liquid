@@ -1,4 +1,4 @@
-{% include 'partials/header-dashboard' %}
+{% include 'partials/header-dashboard.liquid' %}
 
 <section>
   <div class="container">
@@ -14,10 +14,10 @@
     <div class="row pad-btm">
       <div class="six columns">
         <h5>{{ data.subject }}</h5>
-        <small><a href="#" class="small-button view">view mail</a></small>
+        <small><a href="#" class="small-button view">view mail</a> <a href="?export" class="small-button">export</a></small>
       </div>
-      {% assign or = data.unique_opens | times: 100 | divided_by: data.deliveries %}
-      {% assign ctr = data.unique_clicks | times: 100 | divided_by: data.opens %}
+      {% assign or = data.unique_opens | times: 100 | divided_by: data.deliveries | round: 2 %}
+      {% assign ctr = data.unique_clicks | times: 100 | divided_by: data.deliveries | round: 2 %}
       <div class="six columns">
         <div class="row grid">
           <div class="three columns">
@@ -102,7 +102,7 @@
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript">
 var iFrameDoc = $('iframe')[0].contentDocument || $('iframe')[0].contentWindow.document;
-iFrameDoc.write(`<base target="_blank">{{ data.body }}`); // todo: escape ` and $
+iFrameDoc.write(`<base target="_blank">{{ data.body | literal_escape }}`);
 iFrameDoc.close();
 $('.view, .close').on('click', function() {
   $('.modal').toggleClass('hide');
@@ -116,4 +116,4 @@ $(document).keyup(function(e) {
 });
 </script>
 
-{% include 'partials/footer' %}
+{% include 'partials/footer.liquid' %}

@@ -94,14 +94,14 @@ header li {
   display: inline-block;
 }
 header input {
-  border: 0 !important;
+  /*border: 0 !important;*/
   outline: 0;
 }
 
 header ul a {
   color: #777;
   display: block;
-  padding: 6px;
+  padding: 9px 6px 6px;
   margin-left: 15px;
   white-space: nowrap;
   overflow: hidden;
@@ -299,6 +299,31 @@ header .subnav li {
   left: -55px;
 }
 
+.search {
+  margin-left:20px;
+  width:350px
+}
+.search form {
+  border:1px solid #D1D1D1;
+  border-radius: 3px;
+  width:260px
+}
+.search input {
+  border: 0;
+  padding: 10px 0 10px 10px;
+  float: left;
+  width: 235px
+}
+.search input:focus {
+  border: 0 !important;
+}
+.search button {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 25px
+}
+
 .bar {
   margin: 10px 0
 }
@@ -312,21 +337,6 @@ header .subnav li {
 }
 .grid .columns:last-child {
   border-right: 0;
-}
-
-tags {
-  border-radius: 4px;
-  background-color: #fff
-}
-tags input {
-  margin:0;
-}
-tags tag > div {
-  background-color: #f2f2f2;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-tags > div {
 }
 
 .modal {
@@ -446,4 +456,29 @@ Tooltip
 
 .tooltip_templates {
   display: none;
+}
+
+/*
+Stripe
+*/
+.StripeElement {
+  background-color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #D1D1D1;
+  /*box-shadow: 0 1px 3px 0 #e6ebf1;
+  -webkit-transition: box-shadow 150ms ease;
+  transition: box-shadow 150ms ease;*/
+}
+
+.StripeElement--focus {
+  border: 1px solid #aaa;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
 }
