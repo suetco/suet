@@ -13,14 +13,20 @@ It is assumed you have MongoDB installed already. If not, [install MongoDB](http
 - Run `git clone https://github.com/kehers/suet` in the directory or just download and unzip right in
 - Run `npm install`
 
-Next, you will need to update the environment variables. There is a `.env.example` file that contains the needed variables. Open the file, edit the variables and rename the file to `.env`. 
+Next, you will need to update the environment variables. There is a `.env.example` file that contains the needed variables. Open the file, edit the variables and rename the file to `.env`.
 
 The email variables (prefixed with `EMAIL_`) are used to send password recovery emails. (Suet uses [Mailgun’s API](https://documentation.mailgun.com/en/latest/quickstart-sending.html#how-to-start-sending-email) to send emails instead of normal SMTP). The Slack variables (prefixed with `SLACK_`) are used to sign in Slack accounts that should be connected to the Mailgun domains for notifications. (See [Connecting Slack](#connecting-slack))
 
 The environment variables are:
 
 - `HOST` (The IP or web address your application will be located at, without the trailing slash e.g. http://suet.some.paas)
+- `SESSION_KEY` (Random string to encrypt session cookies)
+- `AES_KEY` (Random string used for API key encryption in the database. It is important you don’t change this key once set as already encrypted keys will not be decryptable)
+- `DB_NAME` (Name of your MongoDB database e.g suet)
 - `DB_URL` (URL of your MongoDB database e.g mongodb://localhost/suet)
+- `ES_HOST` (Elasticsearch IP or web address)
+- `ES_AUTH` (_httpAuth_ value for your Elasticsearch)
+- `BS_KEY` (Bugsnag key for error reporting. Signup for a free account at bugsnag.com and get a key)
 - `EMAIL_FROM` (The sender identification for the email. Format “Name \<email>” e.g. Suet \<no-reply@suet.co>)
 - `EMAIL_DOMAIN` (The Mailgun domain you want to send emails from)
 - `EMAIL_KEY` (The API key of the domain above. Login to your Mailgun account and click the domain to get the domain API key)
@@ -30,12 +36,16 @@ The environment variables are:
 
 Once set (and file renamed to `.env`), you can start Suet with `node app.js` or in your favourite way.
 
+### Upgrading to v2
+
+One important change to version 2 is that API keys are encrypted (AES, 256, CTR) in the DB. If you are upgrading from v1, you need to run `node upgrades/v2.js` to encrypt existing keys in your database. Don’t forget that once this is done, you shouldn’t change your `AES_KEY` any longer as already encrypted keys will not be decryptable.
+
 ### Webhook Setup
 
-You need to setup a [webhook](http://mailgun-documentation.readthedocs.io/en/latest/api-webhooks.html) that Mailgun will send events to. The recommended option is to use [Google Cloud HTTP function](https://cloud.google.com/functions/docs/writing/http). It is highly scalable especially if you send lots of mails.
+You need to setup a [webhook](http://mailgun-documentation.readthedocs.io/en/latest/api-webhooks.html) that Mailgun will send events to. (Here is a post on [working with Mailgun webhooks](http://obem.be/2017/09/08/working-with-mailgun-webhooks.html)). The recommended option is to use [Google Cloud HTTP function](https://cloud.google.com/functions/docs/writing/http). It is highly scalable especially if you send lots of mails.
 
 > Q: Why not AWS API gateway + Lambda?
- 
+
 > A: Mailgun uses the content-type multipart/form-data to send some event data and this content-type is not supported by AWS API gateway (yet).
 
 If microservices is not your thing or just can't go through the stress, there is a webhook endpoint available at `[host]/webhook`.
@@ -75,4 +85,3 @@ You can connect [Slack](https://slack.com/) to Suet to be able to receive compla
 - Activate Incoming Webhooks in the next page (toggle the switch to `On`) then go back to previous page.
 - Scroll down to `App Credentials` and copy your Client ID and Client Secret.
 - Use the credentials as your Slack environment variables.
-

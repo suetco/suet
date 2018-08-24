@@ -31,7 +31,7 @@ Invite other members of your team to your analytics dashboard
 
 ## Usage
 
-The easiest way to use Suet is through the managed version at [suet.co](https://suet.co/) (costs as low as $5/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/suetco/suet/blob/master/docs/installation.md).
+The easiest way to use Suet is through the managed version at [suet.co](https://suet.co/) (costs as low as $10/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/suetco/suet/blob/master/docs/installation.md).
 
 ## Staying up to date
 
@@ -43,6 +43,6 @@ You can submit an issue at [github.com/suetco/suet/issues](http://github.com/sue
 
 ## Copyright/Licence
 
-Copyright (c) 2017 Opeyemi Obembe. Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
+Copyright (c) 2018 Opeyemi Obembe. Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
 
 If you use Suet for more than one Mailgun domain, make money from any of your domains, want email support or just want to support development, consider purchasing a [licence for $70/year](https://pay.paddle.com/checkout/515197).
