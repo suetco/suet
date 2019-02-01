@@ -6,46 +6,50 @@
       <div class="row">
         <div class="twelve columns">
           <!--a href="?export" class="right">Export <i class="icon-cloud-download"></i></a-->
+          <h6><span style="padding-right:15px">All Users</span> <a href="/users/cold">Cold Subscribers</a></h6>
         </div>
       </div>
     </div>
     <div class="feed">
-      <div class="row th">
-        <div class="two columns" >
-          <a href="?sort=last_seen&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Interaction{% if query.sort == 'last_seen' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
-        </div>
-        <div class="four columns" >
-          <a href="?sort=email&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Email{% if query.sort == 'email' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
-        </div>
-        <div class="two columns center" >
-          <a href="?sort=delivered&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Delivered<br><span class="fade">(Bounced)</span>{% if query.sort == 'delivered' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
-        </div>
-        <div class="two columns center" >
-          <a href="?sort=opened&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Opened<br><span class="fade">(Unique)</span>{% if query.sort == 'opened' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
-        </div>
-        <div class="two columns center" >
-          <a href="?sort=clicked&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Clicked<br><span class="fade">(Unique)</span>{% if query.sort == 'clicked' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a>
-        </div>
-      </div>
+      <!-- Make responsive: https://css-tricks.com/responsive-data-tables/ -->
+      <table class="u-full-width">
+        <thead>
+        <tr>
+          <th><a href="?sort=last_seen&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Last<br>Interaction{% if query.sort == 'last_seen' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a></th>
+          <th><a href="?sort=email&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Email{% if query.sort == 'email' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a></th>
+          <th class="center"><a href="?sort=delivered&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Delivered{% if query.sort == 'delivered' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a></th>
+          <th class="center">Bounced</th>
+          <th class="center"><a href="?sort=opened&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Opened{% if query.sort == 'opened' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a></th>
+          <th class="center">Unique<br>opens</th>
+          <th class="center"><a href="?sort=clicked&dir={% if query.dir == 'desc' %}asc{% else %}desc{% endif %}">Clicked{% if query.sort == 'clicked' %} <i class="icon-arrow-{% if query.dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}</a></th>
+          <th class="center">Unique<br>clicks</th>
+        </tr>
+      </thead>
       {% for event in data.data %}
-      <div class="row">
-        <div class="two columns" title="{{ event.last_seen | date: "%a, %b %d, %y" }}">
-          {{ event.timeago }}
-        </div>
-        <div class="four columns">
-          <a href="/users/{{ event.email }}">{{ event.email }}</a>
-        </div>
-        <div class="two columns center" >
-          <a href="/users/{{ event.email }}">{{ event.delivered | default: '0' }} {% if event.bounced %} <span class="fade">({{ event.bounced }})</span>{% endif %}</a>
-        </div>
-        <div class="two columns center" >
-          <a href="/users/{{ event.email }}">{{ event.opened | default: '0' }}{% if event.unique_opens %} <span class="fade">({{ event.unique_opens }})</span>{% endif %}</a>
-        </div>
-        <div class="two columns center" >
-          <a href="/users/{{ event.email }}">{{ event.clicked | default: '0' }}{% if event.unique_clicks %} <span class="fade">({{ event.unique_clicks }})</span>{% endif %}</a>
-        </div>
-      </div>
+        <tr>
+          <td>{{ event.timeago }}</td>
+          <td><a href="/users/{{ event.email }}">{{ event.email }}</a></td>
+          <td class="center">
+            <a href="/users/{{ event.email }}">{{ event.delivered | default: '0' }}</a>
+          </td>
+          <td class="center">
+            {% if event.bounced %}<span class="fade">{{ event.bounced }}</span>{% endif %}</a>
+          </td>
+          <td class="center">
+            <a href="/users/{{ event.email }}">{{ event.opened | default: '0' }}</a>
+          </td>
+          <td class="center">
+              {% if event.unique_opens %}<span class="fade">{{ event.unique_opens }}</span>{% endif %}</a></a>
+          </td>
+          <td class="center">
+            <a href="/users/{{ event.email }}">{{ event.clicked | default: '0' }}</a>
+          </td>
+          <td class="center">
+            {% if event.unique_clicks %}<span class="fade">{{ event.unique_clicks }}</span>{% endif %}</a></a>
+          </td>
+        </tr>
       {% endfor %}
+      </table>
     </div>
     {% if data.data %}
     {% assign next = data.offset | plus: data.count %}

@@ -13,8 +13,9 @@
               <option value="opened"{% if action contains 'opened' %} selected{% endif %}>Opened</option>
               <option value="delivered"{% if action contains 'delivered' %} selected{% endif %}>Delivered</option>
               <option value="clicked"{% if action contains 'clicked' %} selected{% endif %}>Clicked</option>
+              <option value="complained"{% if action contains 'complained' %} selected{% endif %}>Complained</option>
               <option value="bounced"{% if action contains 'bounced' %} selected{% endif %}>Bounced</option>
-              <option value="dropped"{% if action contains 'dropped' %} selected{% endif %}>Dropped</option>
+              <option value="failed"{% if action contains 'failed' %} selected{% endif %}>Failed</option>
             </select> <input type="text" value="{{ date }}" name="date" value="" style="height:auto;top:1px;position:relative;" placeholder="All Time">
             <button class="button button-primary" type="submit" style="padding:7px 10px;height:auto;line-height:normal"><i class="icon-menu"></i></button>
           </form>
@@ -46,9 +47,11 @@
             <span class="tag green">{{ event.event }}</span>
           {% elsif event.event == 'opened' %}
             <span class="tag yellow">{{ event.event }}</span>
-          {% elsif event.event == 'dropped' %}
+          {% elsif event.event == 'failed' %}
             <span class="tag red">{{ event.event }}</span>
           {% elsif event.event == 'bounced' %}
+            <span class="tag pink">{{ event.event }}</span>
+          {% elsif event.event == 'complained' %}
             <span class="tag pink">{{ event.event }}</span>
           {% else %}
             <span class="tag">{{ event.event }}</span>
@@ -56,13 +59,17 @@
         </div>
         <div class="seven columns">
           {% if event.event == 'clicked' %}
-            <a href="/links/{{ event.url | url_encode }}" class="break-words">{{ event.url }}</a> <a href="{{ event.url }}" targer="_blank" rel="noopener noreferrer"><i class="icon-open fade"></i></a>
+            <a href="/links/{{ event.url | url_encode }}" class="break-words">{{ event.url }}</a> <a href="{{ event.url }}" targer="_blank" rel="noopener noreferrer"><i class="icon-open fade"></i></a><br>
+            <small><a href="/mails/{{ event.msg_id }}" class="fade">{{ event.subject }}</a></small>
           {% elsif event.event == 'opened' %}
             <a href="/mails/{{ event.msg_id }}">{% if event.subject %}{{ event.subject }}{% else %}{{ event.msg_id }}{% endif %}</a>
           {% elsif event.event == 'delivered' %}
             <a href="/mails/{{ event.msg_id }}">{% if event.subject %}{{ event.subject }}{% else %}{{ event.msg_id }}{% endif %}</a>
-          {% elsif event.event == 'dropped' %}
-              {{ event.description }}
+          {% elsif event.event == 'complained' %}
+            <a href="/mails/{{ event.msg_id }}">{% if event.subject %}{{ event.subject }}{% else %}{{ event.msg_id }}{% endif %}</a>
+          {% elsif event.event == 'failed' %}
+            {{ event.description }}<br>
+            <small><a href="/mails/{{ event.msg_id }}" class="fade">{{ event.subject }}</a></small>
           {% elsif event.event == 'bounced' %}
             {{ event.error }}
           {% endif %}

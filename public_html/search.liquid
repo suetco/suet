@@ -15,7 +15,7 @@
           {{ v.timeago }}
         </div>
         <div class="four columns">
-          {{ v.to }}
+          <a href="/users/{{ v.toLink }}">{{ v.to }}</a>
         </div>
         <div class="seven columns">
           <a href="/mails/{{ v.id }}">{{ v.subject }}</a>

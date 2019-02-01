@@ -27,41 +27,38 @@
         </div>
       </div>
     </div>
-    {% assign delivered = data.engagement.data.delivered | sum %}
-    {% assign opened = data.engagement.data.opened | sum %}
-    {% assign clicked = data.engagement.data.clicked | sum %}
     <div class="row">
       <div class="six columns">
         <div class="row center">
           <div class="four columns">
             <div class="box">
               <p><strong>Delivered</strong></p>
-              <h5><a href="feed?action[]=delivered">{{ delivered | format }}</a></h5>
-              <strong><a href="feed?action[]=dropped">{{ data.engagement.data.dropped | sum | format }}</a></strong><br>dropped
+              <h5><a href="feed?action[]=delivered">{{ data.delivered | format }}</a></h5>
+              <strong><a href="feed?action[]=failed">{{ data.failed | format }}</a></strong><br>failed
             </div>
           </div>
           <div class="four columns">
             <div class="box">
               <p><strong>Opened</strong></p>
-              <h5><a href="feed?action[]=opened">{{ opened | format }}</a></h5>
+              <h5><a href="feed?action[]=opened">{{ data.opened | format }}</a></h5>
               <strong>{{ data.unique_opens | format }}</strong><br>unique
             </div>
           </div>
           <div class="four columns">
             <div class="box">
               <p><strong>Clicked</strong></p>
-              <h5><a href="feed?action[]=clicked">{{ clicked | format }}</a></h5>
+              <h5><a href="feed?action[]=clicked">{{ data.clicked | format }}</a></h5>
               <strong>{{ data.unique_clicks | format }}</strong><br>unique
             </div>
           </div>
         </div>
-        {% if opened == 0 and clicked == 0 and delivered > 0 %}
+        {% if data.opened == 0 and data.clicked == 0 and data.delivered > 0 %}
         <div class="box" style="background-color:#d7ecc1">
-          <p>Psst: Don't forget to turn on open and click tracking for this domain in your Mailgun dashboard</p>
+          <p>Psst: Don't forget to turn on open and click tracking for this domain in your Mailgun/SES dashboard</p>
         </div>
         {% endif %}
-        {% assign or = data.unique_opens | times: 100 | divided_by: delivered %}
-        {% assign ctr = data.unique_clicks | times: 100 | divided_by: delivered %}
+        {% assign or = data.unique_opens | times: 100 | divided_by: data.delivered %}
+        {% assign ctr = data.unique_clicks | times: 100 | divided_by: data.delivered %}
         <div class="row center">
           <div class="four columns">
             <div class="box">
@@ -195,14 +192,14 @@
                 pointBackgroundColor: '#69dd88',
                 data: {{ data.engagement.data.clicked }}
             }, {
-                label: "Dropped",
+                label: "Failed",
                 fill: true,
                 borderColor: '#e74c84',
                 backgroundColor: 'rgba(231, 76, 132, 0.1)',
                 pointBackgroundColor: '#e74c84',
                 borderWidth: 2,
                 pointRadius: 3,
-                data: {{ data.engagement.data.dropped }}
+                data: {{ data.engagement.data.failed }}
             }]
         },
         options: {

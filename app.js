@@ -67,6 +67,8 @@ dbo.connect(err => {
     return v.toLocaleString();
   });
   engine.registerFilter('literal_escape', v => {
+    if (!v)
+      return v;
     v = v.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<script[^>]*>[\s\S]*/gi, '').replace(/`/g, '\\`')
     return v;
   });
@@ -102,6 +104,8 @@ dbo.connect(err => {
   app.use(flash());
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json());
+  app.use(bodyParser.text());
   app.use(express.static(__dirname + '/public_html'));
   app.use(acl());
 

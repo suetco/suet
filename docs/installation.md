@@ -10,52 +10,58 @@
 It is assumed you have MongoDB installed already. If not, [install MongoDB](https://docs.mongodb.com/manual/installation/). Note that MongoDB must be publicly accessible via an IP or domain if you are using Google Cloud HTTP function to handle your webhooks (see [Webhook Setup](#webhook-setup)). If you can, I recommend you host MongoDB on a separate server.
 
 - Create directory locally or on your server
-- Run `git clone https://github.com/kehers/suet` in the directory or just download and unzip right in
+- Run `git clone https://github.com/suetco/suet` in the directory or just download and unzip right in
 - Run `npm install`
 
-Next, you will need to update the environment variables. There is a `.env.example` file that contains the needed variables. Open the file, edit the variables and rename the file to `.env`.
+Next, you will need to update the environment variables. There is a `.env.example` file that contains the needed variables. These variables also include settings for third party tools and services Suet uses. These are:
 
-The email variables (prefixed with `EMAIL_`) are used to send password recovery emails. (Suet uses [Mailgun’s API](https://documentation.mailgun.com/en/latest/quickstart-sending.html#how-to-start-sending-email) to send emails instead of normal SMTP). The Slack variables (prefixed with `SLACK_`) are used to sign in Slack accounts that should be connected to the Mailgun domains for notifications. (See [Connecting Slack](#connecting-slack))
+- [Bugsnag](https://bugsnag.com/) for error reporting
+- [Elasticsearch](https://www.elastic.co/) for search
+- [Mailgun](https://mailgun.com/) for sending password recovery mails. In coming versions, provision will also be made to use SES
+- [Slack](https://slack.com/) for complaints and failure deliveries
 
-The environment variables are:
+Open the file, edit the variables and rename the file to `.env`. They variables are:
 
-- `HOST` (The IP or web address your application will be located at, without the trailing slash e.g. http://suet.some.paas)
-- `SESSION_KEY` (Random string to encrypt session cookies)
-- `AES_KEY` (Random string used for API key encryption in the database. It is important you don’t change this key once set as already encrypted keys will not be decryptable)
-- `DB_NAME` (Name of your MongoDB database e.g suet)
-- `DB_URL` (URL of your MongoDB database e.g mongodb://localhost/suet)
-- `ES_HOST` (Elasticsearch IP or web address)
-- `ES_AUTH` (_httpAuth_ value for your Elasticsearch)
-- `BS_KEY` (Bugsnag key for error reporting. Signup for a free account at bugsnag.com and get a key)
-- `EMAIL_FROM` (The sender identification for the email. Format “Name \<email>” e.g. Suet \<no-reply@suet.co>)
-- `EMAIL_DOMAIN` (The Mailgun domain you want to send emails from)
-- `EMAIL_KEY` (The API key of the domain above. Login to your Mailgun account and click the domain to get the domain API key)
-- `WEBHOOK` (Your webhook URL. See [Webhook Setup](#webhook-setup). This is optional. Defaults to `HOST`/webhook if not added)
-- `SLACK_CLIENT_ID` (Your Slack app’s client ID. See [Connecting Slack](#connecting-slack))
-- `SLACK_CLIENT_SECRET` (Your Slack app’s client secret. See [Connecting Slack](#connecting-slack))
+- `HOST` - The IP or web address your application will be located at, without the trailing slash. Must include the protocol (http or https) even if it is an IP e.g. http://suet.some.paas
+- `SESSION_KEY` - Random string to encrypt session cookies
+- `AES_KEY` - Random string used for API key encryption in the database. It is important you don’t change this key once set as already encrypted keys will not be decryptable
+- `DB_NAME` - Name of your MongoDB database e.g suet
+- `DB_URL` - URL of your MongoDB database e.g mongodb://localhost/suet
+- `ES_HOST` - Elasticsearch IP or web address
+- `ES_AUTH` - _httpAuth_ value for your Elasticsearch
+- `BS_KEY` - Bugsnag key for error reporting. Signup for a free account at bugsnag.com and get a key
+- `EMAIL_FROM` - The sender identification for the email. Format “Name \<email>” e.g. Suet \<no-reply@suet.co>
+- `EMAIL_DOMAIN` - The Mailgun domain you want to send emails from
+- `EMAIL_KEY` - The API key of the domain above. Login to your Mailgun account and click the domain to get the domain API key
+- `WEBHOOK` - Your Mailgun webhook URL. See [Webhook Setup](#webhook-setup).
+- `SLACK_CLIENT_ID`  - Your Slack app’s client ID. See [Connecting Slack](#connecting-slack)
+- `SLACK_CLIENT_SECRET`  - Your Slack app’s client secret. See [Connecting Slack](#connecting-slack))
+- `SES_CONFSET` - [Configuration set name for SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/using-configuration-sets.html). You don’t need to change this.
+- `SES_TOPIC` - A name to create the notification topic. You also don’t need to change this.
+- `SES_WEBHOOK` - Your SES webhook. See [Webhook Setup](#webhook-setup).
 
 Once set (and file renamed to `.env`), you can start Suet with `node app.js` or in your favourite way.
 
-### Upgrading to v2
+### Upgrading from v1 directly to v3
 
 One important change to version 2 is that API keys are encrypted (AES, 256, CTR) in the DB. If you are upgrading from v1, you need to run `node upgrades/v2.js` to encrypt existing keys in your database. Don’t forget that once this is done, you shouldn’t change your `AES_KEY` any longer as already encrypted keys will not be decryptable.
 
 ### Webhook Setup
 
-You need to setup a [webhook](http://mailgun-documentation.readthedocs.io/en/latest/api-webhooks.html) that Mailgun will send events to. (Here is a post on [working with Mailgun webhooks](http://obem.be/2017/09/08/working-with-mailgun-webhooks.html)). The recommended option is to use [Google Cloud HTTP function](https://cloud.google.com/functions/docs/writing/http). It is highly scalable especially if you send lots of mails.
+You need to setup webhooks that Mailgun and SES will send events to. (Here is a post on [working with Mailgun webhooks](http://obem.be/2017/09/08/working-with-mailgun-webhooks.html)). The recommended option for the Mailgun webhook is to use [Google Cloud HTTP function](https://cloud.google.com/functions/docs/writing/http). It is highly scalable especially if you send lots of mails.
 
 > Q: Why not AWS API gateway + Lambda?
 
 > A: Mailgun uses the content-type multipart/form-data to send some event data and this content-type is not supported by AWS API gateway (yet).
 
-If microservices is not your thing or just can't go through the stress, there is a webhook endpoint available at `[host]/webhook`.
+If microservices is not your thing or just can't go through the stress, the webhook endpoints are available at `[host]/mailgun/webhook` and `[host]/ses/webhook`. This is discussed further below.
 
 #### Using Google Cloud HTTP function
 
 - Go to your [Google Cloud Console](https://console.cloud.google.com/) (if you don't have an account yet, create one).
 - Enable Cloud functions in the dashboard.
 - Click on **Create Function**.
-- Enter your preferred name (e.g suet-hooks).
+- You will repeat these steps twice to create the SES and Mailgun webhooks. Enter your preferred name for the webhook (e.g ses-webhook or mg-webhook).
 - In the trigger section, select **HTTP trigger**. Note the **URL**, that will be your webhook URL.
 - Edit `workers/hooks/index.js` and enter your MongoDB URL. (No environment variable in Google cloud or I wasn’t looking well enough).
 - Also enter the HOST variable (as defined in your environment variable above). This is used to create mail links sent to Slack.
@@ -67,13 +73,7 @@ If microservices is not your thing or just can't go through the stress, there is
 
 #### Using app's webhook endpoint
 
-No setup or config needed here. Your webhook is automatically available at `[host]/webhook`.
-
-### Update endpoint in Mailgun
-
-Once you have the webhook setup and have the webhook URL handy, visit [Mailgun](https://mailgun.com/app/webhooks) and update your webhook endpoint to point to either your Google Cloud function URL or `[host]/webhook` depending on which one you are going with. The `Unsubscribes` event is not supported so you can leave it out.
-
-Mailgun will now start sending events to your webhook URL.
+Edit your the `WEBHOOK` and `SES_WEBHOOK` variables to point to  `[host]/mailgun/webhook` and `[host]/ses/webhook` respectively. Remember, the host [host] value should include the protocol (http or https) even if it is an IP.
 
 ### Connecting Slack
 

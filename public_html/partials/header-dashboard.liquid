@@ -10,7 +10,7 @@
 
   <link rel="stylesheet" href="/css/normalize.css">
   <link rel="stylesheet" href="/css/skeleton.css">
-  <link rel="stylesheet" href="/css/style.css?19112017">
+  <link rel="stylesheet" href="/css/style.css?01022019">
   <link rel="stylesheet" href="/css/feather.css">
   <link rel="icon" href="/favicon.ico">
   {{ _css }}
@@ -32,7 +32,13 @@
           <li><a href="/feed"{% if page == 'feed' %} class="active"{% endif %}>Feed</a></li>
           <li><a href="/tags"{% if page == 'tags' %} class="active"{% endif %}>Tags</a></li>
           <li><a href="/mails"{% if page == 'mails' %} class="active"{% endif %}>Mails</a></li>
-          <li><a href="/users"{% if page == 'users' %} class="active"{% endif %}>Users</a></li>
+          <li class="has-sub">
+            <a href="/users"{% if page == 'users' %} class="active"{% endif %}>Users</a>
+            <ul class="subnav">
+              <li><a href="/users">All Users</a></li>
+              <li><a href="/users/cold">Cold Subscribers</a></li>
+            </ul>
+          </li>
           <li><a href="/links"{% if page == 'links' %} class="active"{% endif %}>Links</a></li>
         </ul>
         <div class="left search">
@@ -55,6 +61,7 @@
               <li><a href="/settings">Domain Settings</a></li>
               <li><a href="/profile">Profile Settings</a></li>
               <li><a href="/logout">Logout</a></li>
+            </ul>
           </li>
         </ul>
         {% endif %}

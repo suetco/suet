@@ -14,7 +14,7 @@
     <div class="row pad-btm">
       <div class="six columns">
         <h5>{{ data.subject }}</h5>
-        <small><a href="#" class="small-button view">view mail</a> <a href="?export" class="small-button">export</a></small>
+        <small>{% if data.body %}<a href="#" class="small-button view">view mail</a> {% endif %}<a href="?export" class="small-button">export</a></small>
       </div>
       {% assign or = data.unique_opens | times: 100 | divided_by: data.deliveries | round: 2 %}
       {% assign ctr = data.unique_clicks | times: 100 | divided_by: data.deliveries | round: 2 %}

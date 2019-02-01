@@ -7,6 +7,7 @@ const Logs = require('../models/logs.js')
     , Domains = require('../models/domains.js')
 
     , render = require('../lib/utils.js').render
+    , charge = require('../lib/utils.js').getCharge
     , smtpError = require('../lib/utils.js').getSMTPError
     , moment = require('moment')
 
@@ -67,6 +68,8 @@ module.exports = app => {
       if (!err) {
         for (let d of data) {
           d.timeago = moment(d.date).fromNow();
+          let m = d.to[0].match(/<(.*)>/);
+          d.toLink = m ? m[1] : d.to[0];
           d.to = d.to.join(', ');
         }
       }
@@ -286,7 +289,7 @@ module.exports = app => {
             meta = `${d.client} on ${d.os} (${d.platform})`;
           else if (d.event == 'bounced')
             meta = d.error;
-          else if (d.event == 'dropped')
+          else if (d.event == 'failed')
             meta = d.description;
 
           csvStream.write({
@@ -354,6 +357,30 @@ module.exports = app => {
 
       res.render('users', render(req, {
         title: 'Users',
+        page: 'users',
+        query: req.query,
+        data: data
+      }));
+    })
+  });
+  app.get('/users/cold', (req, res) => {
+    let options = {sort: 'last_seen'};
+    if (req.query.sort)
+      options.sort = req.query.sort;
+    if (req.query.dir)
+      options.dir = req.query.dir;
+    if (req.query.offset)
+      options.offset = req.query.offset;
+    if (req.query.days)
+      options.days = req.query.days;
+
+    Users.getCold(req.session.account.active_domain.domain, options, (err, data) => {
+      for (let user of data.data) {
+        user.timeago = moment(user.last_seen).fromNow();
+      }
+
+      res.render('users-cold', render(req, {
+        title: 'Cold Subscribers',
         page: 'users',
         query: req.query,
         data: data
@@ -530,6 +557,22 @@ module.exports = app => {
             return res.redirect('/settings');
           });
         }
+        // Removing failure email
+        if (req.query.remove_failure_email && domain) {
+          if (domain.owner !== req.session.account.id) {
+            req.flash('error', 'Only administrators can perform this action');
+            return res.redirect('/settings');
+          }
+
+          return Domains.clearFailureEmail(domain.domain, err => {
+              if (err)
+                req.flash('error', err);
+              else
+                req.flash('info', 'Email removed');
+
+              return res.redirect('/settings');
+          });
+        }
 
         res.render('settings', render(req, {
           title: 'Settings',
@@ -558,6 +601,17 @@ module.exports = app => {
             return res.redirect('/settings');
         });
       }
+      else if (req.body.failure_email) {
+        Domains.updateFailureEmail(domain.domain,
+          req.body.failure_email, (err, email) => {
+            if (err)
+              req.flash('error', err);
+            else
+              req.flash('info', 'Email added to domain for failure notification');
+
+            return res.redirect('/settings');
+        });
+      }
       else if (req.body.delete) {
         Domains.delete(domain.domain, err => {
           if (err)
@@ -580,7 +634,7 @@ module.exports = app => {
             res.redirect('/dashboard');
           }
           else {
-            res.redirect('/mailgun/add-key');
+            res.redirect('/select-service');
           }
         });
       }

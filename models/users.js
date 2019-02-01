@@ -50,6 +50,77 @@ exports.getAll = (domain, options, fn)  => {
   });
 }
 
+exports.getCold = (domain, options, fn)  => {
+  if (!domain)
+    return fn('Domain not specified');
+
+  options = options || {};
+  let limit = options.limit || 20;
+  let skip = options.offset || 0;
+  let sort = 'last_seen'
+      , order = -1
+      , allowedSort = ['last_seen', 'email', 'clicked', 'opened', 'delivered']
+      ;
+  if (options.sort && allowedSort.indexOf(options.sort) != -1)
+    sort = options.sort;
+  if (options.dir && options.dir == 'asc')
+    order = 1;
+
+  let qs = {limit: limit, skip: parseInt(skip), sort: {}};
+  qs.sort[sort] = order;
+
+  let p, days, dateAgo;
+  if (options.days) {
+    days = +options.days;
+    p = Promise.resolve();
+  }
+  else {
+    p = new Promise((resolve, reject) => {
+      // Get last day mail was sent
+      dbo.db().collection('mails').find({domain: domain}, {limit: 1, sort: {date: -1}}).toArray((err, mail) => {
+        if (err)
+          return reject(err);
+
+        days = mail.length ? moment().diff(mail[0].date, 'days') + 30 : 30;
+
+        resolve();
+      });
+    })
+  }
+
+  p.then(() => {
+    dateAgo = moment().subtract(days, 'days').toDate();
+    return new Promise((resolve, reject) => {
+      dbo.db().collection('users').count({domain: domain, last_seen: {'$lte': dateAgo}}, (err, c) => {
+        if (err)
+          return reject(err);
+
+        resolve(c);
+      })
+    });
+  })
+  .then(total => {
+    dbo.db().collection('users').find({domain: domain, last_seen: {'$lte': dateAgo}}, qs).toArray((err, docs) => {
+      if (err) {
+        console.log(err);
+        return fn('Internal Error');
+      }
+
+      fn(null, {
+        total: total,
+        count: docs.length,
+        offset: skip,
+        limit: limit,
+        days: days,
+        data: docs
+      });
+    });
+  })
+  .catch(err => {
+    fn(err);
+  });
+}
+
 exports.get = (email, domain, fn) => {
   if (!domain)
     return fn('Domain not specified');

@@ -8,6 +8,8 @@ const dbo = require('../lib/db.js')
       httpAuth: process.env.ES_AUTH,
       log: 'error'
     })
+
+    , AWS = require('aws-sdk')
     ;
 
 exports.search = (domain, q, fn) => {
@@ -154,17 +156,36 @@ exports.get = (msg_id, domain, fn) => {
 }
 
 exports.send = (to, domain, data, fn) => {
-  console.log(data);
   if (!to || !data.name || !data.from || !data.subject || !data.body)
     return fn('Some fields empty');
 
-  let mailOptions = {
-    from: `"${data.name}" <${data.from}>`,
-    to: to,
-    subject: data.subject,
-    text: data.body,
-    //html: '<b>Hello world</b>'
-  };
+  if (domain.type == 'ses') {
+    const ses = new AWS.SES({
+      accessKeyId: decrypt(domain.key.key),
+      secretAccessKey: decrypt(domain.key.secret),
+      region: domain.key.region
+    });
+    return ses.sendEmail({
+      Destination: {
+       ToAddresses: [to]
+      },
+      Message: {
+       Body: {
+        Text: { Data: data.body }
+       },
+       Subject: { Data: data.subject }
+      },
+      ConfigurationSetName: 'suetco',
+      Source:  `"${data.name}" <${data.from}>`
+     }, (err, data) => {
+      if (err) {
+        return fn(err);
+      }
+
+      fn();
+    });
+  }
+
   request.post({
     'url': `https://api.mailgun.net/v3/${domain.domain}/messages`,
     'auth': {
@@ -172,7 +193,12 @@ exports.send = (to, domain, data, fn) => {
       'pass': decrypt(domain.key),
       'sendImmediately': false
     },
-    'form': mailOptions
+    'form': {
+      from: `"${data.name}" <${data.from}>`,
+      to: to,
+      subject: data.subject,
+      text: data.body
+    }
   }, (err, response, body) => {
     if (err) {
       return fn(err);

@@ -3,10 +3,10 @@
 <head>
 
   <meta charset="utf-8">
-  <title>Detailed analytics and reporting for your Mailgun transactional emails and campaigns</title>
+  <title>Easily track delivery, opens and clicks on emails sent to your customers using Mailgun or Amazon SES.</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Detailed analytics and reporting for your Mailgun transactional emails and campaigns">
+  <meta name="description" content="Detailed analytics and reporting for your Mailgun and Amazon SES transactional emails and campaigns">
   <meta name="slack-app-id" content="A6566DWTS">
   <link href="//fonts.googleapis.com/css?family=Rubik:400,500" rel="stylesheet" type="text/css">
 
@@ -135,7 +135,7 @@
       <div class="six columns offset-by-three center">
         <h1><a href="/"><i class="icon-bar-graph-2"></i> <span>suet</span></a><span class="headway" style="position:absolute"></span></h1>
         <div class="hero">
-          <h4 class="title">Detailed analytics and reporting for your Mailgun transactional emails</h4>
+          <h4 class="title">Easily track delivery, opens and clicks on emails sent to your customers using Mailgun or Amazon SES.</h4>
           <p><a href="/signup" class="button button-primary">Signup</a>  <a href="/login" class="button"><i class="icon-skip-forward"></i> Login</a></p>
         </div>
       </div>
@@ -146,7 +146,7 @@
   <div class="container">
     <div class="row">
       <div class="eight columns offset-by-two">
-        <h6>Suet connects to your <a href="https://mailgun.com/">Mailgun</a> account to provide more detailed analytics and reporting for transactional mails and campaigns sent through Mailgun. See what emails your users are getting and how well they are performing</h6>
+        <h6>Suet connects to your <a href="https://mailgun.com/" target="_blank">Mailgun</a> or <a href="https://aws.amazon.com/ses" target="_blank">Amazon SES</a> account to provide more detailed analytics and reporting for your transactional mails and campaigns. See what emails your users are getting and how well they are performing</h6>
         <p>&nbsp;</p>
         <img src="images/hero.png" class="">
       </div>
@@ -177,14 +177,14 @@
           </div>
           <div class="six columns">
             <h5>Campaigns/Tags performance</h5>
-            <p>View your campaigns and tags and see how they perform. Get engagement, open rate, click-through rate and more.</p>
+            <p>View your campaigns and tags and see how they perform. Get engagement, open rate, click-through rate and more. (Mailgun only for now)</p>
           </div>
         </div>
         <p>&nbsp;</p>
         <div class="row">
           <div class="six columns">
             <h5>View emails</h5>
-            <p>See exactly what is sent to users. What does the delivered mail look like? What details were missing?</p>
+            <p>See exactly what is sent to users. What does the delivered mail look like? What details were missing? (Mailgun only)</p>
           </div>
           <div class="six columns">
             <h5>View links</h5>
@@ -228,7 +228,7 @@
     <div class="row">
       <div class="six columns offset-by-three">
         <h3 class="title">Pricing</h3>
-        <p>Pricing is based on the number of Mailgun events received per month irrespective of the number of domains in your account.</p>
+        <p>Pricing is based on the number of events received per month irrespective of the number of domains in your account.</p>
         <p>An event is something that happens to an email. This could be a delivery, open, bounce or click on a link. Note that non-unique events are also tracked. This means if a recipient opens the same email twice, 2 events are tracked and not one.</p>
         <p>At the end of the month, you will be sent an invoice for the number of events consumed by your account.</p>
       </div>
@@ -255,7 +255,7 @@
       <div class="three columns">
         <div>
           <h4>Biz</h4>
-          <p>One month free trial<br>
+          <p>&nbsp;<br>
           Up to 400k events/month</p>
           <h1>$100</h1>
           <p><a href="/signup?biz" class="button button-primary">Signup</a></p>
@@ -275,8 +275,8 @@
     <h3 class="title">FAQ</h3>
     <div class="row">
       <div class="six columns">
-        <p><strong>How is this different from the analytics in Mailgun dashboard?</strong></p>
-        <p>Suet gives more detailed analytics like uniques, click throughs, top interactions and on top of that presents it in an easy to follow way. It also connects to your Slack account to notify you of failures and bounces.</p>
+        <p><strong>How is this different from the analytics in the dashboard of my service?</strong></p>
+        <p>Suet gives you more. There is detailed analytics like uniques, click throughs and top interactions; you can view body of the email (Mailgun only); there is a powerful search; you can connect your Slack account for failures.</p>
       </div>
       <div class="three columns">
         <p><strong>Can I try it out without paying?</strong></p>
@@ -289,12 +289,12 @@
     </div>
     <div class="row">
       <div class="six columns">
-        <p><strong>Does Suet handle bulk emails sent via Mailgun too?</strong></p>
+        <p><strong>Does Suet handle bulk emails sent too?</strong></p>
         <p>If you are using Mailgun to send bulk emails/campaigns like newsletters, you need to let Suet know to group the analytics. To do this, either send the email through <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#batch-sending">Mailgun's batch sending API</a> (instead of SMTP) or <a href="http://mailgun-documentation.readthedocs.io/en/latest/user_manual.html#tagging">tag</a> the mail.</p>
       </div>
       <div class="three columns">
         <p><strong>I only see delivered events. What of opens and clicks?</strong></p>
-        <p>Make sure you turn on open and click tracking in your Mailgun dashboard and also set the URLs in webhooks.</p>
+        <p>Make sure open and click tracking is turned on in your Mailgun or SES account. </p>
       </div>
       <div class="three columns">
         <p><strong>I have other questions</strong></p>

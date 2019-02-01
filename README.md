@@ -1,6 +1,6 @@
 ## Suet [![Build Status](https://travis-ci.org/kehers/suet.svg?branch=master)](https://travis-ci.org/kehers/suet)
 
-Suet is an analytics dashboard and reporting tool for transactional emails through Mailgun. It gives better insight into the performance of your transactional emails by providing answers to questions like: 
+Suet is an analytics dashboard and reporting tool for transactional emails through Mailgun or SES. It gives better insight into the performance of your transactional emails by providing answers to questions like:
 
 - Who received what email? Which ones were opened? What links were clicked? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/feed.png))
 - What’s user engagement like? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/users.png))
@@ -12,21 +12,21 @@ Suet is an analytics dashboard and reporting tool for transactional emails throu
 
 ## Features
 
-- Engagement overview   
+- Engagement overview
 Sent count, daily interactions, top items? Get a general overview of your mails' performance.
-- Get notifications on Slack   
+- Get notifications on Slack
 Connect Slack and get failure, bounce and complaint notifications.
-- Deliveries, opens and clicks   
+- Deliveries, opens and clicks
 Track deliveries, opens, clicks and uniques across mails and recipients.
-- Live feed   
+- Live feed
 Get events from your mails as they happen. You can further filter based on the different event types.
-- View emails   
+- View emails
 See exactly what is sent to users. What does the delivered mail look like? What details were missing?
-- View links   
+- View links
 Get summary of all clicks on all links. Know who clicked, when and on what mail.
-- Recipients and activity   
+- Recipients and activity
 View recipient journey from delivery to open and clicks. Know who opened and clicked on what.
-- Bring your team   
+- Bring your team
 Invite other members of your team to your analytics dashboard
 
 ## Usage
@@ -43,6 +43,6 @@ You can submit an issue at [github.com/suetco/suet/issues](http://github.com/sue
 
 ## Copyright/Licence
 
-Copyright (c) 2018 Opeyemi Obembe. Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
+Copyright (c) 2017 - present Opeyemi Obembe. Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
 
-If you use Suet for more than one Mailgun domain, make money from any of your domains, want email support or just want to support development, consider purchasing a [licence for $70/year](https://pay.paddle.com/checkout/515197).
+If you use Suet for more than one Mailgun/SES domain, make money from any of your domains, want email support or just want to support development, consider purchasing a [licence for $70/year](https://pay.paddle.com/checkout/515197).

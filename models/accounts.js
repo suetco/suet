@@ -7,9 +7,9 @@ const dbo = require('../lib/db.js')
     , Domains = require('./domains.js')
     ;
 
-function unique(event, domain, date, fn) {
+function unique(event, domain, fn) {
   dbo.db().collection('logs').aggregate([
-    {$match: {domain: domain, event: event, date: date}},
+    {$match: {domain: domain, event: event/*, date: date*/}},
     {$group: {
       _id: {
         msg_id: "$msg_id",
@@ -82,14 +82,14 @@ exports.dashboardData = (domain, query, fn)  => {
           , events_map
           , e_labels = []
           , e_data = {
-            dropped: []
+            failed: []
             , delivered: []
             , clicked: []
             , opened: []
           };
       for (d of docs) {
         e_labels.push(d._id);
-        events_map = {'delivered': false, 'dropped': false, 'opened': false, 'clicked': false};
+        events_map = {'delivered': false, 'failed': false, 'opened': false, 'clicked': false};
         for (e of d.event) {
           if (e_data[e.event]) {
             e_data[e.event].push(e.count);
@@ -106,6 +106,42 @@ exports.dashboardData = (domain, query, fn)  => {
       data.engagement = {label: e_labels, data: e_data};
       resolve();
     });
+  })
+  .then(() => {
+    // Delivered
+    return new Promise((resolve, reject) => {
+      dbo.db().collection('logs').count({domain: domain, event: 'delivered'}, (err, count) => {
+        data.delivered = count;
+        return resolve();
+      })
+    })
+  })
+  .then(() => {
+    // Failed
+    return new Promise((resolve, reject) => {
+      dbo.db().collection('logs').count({domain: domain, event: 'failed'}, (err, count) => {
+        data.failed = count;
+        return resolve();
+      })
+    })
+  })
+  .then(() => {
+    // Clicked
+    return new Promise((resolve, reject) => {
+      dbo.db().collection('logs').count({domain: domain, event: 'clicked'}, (err, count) => {
+        data.clicked = count;
+        return resolve();
+      })
+    })
+  })
+  .then(() => {
+    // Opened
+    return new Promise((resolve, reject) => {
+      dbo.db().collection('logs').count({domain: domain, event: 'opened'}, (err, count) => {
+        data.opened = count;
+        return resolve();
+      })
+    })
   })
   .then(() => {
     // Get top clicks
@@ -288,7 +324,7 @@ exports.dashboardData = (domain, query, fn)  => {
   .then(() => {
     // Unique opens
     return new Promise((resolve, reject) => {
-      unique('opened', domain, eng_date, (err, c) => {
+      unique('opened', domain, (err, c) => {
 
         if (c)
           data.unique_opens = c;
@@ -300,7 +336,7 @@ exports.dashboardData = (domain, query, fn)  => {
   .then(() => {
     // Unique clicks
     return new Promise((resolve, reject) => {
-      unique('clicked', domain, eng_date, (err, c) => {
+      unique('clicked', domain, (err, c) => {
 
         if (c)
           data.unique_clicks = c;

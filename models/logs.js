@@ -12,7 +12,7 @@ exports.feed = (domain, options, fn) => {
   let sort = 'date'
       , order = -1
       , allowedSort = ['date', 'email', 'event']
-      , allowedEvents = ['delivered', 'opened', 'bounced', 'dropped', 'clicked']
+      , allowedEvents = ['delivered', 'opened', 'bounced', 'complained', 'failed', 'clicked']
       ;
 
   let qs = {}

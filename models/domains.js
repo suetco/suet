@@ -8,7 +8,7 @@ const dbo = require('../lib/db.js')
       httpAuth: process.env.ES_AUTH,
       log: 'error'
     })
-    //, AWS = require('aws-sdk')
+    , AWS = require('aws-sdk')
     ;
 
 // Get list of domains connected to account
@@ -157,55 +157,30 @@ exports.setupMGDomains = (accId, key, domains, domainHooks, fn) => {
       return fn('Invalid account');
 
     let addedDomains = [];
-    let hooks = ['bounce', 'deliver', 'drop', 'spam', 'click', 'open'];
+    let hooks = ['temporary_fail', 'delivered', 'permanent_fail', 'complained', 'clicked', 'opened'];
     // Update webhooks
     Promise.all(domains.map(domain => {
       return new Promise(resolve => {
-        let endpoint = ['https://api.mailgun.net/v3/domains/', domain, '/webhooks'].join('');
-
+        let endpoint = `https://api.mailgun.net/v3/domains/${domain}/webhooks`;
         Promise.all(hooks.map(hook => {
           return new Promise(resolveInner => {
-
-            if (domainHooks[domain] && domainHooks[domain].hooks
-                  && domainHooks[domain].hooks.indexOf(hook) != -1) {
-              // Webhook exist for domain and id already
-              // Update
-              request.put({
-                'url': [endpoint, '/', hook].join(''),
-                'gzip': true,
-                'auth': {
-                  'user': 'api',
-                  'pass': key,
-                  'sendImmediately': false
-                },
-                'form': {
-                  'id': hook,
-                  'url': process.env.WEBHOOK
-                }
-              }, (err, response, body) => {
-                // So how do we even handle errors here? :/
-                resolveInner();
-              });
-            }
-            else {
-              // No existing webhook, create
-              request.post({
-                'url': endpoint,
-                'gzip': true,
-                'auth': {
-                  'user': 'api',
-                  'pass': key,
-                  'sendImmediately': false
-                },
-                'form': {
-                  'id': hook,
-                  'url': process.env.WEBHOOK
-                }
-              }, (err, response, body) => {
-                // So how do we even handle errors here? :/
-                resolveInner();
-              });
-            }
+            request.post({
+              url: endpoint,
+              gzip: true,
+              auth: {
+                user: 'api',
+                pass: key,
+                sendImmediately: false
+              },
+              form: {
+                id: hook,
+                domain: domain,
+                url: process.env.WEBHOOK
+              }
+            }, (err, response, body) => {
+              // So how do we even handle errors here? :/
+              resolveInner();
+            });
           });
         })).then(() => {
           // Hooks updated, add to db
@@ -213,7 +188,11 @@ exports.setupMGDomains = (accId, key, domains, domainHooks, fn) => {
             domain: domain
           }, {
             $addToSet: {accs: accId},
-            $set: {key: encryptedKey, owner: accId}
+            $set: {
+              key: encryptedKey,
+              type: 'mg',
+              owner: accId
+            }
           }, {upsert: true}, err => {
             if (!err)
               addedDomains.push(domain);
@@ -230,6 +209,211 @@ exports.setupMGDomains = (accId, key, domains, domainHooks, fn) => {
     }).catch(() => {
       return fn(null, addedDomains);
     });
+  });
+}
+
+// Get domains from SES
+exports.getSESDomains = (accId, key, fn) => {
+
+  if (!accId)
+    return fn('Invalid account');
+  if (!key)
+    return fn('You missed the API key.');
+  if (!key.id || !key.secret)
+    return fn('Invalid key details.');
+
+  accId = dbo.id(accId);
+  dbo.db().collection('accounts').findOne({_id: accId}, (err, doc) => {
+    if (!doc)
+      return fn('Invalid account');
+
+    // Validate API key and get domains
+    const ses = new AWS.SES({
+      accessKeyId: key.id,
+      secretAccessKey: key.secret,
+      region: key.region
+    });
+    ses.listIdentities({IdentityType: 'Domain'}, (err, body) => {
+      if (err) {
+        //console.log(err);
+        return fn(err.message);
+      }
+
+      //console.log(body);
+      //body = JSON.parse(body);
+      return fn(null, body.Identities);
+
+    });
+    //return fn(null, []);
+  });
+}
+// Setup SES domains
+exports.setupSESDomains = (accId, key, domains, fn) => {
+
+  if (!accId)
+    return fn('Invalid account');
+  if (!domains || !Array.isArray(domains))
+    return fn('Select one or more domains.');
+  if (domains.length < 1)
+    return fn('Select one or more domains.');
+
+  accId = dbo.id(accId);
+  let addedDomains = [],
+      topicArn = '';
+  //let encryptedKey = encrypt(key);
+  dbo.db().collection('accounts').findOne({_id: accId}, (err, doc) => {
+    if (!doc)
+      return fn('Invalid account');
+
+    const ses = new AWS.SES({
+      accessKeyId: key.id,
+      secretAccessKey: key.secret,
+      region: key.region
+    });
+    const sns = new AWS.SNS({
+      accessKeyId: key.id,
+      secretAccessKey: key.secret,
+      region: key.region
+    });
+
+    new Promise((resolve, reject) => {
+      // 1. Create topic (action is indempodent. If topic exists, not created)
+      sns.createTopic({
+        Name: process.env.SES_TOPIC
+      }, (err, data) => {
+        if (err) {
+          return fn(err.message);
+        }
+
+        topicArn = data.TopicArn;
+
+        // 2. Create subscription
+        sns.subscribe({
+          Protocol: process.env.SES_WEBHOOK.split(':')[0],
+          TopicArn: topicArn,
+          Attributes: {},
+          Endpoint: process.env.SES_WEBHOOK,
+          ReturnSubscriptionArn: true
+        }, function(err, data) {
+          if (err) {
+            return fn(err.message);
+          }
+
+          // 3. Create configuration set
+          ses.createConfigurationSet({
+            ConfigurationSet: {
+              Name: process.env.SES_CONFSET
+            }
+          }, function(err, data) {
+
+            if (err) {
+              if (err.code == 'ConfigurationSetAlreadyExists') {
+                return resolve();
+              }
+
+              return fn(err.message);
+            }
+
+            // 4. Create event destination
+            ses.createConfigurationSetEventDestination({
+              ConfigurationSetName: process.env.SES_CONFSET,
+              EventDestination: {
+                MatchingEventTypes: [
+                  'reject', 'bounce', 'complaint', 'delivery', 'open', 'click'
+                ],
+                Name: process.env.SES_CONFSET,
+                Enabled: true,
+                SNSDestination: {
+                  TopicARN: topicArn
+                }
+              }
+            }, (err, data) => {
+
+              if (err) {
+                return fn(err.message);
+              }
+
+              resolve();
+            });
+          });
+
+        });
+      });
+    })
+    .then(() => {
+      // Add domains
+      let encryptedKey = {
+        key: encrypt(key.id),
+        secret: encrypt(key.secret),
+        region: key.region
+      }
+
+      return Promise.all(domains.map(domain => {
+        return new Promise(resolve => {
+          dbo.db().collection('domains').updateOne({
+            domain: domain
+          }, {
+            $addToSet: {accs: accId},
+            $set: {
+              key: encryptedKey,
+              type: 'ses',
+              owner: accId
+            }
+          }, {upsert: true}, err => {
+            if (!err)
+              addedDomains.push(domain);
+
+            return resolve();
+          });
+        });
+      }));
+    })
+    .then(() => {
+      return fn(null, addedDomains);
+    }).catch(() => {
+      return fn(null, addedDomains);
+    });
+  });
+}
+
+exports.updateFailureEmail = (domain, email, fn) => {
+
+  if (!domain)
+    return fn('No domain provided');
+  email = email.toLowerCase().trim();
+  if (!/^\S+@\S+$/.test(email))
+    return fn('Email invalid. Confirm and try again');
+
+  dbo.db().collection('domains').updateOne({
+    domain: domain
+  }, {$set: {
+      failure_email: email
+    }
+  }, (err, status) => {
+    if (err) {
+      return fn('Internal Error');
+    }
+
+    fn(null, email);
+  });
+}
+
+exports.clearFailureEmail = (domain, fn) => {
+
+  if (!domain)
+    return fn('No domain provided');
+
+  dbo.db().collection('domains').updateOne({
+    domain: domain
+  }, {$unset: {
+      failure_email: 1
+    }
+  }, (err, status) => {
+    if (err) {
+      return fn('Internal Error');
+    }
+
+    fn(null);
   });
 }
 
@@ -325,9 +509,13 @@ exports.delete = (domain, fn) => {
       if (err)
         return fn('Internal Error');
 
+      if (domain.type == 'ses') {
+        return fn();
+      }
+
       // Remove webhooks from Mailgun
       request.get({
-        'url': ['https://api.mailgun.net/v3/domains/', domain, '/webhooks'].join(''),
+        'url': `https://api.mailgun.net/v3/domains/${domain}/webhooks`,
         'gzip': true,
         'auth': {
           'user': 'api',
