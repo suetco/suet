@@ -1,0 +1,24 @@
+{% include 'partials/header.liquid' %}
+
+<section style="margin-top:7%">
+  <div class="container">
+    <div class="row">
+      <div class="six columns offset-by-three">
+        <h5 class="center pad-btm"><a href="/"><i class="icon-bar-graph-2"></i></a></h5>
+        <div class="box">
+          <h5 class="pad-btm">One final step</h5>
+          <p>There is a tiny change you need to make to your outgoing emails so that Suet can get the events.</p>
+          <ol style="margin:10px 20px">
+            <li>If you are sending your email via SMTP, add the header <code>X-SES-CONFIGURATION-SET: <strong>suetco</strong></code></li>
+            <li>If you are sending your email via the <a href="https://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html" target="_blank">sendRawEmail</a> or <a href="https://docs.aws.amazon.com/ses/latest/APIReference/API_SendEmail.html" target="_blank">SendEmail</a> API, set the <code>ConfigurationSetName</code> parameter to <strong>suetco</strong></li>
+          </ol>
+          <p>If you need more help, send a mail to <a href="mailto:hello@suet.co">hello@suet.co</a>. You can also see <a href="https://docs.aws.amazon.com/ses/latest/DeveloperGuide/event-publishing-send-email.html" target="_blank">this link</a> to learn more.</p>
+        </div>
+        <p class="center"><a href="/dashboard">Continue to dashboard</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -11,13 +11,13 @@
             {% if error %}<p class="error">{{ error }}</p>{% endif %}
             <p>
               {% for domain in domains %}
-              <label style="font-weight:normal"><input type="checkbox" name="domains[]" value="{{domain.name}}" checked> {{domain.name}}</label>
+              <label style="font-weight:normal"><input type="checkbox" name="domains[]" value="{{domain}}" checked> {{domain}}</label>
               {% endfor %}
             </p>
             <p><button class="button button-primary u-full-width">Add Domains</button></p>
           </form>
         </div>
-        <p class="center"><a href="/mailgun/add-key">Back</a> &middot; <a href="/logout">Logout</a></p>
+        <p class="center"><a href="/ses/add-key">Back</a> &middot; <a href="/logout">Logout</a></p>
       </div>
     </div>
   </div>

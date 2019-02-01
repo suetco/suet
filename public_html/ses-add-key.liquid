@@ -1,0 +1,40 @@
+{% include 'partials/header.liquid' %}
+
+<section>
+  <div style="width:50%;position:fixed;height:100%;overflow-y:scroll">
+    <div style="padding:50px">
+      <h5 class="pad-btm"><a href="/"><i class="icon-bar-graph-2"></i></a></h5>
+      <h5 class="pad-btm">Amazon SES Setup Instructions</h5>
+      <ol>
+        <li>Login to your Amazon console and access <code>IAM</code><br><img src="/images/ses-1.png" style="width:80%;padding:5px;border-radius:5px"></li>
+        <li>Click <code>Users</code> &rarr; <code>Add New User</code>. Create a user with the <code>user name</code> <strong>Suet</strong> with just <code>Programmatic access</code>.<br><img src="/images/ses-2.png" style="width:80%;padding:5px;border-radius:5px"></li>
+        <li>In the <code>Set Permissions</code> screen and select <code>Attach existing policies directly</code>. Check access for the policies <code>AmazonSESFullAccess</code> and <code>AmazonSNSFullAccess</code>. <span class="highlight">The access keys are used to automatically setup email tracking and send direct mails from the Suet dashboard. <a href="/privacy" target="_blank">Learn more</a></span><br><img src="/images/ses-3.png" style="width:80%;padding:5px;border-radius:5px"></li>
+        <li>Confirm and create the user. Enter the <code>Access key ID</code> and <code>Secret access key</code> in the fields to the right.</li>
+      </ol>
+      <p class=""><a href="/select-service">Back</a> &middot; <a href="/logout">Logout</a></p>
+    </div>
+  </div>
+  <div style="width:60%;position:fixed;margin-left:50%;height:100%;background-color:#fff">
+    <div style="padding:50px">
+      <div style="width:400px;margin-top:100px">
+        <form method="post">
+          <p><strong>Add IAM Access key</strong></p>
+          <p>Follow the instructions to the left to get your access key and secret. Enter the key ID and secret below.</p>
+          {% if error %}<p class="error">{{ error }}</p>{% endif %}
+          <p><input type="text" name="id" placeholder="Access key ID" class="u-full-width" required></p>
+          <p><input type="password" name="secret" placeholder="Secret access key" class="u-full-width" required></p>
+          <p><select class="u-full-width" name="region" required>
+            <option value="">Select SES/SNS Region</option>
+            <option value="us-east-1">US East (N. Virginia, us-east-1)</option>
+            <option value="us-west-2">US West (Oregon, us-west-2)</option>
+            <option value="eu-west-1">EU (Ireland, eu-west-1)</option>
+          </select></p>
+          <p><button class="button button-primary u-full-width" type="submit">Setup Tracking</button></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
