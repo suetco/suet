@@ -1,14 +1,16 @@
-## Suet [![Build Status](https://travis-ci.org/kehers/suet.svg?branch=master)](https://travis-ci.org/kehers/suet)
+## Suet
+
+*(This repo has now been put in read-only mode. No further work will continue on the open source version. It’s been increasingly difficult to keep the open source version up with the managed version at [suet.co](https://suet.co/). Instead of the divided attention between both versions, all focus will now be on the managed version. If you need to setup your own version of Suet or build anything off SES/Mailgun analytics, this source is still a good place to start)*
 
 Suet is an analytics dashboard and reporting tool for transactional emails through Mailgun or SES. It gives better insight into the performance of your transactional emails by providing answers to questions like:
 
-- Who received what email? Which ones were opened? What links were clicked? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/feed.png))
-- What’s user engagement like? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/users.png))
-- What device/platform are most used? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/dashboard.png))
-- Which email performed best? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/email.png))
+- Who received what email? Which ones were opened? What links were clicked? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/static/images/screenshots/feed.png))
+- What’s user engagement like? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/static/images/screenshots/users.png))
+- What device/platform are most used? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/static/images/screenshots/dashboard.png))
+- Which email performed best? ([Screenshot](https://github.com/suetco/suet/raw/master/public_html/static/images/screenshots/email.png))
 - Which email bounced or was complained about?
 
-![Dashboard](https://github.com/suetco/suet/raw/master/public_html/images/screenshots/dashboard.png)
+![Dashboard](https://github.com/suetco/suet/raw/master/public_html/static/images/screenshots/dashboard.png)
 
 ## Features
 
@@ -35,14 +37,12 @@ The easiest way to use Suet is through the managed version at [suet.co](https://
 
 ## Staying up to date
 
-Follow [@suet_co](http://twitter.com/suet_co) on Twitter and the changelog at [headwayapp.co/suet-changelog](https://headwayapp.co/suet-changelog)
+Follow [@suet_co](http://twitter.com/suet_co) on Twitter.
 
 ## Issues
 
-You can submit an issue at [github.com/suetco/suet/issues](http://github.com/suetco/suet/issues). If you require email support, you will need to [purchase a licence](https://pay.paddle.com/checkout/515197) (costs $70/year).
+~You can submit an issue at [github.com/suetco/suet/issues](http://github.com/suetco/suet/issues). If you require email support, you will need to [purchase a licence](https://pay.paddle.com/checkout/515197) (costs $70/year).~
 
 ## Copyright/Licence
 
-Copyright (c) 2017 - present Opeyemi Obembe. Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
-
-If you use Suet for more than one Mailgun/SES domain, make money from any of your domains, want email support or just want to support development, consider purchasing a [licence for $70/year](https://pay.paddle.com/checkout/515197).
+Copyright (c) 2017 - present, Opeyemi Obembe. Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
