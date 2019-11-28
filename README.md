@@ -1,6 +1,6 @@
 ## Suet
 
-*(This repo has now been put in read-only mode. No further work will continue on the open source version. It’s been increasingly difficult to keep the open source version up with the managed version at [suet.co](https://suet.co/). Instead of the divided attention between both versions, all focus will now be on the managed version. If you need to setup your own version of Suet or build anything off SES/Mailgun analytics, this source is still a good place to start)*
+*(This repo has now been put in read-only mode. No further work will continue on the open source version. It’s been increasingly difficult to keep the open source version up with the managed version at [mailintel.io](https://mailintel.io/) ~~suet.co~~. Instead of the divided attention between both versions, all focus will now be on the managed version. If you need to setup your own version of Suet or build anything off SES/Mailgun analytics, this source is still a good place to start)*
 
 Suet is an analytics dashboard and reporting tool for transactional emails through Mailgun or SES. It gives better insight into the performance of your transactional emails by providing answers to questions like:
 
@@ -33,11 +33,11 @@ Invite other members of your team to your analytics dashboard
 
 ## Usage
 
-The easiest way to use Suet is through the managed version at [suet.co](https://suet.co/) (costs as low as $10/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/suetco/suet/blob/master/docs/installation.md).
+The easiest way to use Suet is through the managed version at [mailintel.io](https://mailintel.io/) (costs as low as $10/month). An alternative option is to set up Suet on your own server. To do this, check out the [installation instructions](http://github.com/suetco/suet/blob/master/docs/installation.md).
 
 ## Staying up to date
 
-Follow [@suet_co](http://twitter.com/suet_co) on Twitter.
+Follow [@mailintel](http://twitter.com/mailintel) on Twitter.
 
 ## Issues
 
